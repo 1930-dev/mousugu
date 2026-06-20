@@ -6,8 +6,22 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E222CDDC2FE5D4F2003481F8 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E222CDDB2FE5D4F2003481F8 /* DesignSystem.swift */; };
+		E222CDDE2FE6027C003481F8 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E222CDDD2FE6027C003481F8 /* Localizable.xcstrings */; };
+		E222CDE02FE60286003481F8 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E222CDDF2FE60286003481F8 /* InfoPlist.xcstrings */; };
+		E222CDE22FE74AB1003481F8 /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E222CDE12FE74AB1003481F8 /* UpdateChecker.swift */; };
+		E222CDE52FE74C93003481F8 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = E222CDE42FE74C93003481F8 /* Sparkle */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		E222CDD22FE5D3C6003481F8 /* MenuBarCalendar.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = MenuBarCalendar.xcodeproj; sourceTree = "<group>"; };
+		E222CDDB2FE5D4F2003481F8 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		E222CDDD2FE6027C003481F8 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		E222CDDF2FE60286003481F8 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		E222CDE12FE74AB1003481F8 /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
 		E2B6B6FC2FC4E825007255BA /* MenuBarCalendar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MenuBarCalendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2B6B70C2FC4E84F007255BA /* MenuBarCalendar.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = MenuBarCalendar.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -23,17 +37,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E222CDE52FE74C93003481F8 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E222CDD42FE5D3C6003481F8 /* Products */ = {
+			isa = PBXGroup;
+			name = Products;
+			sourceTree = "<group>";
+		};
 		E2B6B6F32FC4E825007255BA = {
 			isa = PBXGroup;
 			children = (
 				E2B6B6FE2FC4E825007255BA /* MenuBarCalendar */,
 				E2B6B6FD2FC4E825007255BA /* Products */,
+				E222CDDB2FE5D4F2003481F8 /* DesignSystem.swift */,
+				E222CDDD2FE6027C003481F8 /* Localizable.xcstrings */,
+				E222CDDF2FE60286003481F8 /* InfoPlist.xcstrings */,
+				E222CDE12FE74AB1003481F8 /* UpdateChecker.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -42,6 +66,11 @@
 			children = (
 				E2B6B6FC2FC4E825007255BA /* MenuBarCalendar.app */,
 			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E2B6B70E2FC4E84F007255BA /* Products */ = {
+			isa = PBXGroup;
 			name = Products;
 			sourceTree = "<group>";
 		};
@@ -65,6 +94,7 @@
 			);
 			name = MenuBarCalendar;
 			packageProductDependencies = (
+				E222CDE42FE74C93003481F8 /* Sparkle */,
 			);
 			productName = MenuBarCalendar;
 			productReference = E2B6B6FC2FC4E825007255BA /* MenuBarCalendar.app */;
@@ -91,12 +121,26 @@
 			knownRegions = (
 				en,
 				Base,
+				es,
 			);
 			mainGroup = E2B6B6F32FC4E825007255BA;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E222CDE32FE74C92003481F8 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E2B6B6FD2FC4E825007255BA /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E2B6B70E2FC4E84F007255BA /* Products */;
+					ProjectRef = E2B6B70C2FC4E84F007255BA /* MenuBarCalendar.xcodeproj */;
+				},
+				{
+					ProductGroup = E222CDD42FE5D3C6003481F8 /* Products */;
+					ProjectRef = E222CDD22FE5D3C6003481F8 /* MenuBarCalendar.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				E2B6B6FB2FC4E825007255BA /* MenuBarCalendar */,
@@ -109,6 +153,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E222CDE02FE60286003481F8 /* InfoPlist.xcstrings in Resources */,
+				E222CDDE2FE6027C003481F8 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +165,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E222CDE22FE74AB1003481F8 /* UpdateChecker.swift in Sources */,
+				E222CDDC2FE5D4F2003481F8 /* DesignSystem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,6 +226,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "MenuBarCalendar uses your calendar to show the next event and remaining time directly in the menu bar.";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -234,6 +283,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "MenuBarCalendar uses your calendar to show the next event and remaining time directly in the menu bar.";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -246,14 +296,27 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MenuBarCalendar/MenuBarCalendar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 77229JW87F;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = YES;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "MenuBarCalendar utiliza tu calendario para mostrarte el próximo evento y el tiempo restante directamente en la barra de menú.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -268,7 +331,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.1930.MenuBarCalendar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -290,14 +353,27 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MenuBarCalendar/MenuBarCalendar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 77229JW87F;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = YES;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "MenuBarCalendar utiliza tu calendario para mostrarte el próximo evento y el tiempo restante directamente en la barra de menú.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -312,7 +388,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.1930.MenuBarCalendar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -351,6 +427,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E222CDE32FE74C92003481F8 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E222CDE42FE74C93003481F8 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E222CDE32FE74C92003481F8 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E2B6B6F42FC4E825007255BA /* Project object */;
 }

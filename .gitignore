@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+*.xcuserdatad/
+*.xcscmblueprint
+*.xccheckout
+
+# Build output
+build/
+DerivedData/
+*.dmg
+
+# SwiftPM
+.swiftpm/
+.build/
+Packages/
+
+# Empty stub xcodeproj created by tooling early in development
+MenuBarCalendar/MenuBarCalendar.xcodeproj/

@@ -1,0 +1,42 @@
+import Foundation
+
+/// All user-facing strings.
+///
+/// Each value is a computed property that resolves via `String(localized:)`,
+/// so the displayed text follows the system language at call time. Source
+/// strings (the literal arguments below) are English; translations live in
+/// `Localizable.xcstrings`. To add a new language, add a new locale column in
+/// the catalog — no code changes required.
+struct Strings {
+    struct General {
+        static var loading: String { String(localized: "Loading…") }
+        static var noPermission: String { String(localized: "No permission 📅") }
+        static var error: String { String(localized: "Error ⚠️") }
+        static var noMoreEvents: String { String(localized: "No more events today") }
+        static var join: String { String(localized: "Join") }
+        static var rejoin: String { String(localized: "Rejoin") }
+        static var preferences: String { String(localized: "Preferences…") }
+        static var checkForUpdates: String { String(localized: "Check for updates…") }
+        static var exit: String { String(localized: "Quit") }
+    }
+
+    struct Status {
+        static var now: String { String(localized: "Now: ") }
+        /// Format string — consumed via `String(format:)` with the minute count.
+        static var inMinutes: String { String(localized: "in %dm: ") }
+        /// Format string — consumed via `String(format:)` with the hour count.
+        static var inHours: String { String(localized: "in %dh: ") }
+        static var noEvents: String { String(localized: "No events today") }
+    }
+
+    struct Menu {
+        static var today: String { String(localized: "Today") }
+    }
+
+    struct Settings {
+        static var general: String { String(localized: "General") }
+        static var calendars: String { String(localized: "Calendars") }
+        static var autoStart: String { String(localized: "Start at macOS login") }
+        static var hideFreeEvents: String { String(localized: "Hide events where I'm free") }
+    }
+}
