@@ -22,13 +22,15 @@ struct CalendarSettingsView: View {
     @AppStorage("selectedSettingsTab") private var selection: SettingsTab = .general
 
     var body: some View {
+        // `.tabItem`/`.tag` rather than the newer `Tab(_:value:)` API, which is
+        // macOS 15+; this keeps the deployment target at macOS 14.
         TabView(selection: $selection) {
-            Tab(Strings.Settings.general, systemImage: "gearshape", value: SettingsTab.general) {
-                GeneralPane(store: store)
-            }
-            Tab(Strings.Settings.calendars, systemImage: "calendar", value: SettingsTab.calendars) {
-                CalendarsPane(store: store)
-            }
+            GeneralPane(store: store)
+                .tabItem { Label(Strings.Settings.general, systemImage: "gearshape") }
+                .tag(SettingsTab.general)
+            CalendarsPane(store: store)
+                .tabItem { Label(Strings.Settings.calendars, systemImage: "calendar") }
+                .tag(SettingsTab.calendars)
         }
         .frame(width: 440, height: 260)
     }

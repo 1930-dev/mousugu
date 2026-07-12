@@ -12,7 +12,11 @@ struct CalendarBarApp: App {
         } label: {
             HStack(spacing: DesignSystem.Spacing.xs) {
                 Image(systemName: "calendar")
-                Text(store.countdownLabel)
+                // Collapse to just the icon when idle (no upcoming event today);
+                // the store sets an empty label in that case.
+                if !store.countdownLabel.isEmpty {
+                    Text(store.countdownLabel)
+                }
             }
         }
         .menuBarExtraStyle(.window)
@@ -76,6 +80,19 @@ struct MainMenuView: View {
     /// translucent glass.
     private var eventsCard: some View {
         VStack(alignment: .leading, spacing: 0) {
+            if store.accessDenied {
+                accessDeniedState
+            } else {
+                todayEventsList
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// Header + today's events (or the empty state), shown once calendar access
+    /// is granted.
+    private var todayEventsList: some View {
+        VStack(alignment: .leading, spacing: 0) {
             Text(Strings.Menu.today)
                 .font(.subheadline)
                 .fontWeight(.semibold)
@@ -138,6 +155,32 @@ struct MainMenuView: View {
                 .foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity)
+        .padding(.vertical, DesignSystem.Spacing.xl)
+    }
+
+    /// Shown when calendar access was denied — explains the problem and links
+    /// straight to the Privacy pane so the user isn't stuck on an empty list.
+    private var accessDeniedState: some View {
+        VStack(spacing: DesignSystem.Spacing.md) {
+            Image(systemName: "calendar.badge.exclamationmark")
+                .font(.system(size: 28))
+                .foregroundColor(.secondary)
+            Text(Strings.Access.title)
+                .font(.callout)
+                .fontWeight(.semibold)
+            Text(Strings.Access.message)
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+            Button(Strings.Access.openSettings) {
+                if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Calendars") {
+                    NSWorkspace.shared.open(url)
+                }
+            }
+            .controlSize(.small)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, DesignSystem.Spacing.md)
         .padding(.vertical, DesignSystem.Spacing.xl)
     }
 }

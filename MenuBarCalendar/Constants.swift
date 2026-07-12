@@ -13,6 +13,7 @@ struct Strings {
         static var noPermission: String { String(localized: "No permission 📅") }
         static var error: String { String(localized: "Error ⚠️") }
         static var noMoreEvents: String { String(localized: "No more events today") }
+        static var untitledEvent: String { String(localized: "Untitled event") }
         static var join: String { String(localized: "Join") }
         static var rejoin: String { String(localized: "Rejoin") }
         static var preferences: String { String(localized: "Preferences…") }
@@ -31,6 +32,12 @@ struct Strings {
 
     struct Menu {
         static var today: String { String(localized: "Today") }
+    }
+
+    struct Access {
+        static var title: String { String(localized: "Calendar access needed") }
+        static var message: String { String(localized: "MenuBarCalendar needs access to your calendar to show your next event. Grant access in System Settings, then reopen the app.") }
+        static var openSettings: String { String(localized: "Open Privacy Settings") }
     }
 
     struct Settings {

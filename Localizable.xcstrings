@@ -1,6 +1,46 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Calendar access needed" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se necesita acceso al calendario"
+          }
+        }
+      }
+    },
+    "MenuBarCalendar needs access to your calendar to show your next event. Grant access in System Settings, then reopen the app." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MenuBarCalendar necesita acceso a tu calendario para mostrarte el próximo evento. Otorgá el acceso en Configuración del Sistema y volvé a abrir la app."
+          }
+        }
+      }
+    },
+    "Open Privacy Settings" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Configuración de Privacidad"
+          }
+        }
+      }
+    },
+    "Untitled event" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Evento sin título"
+          }
+        }
+      }
+    },
     "%@ - %@" : {
       "localizations" : {
         "en" : {

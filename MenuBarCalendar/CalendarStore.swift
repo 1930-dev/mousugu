@@ -10,6 +10,14 @@ final class CalendarStore: ObservableObject {
     @Published var allCalendars: [EKCalendar] = []
     @Published var nextEvent: EKEvent?
     @Published var countdownLabel: String = Strings.General.loading
+    /// `true` when calendar access was denied or restricted, so the popover can
+    /// offer a way to fix it instead of showing an empty list.
+    @Published var accessDenied: Bool = false
+
+    /// Start-of-day of the currently loaded event window. Lets the per-minute
+    /// tick detect a day rollover and reload, rather than staying stuck on the
+    /// previous day until an external EventKit change happens to fire.
+    private var loadedDay = Date.distantPast
     
     // Almacena los IDs de los calendarios que el usuario ocultó
     @AppStorage("hiddenCalendarIDs") private var hiddenCalendarIDsData: Data = Data()
@@ -40,8 +48,19 @@ final class CalendarStore: ObservableObject {
         timer = Timer.publish(every: 60, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
-                self?.updateCountdown()
+                self?.tick()
             }
+    }
+
+    /// Per-minute tick. Reloads the whole window when the calendar day rolled
+    /// over (so tomorrow's events appear on their own), otherwise just refreshes
+    /// the countdown.
+    private func tick() {
+        if Calendar.current.startOfDay(for: Date()) != loadedDay {
+            loadEvents()
+        } else {
+            updateCountdown()
+        }
     }
 
     func requestAccessAndLoad() async {
@@ -62,12 +81,15 @@ final class CalendarStore: ObservableObject {
             }
             
             if granted {
+                accessDenied = false
                 loadEvents()
             } else {
+                accessDenied = true
                 countdownLabel = Strings.General.noPermission
             }
         } catch {
             print("Error solicitando acceso: \(error)")
+            accessDenied = true
             countdownLabel = Strings.General.error
         }
     }
@@ -92,6 +114,7 @@ final class CalendarStore: ObservableObject {
             .sorted { $0.startDate < $1.startDate }
         
         self.todayEvents = events
+        self.loadedDay = start
         updateCountdown()
     }
 
@@ -101,7 +124,7 @@ final class CalendarStore: ObservableObject {
         // Event currently in progress takes priority — shows "Ahora: …".
         if let current = todayEvents.first(where: { $0.startDate <= now && $0.endDate > now }) {
             nextEvent = current
-            countdownLabel = Strings.Status.now + (current.title ?? "Evento")
+            countdownLabel = Strings.Status.now + eventTitle(current)
             return
         }
 
@@ -111,16 +134,24 @@ final class CalendarStore: ObservableObject {
         nextEvent = upcoming
 
         guard let next = upcoming else {
-            countdownLabel = Strings.General.noMoreEvents
+            // No upcoming event: collapse the menu bar to just the icon (the
+            // popover still shows its "no more events" empty state).
+            countdownLabel = ""
             return
         }
 
         let minutes = Int(next.startDate.timeIntervalSince(now) / 60)
         if minutes < 60 {
-            countdownLabel = String(format: Strings.Status.inMinutes, minutes) + (next.title ?? "")
+            countdownLabel = String(format: Strings.Status.inMinutes, minutes) + eventTitle(next)
         } else {
-            countdownLabel = String(format: Strings.Status.inHours, minutes / 60) + (next.title ?? "")
+            countdownLabel = String(format: Strings.Status.inHours, minutes / 60) + eventTitle(next)
         }
+    }
+
+    /// Event title with a localized fallback for untitled events.
+    private func eventTitle(_ event: EKEvent) -> String {
+        let title = event.title ?? ""
+        return title.isEmpty ? Strings.General.untitledEvent : title
     }
 
     func toggleCalendar(_ calendar: EKCalendar) {
