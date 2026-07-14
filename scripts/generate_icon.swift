@@ -6,8 +6,16 @@
 // 1b direction): a charcoal rounded square holding a 5x5 grid of dots, the centre
 // one marked as today.
 //
-// The source's outer drop shadow is deliberately not baked in — it is page
-// presentation, and macOS draws its own shadow around the icon.
+// The icon follows the macOS Big Sur+ grid rather than filling the canvas: the
+// body is inset and casts a baked-in drop shadow. Those numbers are not
+// invented — they were measured off the system's own icons (Calculator, Notes
+// and Reminders are pixel-identical in geometry): on a 1024 canvas the solid
+// body spans 820x820 centred, and its shadow reaches 17px to either side, 5px
+// above and 29px below, i.e. a ~17px blur pushed ~12px down.
+//
+// macOS does not add a shadow of its own to a .icns — that the system icons
+// bake theirs in is the proof. A full-bleed icon renders larger than, and a
+// different shape from, every neighbour in the Dock.
 //
 // Run:
 //   swift scripts/generate_icon.swift <output.png>
@@ -19,9 +27,17 @@ guard CommandLine.arguments.count >= 2 else {
 }
 let outputPath = CommandLine.arguments[1]
 
-// The source sizes every feature as a fraction of the icon's edge, so this does too.
+// The bitmap Apple asks for.
 let canvas: CGFloat = 1024
-func s(_ fraction: CGFloat) -> CGFloat { fraction * canvas }
+// The icon shape inside it — Apple's template body for a 1024 canvas.
+let bodyEdge: CGFloat = 824
+let body = NSRect(x: (canvas - bodyEdge) / 2, y: (canvas - bodyEdge) / 2,
+                  width: bodyEdge, height: bodyEdge)
+
+// The source sizes every feature as a fraction of the icon's edge, so this does
+// too — the edge being the body, not the canvas, so the artwork keeps its
+// proportions now that the body no longer fills the bitmap.
+func s(_ fraction: CGFloat) -> CGFloat { fraction * bodyEdge }
 
 func rgb(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat, _ alpha: CGFloat = 1) -> NSColor {
     NSColor(srgbRed: r / 255, green: g / 255, blue: b / 255, alpha: alpha)
@@ -34,7 +50,16 @@ let todayColour = rgb(223, 75, 59) // #DF4B3B
 let dotColour = rgb(255, 255, 255, 0.24)
 let ringColour = rgb(255, 255, 255, 0.04)
 
-let cornerRadius = s(0.2237)
+// 185.4 on an 824 body — Apple's corner radius for the macOS icon grid. The
+// source's own 0.2237 rounds to the same shape, so this keeps the design intact.
+let cornerRadius = s(0.2249)
+// Drop shadow. NSShadow's blur radius is not a pixel extent — these were tuned
+// against the system icons' measured reach (L17 T5 R17 B29) and land within a
+// pixel of it. The offset is negative because the context below is flipped, so
+// negative y draws downwards.
+let shadowBlur = s(0.0388)      // 32, reaching ~18px
+let shadowOffsetY = s(-0.0146)  // -12, i.e. downwards
+let shadowColour = NSColor.black.withAlphaComponent(0.28)
 let dotSize = s(0.078)
 let dotGap = s(0.078)
 let todayRadius = s(0.03)
@@ -76,15 +101,26 @@ func makeIcon(_ draw: (CGContext) -> Void) -> CGImage {
     return image
 }
 
-let bounds = NSRect(x: 0, y: 0, width: canvas, height: canvas)
-let squircle = NSBezierPath(roundedRect: bounds, xRadius: cornerRadius, yRadius: cornerRadius)
+let squircle = NSBezierPath(roundedRect: body, xRadius: cornerRadius, yRadius: cornerRadius)
 
 let icon = makeIcon { context in
+    // The shadow the Dock expects to find already in the asset. Cast off an
+    // opaque fill of the body, which the backdrop then paints over.
+    context.saveGState()
+    let dropShadow = NSShadow()
+    dropShadow.shadowOffset = NSSize(width: 0, height: shadowOffsetY)
+    dropShadow.shadowBlurRadius = shadowBlur
+    dropShadow.shadowColor = shadowColour
+    dropShadow.set()
+    NSColor.black.setFill()
+    squircle.fill()
+    context.restoreGState()
+
     context.saveGState()
     squircle.setClip()
 
     // Backdrop — a charcoal radial lift, brightest towards the top-left.
-    let backdropCentre = NSPoint(x: s(0.30), y: s(0.20))
+    let backdropCentre = NSPoint(x: body.minX + s(0.30), y: body.minY + s(0.20))
     gradient([backdropNear, backdropMid, backdropFar], at: [0, 0.6, 1])
         .draw(fromCenter: backdropCentre, radius: 0,
               toCenter: backdropCentre, radius: s(1.20),
@@ -93,7 +129,7 @@ let icon = makeIcon { context in
     // The source's `inset 0 0 0 1px` hairline, which sits above the backdrop but
     // below the grid.
     let ringWidth: CGFloat = 1
-    let ring = NSBezierPath(roundedRect: bounds.insetBy(dx: ringWidth / 2, dy: ringWidth / 2),
+    let ring = NSBezierPath(roundedRect: body.insetBy(dx: ringWidth / 2, dy: ringWidth / 2),
                             xRadius: cornerRadius - ringWidth / 2,
                             yRadius: cornerRadius - ringWidth / 2)
     ring.lineWidth = ringWidth
@@ -103,11 +139,12 @@ let icon = makeIcon { context in
     // Day grid — 5x5, centred, with today marked at the middle cell.
     let step = dotSize + dotGap
     let gridEdge = dotSize * 5 + dotGap * 4
-    let gridOrigin = (canvas - gridEdge) / 2
+    let gridOriginX = body.midX - gridEdge / 2
+    let gridOriginY = body.midY - gridEdge / 2
     for row in 0..<5 {
         for column in 0..<5 {
-            let cell = NSRect(x: gridOrigin + CGFloat(column) * step,
-                              y: gridOrigin + CGFloat(row) * step,
+            let cell = NSRect(x: gridOriginX + CGFloat(column) * step,
+                              y: gridOriginY + CGFloat(row) * step,
                               width: dotSize, height: dotSize)
             guard row == 2 && column == 2 else {
                 dotColour.setFill()
