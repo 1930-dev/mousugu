@@ -13,8 +13,20 @@ guard CommandLine.arguments.count >= 2 else {
 let outputPath = CommandLine.arguments[1]
 
 let canvas = CGSize(width: 1024, height: 1024)
-let image = NSImage(size: canvas)
-image.lockFocus()
+
+// Rasterise into an explicitly sRGB context. `NSImage.lockFocus` instead rasterises
+// in whatever colour space the current display uses and tags the PNG with that
+// profile, which shifts the icon's colours on every other machine.
+guard let colourSpace = CGColorSpace(name: CGColorSpace.sRGB),
+      let context = CGContext(data: nil,
+                              width: Int(canvas.width), height: Int(canvas.height),
+                              bitsPerComponent: 8, bytesPerRow: 0,
+                              space: colourSpace,
+                              bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+else { fatalError("Could not create an sRGB bitmap context") }
+
+NSGraphicsContext.saveGraphicsState()
+NSGraphicsContext.current = NSGraphicsContext(cgContext: context, flipped: false)
 
 // Background — rounded square in system blue with a soft gradient.
 let bgRect = NSRect(origin: .zero, size: canvas)
@@ -77,11 +89,10 @@ day.draw(at: NSPoint(
     y: textArea.minY + (textArea.height - daySize.height) / 2 - 20
 ))
 
-image.unlockFocus()
+NSGraphicsContext.restoreGraphicsState()
 
-guard let tiff = image.tiffRepresentation,
-      let bitmap = NSBitmapImageRep(data: tiff),
-      let pngData = bitmap.representation(using: .png, properties: [:])
+guard let image = context.makeImage(),
+      let pngData = NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])
 else { fatalError("PNG encoding failed") }
 
 try pngData.write(to: URL(fileURLWithPath: outputPath))
