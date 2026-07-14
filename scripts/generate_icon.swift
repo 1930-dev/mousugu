@@ -1,6 +1,13 @@
 #!/usr/bin/env swift
 //
-// generate_icon.swift — renders a 1024x1024 calendar app icon as PNG.
+// generate_icon.swift — renders the 1024x1024 "Day grid" app icon as PNG.
+//
+// Ported from the Claude Design source "Calendar Icon.dc.html" (Turn 2, the refined
+// 1b direction): a charcoal rounded square holding a 5x5 grid of dots, the centre
+// one marked as today.
+//
+// The source's outer drop shadow is deliberately not baked in — it is page
+// presentation, and macOS draws its own shadow around the icon.
 //
 // Run:
 //   swift scripts/generate_icon.swift <output.png>
@@ -12,87 +19,119 @@ guard CommandLine.arguments.count >= 2 else {
 }
 let outputPath = CommandLine.arguments[1]
 
-let canvas = CGSize(width: 1024, height: 1024)
+// The source sizes every feature as a fraction of the icon's edge, so this does too.
+let canvas: CGFloat = 1024
+func s(_ fraction: CGFloat) -> CGFloat { fraction * canvas }
 
-// Rasterise into an explicitly sRGB context. `NSImage.lockFocus` instead rasterises
-// in whatever colour space the current display uses and tags the PNG with that
-// profile, which shifts the icon's colours on every other machine.
-guard let colourSpace = CGColorSpace(name: CGColorSpace.sRGB),
-      let context = CGContext(data: nil,
-                              width: Int(canvas.width), height: Int(canvas.height),
-                              bitsPerComponent: 8, bytesPerRow: 0,
-                              space: colourSpace,
-                              bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
-else { fatalError("Could not create an sRGB bitmap context") }
-
-NSGraphicsContext.saveGraphicsState()
-NSGraphicsContext.current = NSGraphicsContext(cgContext: context, flipped: false)
-
-// Background — rounded square in system blue with a soft gradient.
-let bgRect = NSRect(origin: .zero, size: canvas)
-let bgPath = NSBezierPath(roundedRect: bgRect, xRadius: 224, yRadius: 224)
-let gradient = NSGradient(starting: NSColor(red: 0.30, green: 0.55, blue: 1.00, alpha: 1.0),
-                          ending:   NSColor(red: 0.10, green: 0.35, blue: 0.95, alpha: 1.0))!
-bgPath.addClip()
-gradient.draw(in: bgRect, angle: -90)
-
-// Calendar page — white rounded card sitting on the background.
-let pad: CGFloat = 188
-let paperRect = NSRect(x: pad, y: pad, width: canvas.width - pad * 2, height: canvas.height - pad * 2)
-let paperPath = NSBezierPath(roundedRect: paperRect, xRadius: 56, yRadius: 56)
-NSColor.white.setFill()
-paperPath.fill()
-
-// Red header strip with rounded top corners (matching the paper's top radius).
-let headerHeight: CGFloat = 156
-let headerRect = NSRect(
-    x: paperRect.origin.x,
-    y: paperRect.origin.y + paperRect.height - headerHeight,
-    width: paperRect.width,
-    height: headerHeight
-)
-let header = NSBezierPath()
-let r: CGFloat = 56
-header.move(to: NSPoint(x: headerRect.minX, y: headerRect.minY))
-header.line(to: NSPoint(x: headerRect.minX, y: headerRect.maxY - r))
-header.appendArc(withCenter: NSPoint(x: headerRect.minX + r, y: headerRect.maxY - r),
-                 radius: r, startAngle: 180, endAngle: 90, clockwise: true)
-header.line(to: NSPoint(x: headerRect.maxX - r, y: headerRect.maxY))
-header.appendArc(withCenter: NSPoint(x: headerRect.maxX - r, y: headerRect.maxY - r),
-                 radius: r, startAngle: 90, endAngle: 0, clockwise: true)
-header.line(to: NSPoint(x: headerRect.maxX, y: headerRect.minY))
-header.close()
-NSColor(red: 0.95, green: 0.25, blue: 0.30, alpha: 1.0).setFill()
-header.fill()
-
-// Two small "ring" tabs at the top, like a wall calendar.
-NSColor(white: 0.85, alpha: 1.0).setFill()
-for x: CGFloat in [paperRect.minX + 180, paperRect.maxX - 180 - 50] {
-    let tab = NSRect(x: x, y: paperRect.maxY - 30, width: 50, height: 80)
-    NSBezierPath(roundedRect: tab, xRadius: 25, yRadius: 25).fill()
+func rgb(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat, _ alpha: CGFloat = 1) -> NSColor {
+    NSColor(srgbRed: r / 255, green: g / 255, blue: b / 255, alpha: alpha)
 }
 
-// Day number — bold, centered on the white area.
-let textArea = NSRect(
-    x: paperRect.origin.x,
-    y: paperRect.origin.y,
-    width: paperRect.width,
-    height: paperRect.height - headerHeight
-)
-let day = NSAttributedString(string: "20", attributes: [
-    .font: NSFont.systemFont(ofSize: 360, weight: .bold),
-    .foregroundColor: NSColor.black,
-])
-let daySize = day.size()
-day.draw(at: NSPoint(
-    x: textArea.minX + (textArea.width - daySize.width) / 2,
-    y: textArea.minY + (textArea.height - daySize.height) / 2 - 20
-))
+let backdropNear = rgb(53, 52, 44) // #35342C
+let backdropMid = rgb(36, 35, 29)  // #24231D
+let backdropFar = rgb(28, 27, 22)  // #1C1B16
+let todayColour = rgb(223, 75, 59) // #DF4B3B
+let dotColour = rgb(255, 255, 255, 0.24)
+let ringColour = rgb(255, 255, 255, 0.04)
 
-NSGraphicsContext.restoreGraphicsState()
+let cornerRadius = s(0.2237)
+let dotSize = s(0.078)
+let dotGap = s(0.078)
+let todayRadius = s(0.03)
+// The source's grid cell is one dot wide and `flex-shrink` pulls the marker's width
+// back to it, so the design renders an upright rectangle. Both its code and its
+// prose ("a rounded-square today marker") call for a square, so the declared size
+// wins here over that CSS accident.
+let todaySize = s(0.104)
 
-guard let image = context.makeImage(),
-      let pngData = NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])
+func gradient(_ colours: [NSColor], at locations: [CGFloat]) -> NSGradient {
+    guard let gradient = NSGradient(colors: colours, atLocations: locations, colorSpace: .sRGB) else {
+        fatalError("Gradient construction failed")
+    }
+    return gradient
+}
+
+/// Rasterises into an explicitly sRGB context, flipped to the source's top-left
+/// origin. `NSImage.lockFocus` would instead rasterise in whatever colour space the
+/// current display uses and tag the PNG with that profile, which shifts the icon's
+/// colours on every other machine.
+func makeIcon(_ draw: (CGContext) -> Void) -> CGImage {
+    guard let colourSpace = CGColorSpace(name: CGColorSpace.sRGB),
+          let context = CGContext(data: nil,
+                                  width: Int(canvas), height: Int(canvas),
+                                  bitsPerComponent: 8, bytesPerRow: 0,
+                                  space: colourSpace,
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+    else { fatalError("Could not create an sRGB bitmap context") }
+
+    context.translateBy(x: 0, y: canvas)
+    context.scaleBy(x: 1, y: -1)
+
+    NSGraphicsContext.saveGraphicsState()
+    NSGraphicsContext.current = NSGraphicsContext(cgContext: context, flipped: true)
+    draw(context)
+    NSGraphicsContext.restoreGraphicsState()
+
+    guard let image = context.makeImage() else { fatalError("Rasterisation failed") }
+    return image
+}
+
+let bounds = NSRect(x: 0, y: 0, width: canvas, height: canvas)
+let squircle = NSBezierPath(roundedRect: bounds, xRadius: cornerRadius, yRadius: cornerRadius)
+
+let icon = makeIcon { context in
+    context.saveGState()
+    squircle.setClip()
+
+    // Backdrop — a charcoal radial lift, brightest towards the top-left.
+    let backdropCentre = NSPoint(x: s(0.30), y: s(0.20))
+    gradient([backdropNear, backdropMid, backdropFar], at: [0, 0.6, 1])
+        .draw(fromCenter: backdropCentre, radius: 0,
+              toCenter: backdropCentre, radius: s(1.20),
+              options: [.drawsAfterEndingLocation])
+
+    // The source's `inset 0 0 0 1px` hairline, which sits above the backdrop but
+    // below the grid.
+    let ringWidth: CGFloat = 1
+    let ring = NSBezierPath(roundedRect: bounds.insetBy(dx: ringWidth / 2, dy: ringWidth / 2),
+                            xRadius: cornerRadius - ringWidth / 2,
+                            yRadius: cornerRadius - ringWidth / 2)
+    ring.lineWidth = ringWidth
+    ringColour.setStroke()
+    ring.stroke()
+
+    // Day grid — 5x5, centred, with today marked at the middle cell.
+    let step = dotSize + dotGap
+    let gridEdge = dotSize * 5 + dotGap * 4
+    let gridOrigin = (canvas - gridEdge) / 2
+    for row in 0..<5 {
+        for column in 0..<5 {
+            let cell = NSRect(x: gridOrigin + CGFloat(column) * step,
+                              y: gridOrigin + CGFloat(row) * step,
+                              width: dotSize, height: dotSize)
+            guard row == 2 && column == 2 else {
+                dotColour.setFill()
+                NSBezierPath(ovalIn: cell).fill()
+                continue
+            }
+            let marker = NSRect(x: cell.midX - todaySize / 2,
+                                y: cell.midY - todaySize / 2,
+                                width: todaySize, height: todaySize)
+            context.saveGState()
+            let glow = NSShadow()
+            glow.shadowOffset = NSSize(width: 0, height: s(0.012))
+            glow.shadowBlurRadius = s(0.04)
+            glow.shadowColor = todayColour.withAlphaComponent(0.55)
+            glow.set()
+            todayColour.setFill()
+            NSBezierPath(roundedRect: marker, xRadius: todayRadius, yRadius: todayRadius).fill()
+            context.restoreGState()
+        }
+    }
+    context.restoreGState()
+}
+
+guard let pngData = NSBitmapImageRep(cgImage: icon).representation(using: .png, properties: [:])
 else { fatalError("PNG encoding failed") }
 
 try pngData.write(to: URL(fileURLWithPath: outputPath))

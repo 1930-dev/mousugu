@@ -96,9 +96,12 @@ credentials, `create-dmg`). Auto-updates are wired through
 
 ## Icon & legal
 
-The app icon is an original design that follows the macOS visual language (Big Sur
-and later) using geometry and shadows consistent with Apple's design guidelines. It
-does **not** reproduce any copyrighted asset or trademark of Apple Inc. All glyphs
+The app icon is an original design — a charcoal rounded square holding a 5x5 grid of
+dots, with today marked in red — that follows the macOS visual language using
+geometry and shadows consistent with Apple's design guidelines. It does **not**
+reproduce any copyrighted asset or trademark of Apple Inc. It is rendered from
+[scripts/generate_icon.swift](scripts/generate_icon.swift); run that and re-export
+the sizes in `AppIcon.appiconset` to change it. The glyphs in the app's interface
 come from **SF Symbols**, licensed by Apple for use within its ecosystem.
 
 Apple, macOS, and the Calendar icon are trademarks of Apple Inc., registered in the
