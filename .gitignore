@@ -17,6 +17,3 @@ DerivedData/
 .swiftpm/
 .build/
 Packages/
-
-# Empty stub xcodeproj created by tooling early in development
-MenuBarCalendar/MenuBarCalendar.xcodeproj/
