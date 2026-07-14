@@ -147,10 +147,14 @@ create-dmg \
     "$DMG_PATH" \
     "$EXPORT_DIR"
 
-# The DMG is the artifact users download, so notarize + staple the DMG itself —
-# otherwise double-clicking the quarantined download is blocked by Gatekeeper
-# ("Apple cannot check it"), even though the app inside is notarized. Stapling
-# the DMG must happen BEFORE the appcast is generated, since it rewrites the DMG.
+# The DMG is the artifact users download, so it must itself be signed + notarized
+# + stapled — otherwise double-clicking the quarantined download is blocked by
+# Gatekeeper ("Apple cannot check it"), even though the app inside is notarized.
+# Sign first (notarization requires a Developer ID signature + secure timestamp),
+# then notarize, then staple — all BEFORE the appcast, since each rewrites the DMG.
+echo "▸ Signing the DMG with Developer ID"
+codesign --force --timestamp --keychain "$KEYCHAIN" --sign "$SIGN_IDENTITY" "$DMG_PATH"
+
 echo "▸ Notarizing the DMG (this can take several minutes)"
 xcrun notarytool submit "$DMG_PATH" \
     --key "$ASC_KEY_FILE" \
