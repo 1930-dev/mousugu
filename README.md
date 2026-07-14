@@ -56,7 +56,11 @@ switch to, no tab to hunt for.
 ### Download
 
 Grab the latest signed, notarized `.dmg` from the [Releases](../../releases) page,
-open it, and drag **MenuBarCalendar** to your Applications folder.
+open it, and drag **MenuBarCalendar** to your Applications folder. This build keeps
+itself up to date through [Sparkle](https://github.com/sparkle-project/Sparkle).
+
+A Mac App Store build is also published — same app, minus the updater, since the
+App Store ships updates itself.
 
 ### Build from source
 
@@ -76,12 +80,22 @@ Then **Product → Run** in Xcode. On first launch, grant calendar access when p
 
 ## Releasing
 
-`scripts/release.sh` archives a Release build, signs it with your Developer ID,
-notarizes it with Apple, staples the ticket, and packages a DMG. See the header
-of the script for the one-time prerequisites (Developer ID certificate, notary
-credentials, `create-dmg`). Auto-updates are wired through
-[Sparkle](https://github.com/sparkle-project/Sparkle) — add `SUFeedURL` and
-`SUPublicEDKey` to the target's Info.plist to start shipping appcast updates.
+Two channels ship from this repo, as two targets over the same sources:
+
+| Channel | Scheme | Updater | Script |
+| --- | --- | --- | --- |
+| Direct (DMG) | `MenuBarCalendar` | Sparkle | `scripts/release.sh` |
+| Mac App Store | `MenuBarCalendar-MAS` | Apple's | `scripts/release-appstore.sh` |
+
+`release.sh` archives, signs with your Developer ID, notarizes, staples, packages
+a DMG, and regenerates `website/appcast.xml` signed with the Ed25519 key in your
+Keychain. `release-appstore.sh` archives the App Store target, refuses to proceed
+if Sparkle somehow made it into the bundle, then validates and optionally uploads.
+
+Only the direct target links Sparkle — Apple rejects apps that bundle their own
+updater, and SPM links per target rather than per configuration.
+[APP_STORE.md](APP_STORE.md) explains how the split works and what App Store
+Connect still needs. See each script's header for one-time prerequisites.
 
 ## Architecture
 
@@ -90,9 +104,11 @@ credentials, `create-dmg`). Auto-updates are wired through
 | [CalendarBarApp.swift](MenuBarCalendar/CalendarBarApp.swift) | App entry point, menu bar extra, popover UI, join-button logic |
 | [CalendarStore.swift](MenuBarCalendar/CalendarStore.swift) | EventKit access, today's events, countdown, meeting-URL detection |
 | [SettingsView.swift](MenuBarCalendar/SettingsView.swift) | Preferences window — General and Calendars panes |
-| [UpdateChecker.swift](UpdateChecker.swift) | Optional Sparkle auto-update wrapper |
+| [UpdateChecker.swift](UpdateChecker.swift) | Sparkle wrapper, compiled in only for the direct channel |
 | [Constants.swift](MenuBarCalendar/Constants.swift) | Localized strings catalog |
 | [DesignSystem.swift](DesignSystem.swift) | Spacing, radius, and layout tokens |
+| [Config/](Config) | Build settings — shared, then per channel |
+| [website/](website) | Landing page, privacy policy, and the Sparkle appcast |
 
 ## Icon & legal
 
