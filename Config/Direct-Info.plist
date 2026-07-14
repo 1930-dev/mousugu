@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  Info.plist additions for the direct/DMG channel only.
+
+	  This file is the base; GENERATE_INFOPLIST_FILE merges the INFOPLIST_KEY_*
+	  settings from the xcconfigs on top. Only Sparkle's keys live here, because
+	  INFOPLIST_KEY_* is a closed allowlist and cannot express SU* keys.
+
+	  SUEnableDownloaderService is deliberately absent: it is only needed by
+	  sandboxed apps without network access, and this channel has
+	  network.client. See SPUDownloadDriver.m, which asks you to remove it.
+	-->
+	<key>SUEnableInstallerLauncherService</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://agu.uy/MenuBarCalendar/appcast.xml</string>
+	<!-- Public half of the Ed25519 pair. The private key lives in the Keychain
+	     and is never committed; release.sh signs the DMG with it. -->
+	<key>SUPublicEDKey</key>
+	<string>Nmrt0reOIAJEYTTtavvYNCG6OpIVUA+lHtQKWvk0Tso=</string>
+</dict>
+</plist>

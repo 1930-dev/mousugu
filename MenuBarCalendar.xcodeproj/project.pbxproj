@@ -29,6 +29,8 @@
 		E2A11E012FF2000000000004 /* App-Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "App-Common.xcconfig"; sourceTree = "<group>"; };
 		E2A11E012FF2000000000005 /* App-Direct.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "App-Direct.xcconfig"; sourceTree = "<group>"; };
 		E2A11E012FF2000000000006 /* App-MAS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "App-MAS.xcconfig"; sourceTree = "<group>"; };
+		E2A11E012FF2000000000007 /* Sparkle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sparkle.entitlements; sourceTree = "<group>"; };
+		E2A11E012FF2000000000008 /* Direct-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Direct-Info.plist"; sourceTree = "<group>"; };
 		E2A11E012FF3000000000002 /* MenuBarCalendar.app (App Store) */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MenuBarCalendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2B6B6FC2FC4E825007255BA /* MenuBarCalendar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MenuBarCalendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -90,6 +92,8 @@
 				E2A11E012FF2000000000004 /* App-Common.xcconfig */,
 				E2A11E012FF2000000000005 /* App-Direct.xcconfig */,
 				E2A11E012FF2000000000006 /* App-MAS.xcconfig */,
+				E2A11E012FF2000000000007 /* Sparkle.entitlements */,
+				E2A11E012FF2000000000008 /* Direct-Info.plist */,
 			);
 			path = Config;
 			sourceTree = "<group>";

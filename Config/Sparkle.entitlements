@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  Entitlements for the direct/DMG channel only.
+
+	  app-sandbox, personal-information.calendars and network.client are NOT
+	  listed here: the ENABLE_* capability settings in App-Common.xcconfig and
+	  App-Direct.xcconfig generate them and merge on top of this file. Only the
+	  mach-lookup exception needs to live here, because the build settings have
+	  no equivalent for it.
+
+	  Sparkle launches its installer as a launchd job and talks to it over Mach
+	  services named after the host bundle id (see SPUMessageTypes.m: "-spki" is
+	  the installer, "-spks" is its status). A sandboxed app cannot reach them
+	  without these exceptions.
+
+	  "-spkp" (the progress agent) is deliberately absent: the installer talks to
+	  it, this app does not.
+	-->
+	<key>com.apple.security.temporary-exception.mach-lookup.global-name</key>
+	<array>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)-spks</string>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)-spki</string>
+	</array>
+</dict>
+</plist>

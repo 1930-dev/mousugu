@@ -1,38 +1,37 @@
 import SwiftUI
 import Combine
-#if canImport(Sparkle)
+#if SPARKLE
 import Sparkle
 #endif
 
 /// Wrapper around Sparkle's `SPUStandardUpdaterController` so the rest of the
 /// app can ask for updates without conditional-compilation noise.
 ///
-/// The whole class compiles unconditionally — when the Sparkle SPM package
-/// isn't present yet, `canCheckForUpdates` returns `false` and the UI hides
-/// the "Check for updates…" entry. After running
-/// File → Add Package Dependencies… and pulling in
-/// `https://github.com/sparkle-project/Sparkle`, the `#if canImport(Sparkle)`
-/// blocks activate and the updater is fully wired up — no code changes
-/// elsewhere.
+/// Sparkle only ships in the direct/DMG channel — the Mac App Store rejects
+/// apps that bundle their own updater. The `SPARKLE` condition is set in
+/// `Config/App-Direct.xcconfig`; the App Store target never defines it, so this
+/// class compiles down to `isAvailable == false` and the "Check for updates…"
+/// entry disappears.
 ///
-/// To actually ship updates, also set these keys in the target's Info.plist:
-///   • `SUFeedURL` — URL of your appcast XML
-///   • `SUPublicEDKey` — base64 public Ed25519 key (generate via Sparkle's
-///     bundled `generate_keys` tool when you cut your first release).
+/// The condition is an explicit flag rather than `canImport(Sparkle)` on
+/// purpose: `canImport` resolves against the framework search path, and
+/// `BUILT_PRODUCTS_DIR` is on every target's path. It would answer `true` in the
+/// App Store target whenever the direct target had been built first, silently
+/// linking a framework that is never embedded.
 @MainActor
 final class UpdateChecker: ObservableObject {
     // Required because the class has no `@Published` storage to drive the
     // default synthesized publisher; `isAvailable` is static-by-compilation
-    // (set by `#if canImport`) so it never actually emits, but conforming to
-    // `ObservableObject` lets us use `@StateObject` for lifecycle.
+    // so it never actually emits, but conforming to `ObservableObject` lets us
+    // use `@StateObject` for lifecycle.
     let objectWillChange = ObservableObjectPublisher()
 
-    #if canImport(Sparkle)
+    #if SPARKLE
     private let controller: SPUStandardUpdaterController
     #endif
 
     init() {
-        #if canImport(Sparkle)
+        #if SPARKLE
         controller = SPUStandardUpdaterController(
             startingUpdater: true,
             updaterDelegate: nil,
@@ -44,7 +43,7 @@ final class UpdateChecker: ObservableObject {
     /// `true` once Sparkle is linked. Drives the visibility of the
     /// "Check for updates…" menu entry.
     var isAvailable: Bool {
-        #if canImport(Sparkle)
+        #if SPARKLE
         return true
         #else
         return false
@@ -53,7 +52,7 @@ final class UpdateChecker: ObservableObject {
 
     /// Triggers Sparkle's standard "Check for Updates…" dialog.
     func checkForUpdates() {
-        #if canImport(Sparkle)
+        #if SPARKLE
         controller.checkForUpdates(nil)
         #endif
     }
