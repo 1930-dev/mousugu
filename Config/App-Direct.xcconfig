@@ -1,0 +1,9 @@
+// App-Direct.xcconfig — the direct/DMG channel (Developer ID + notarized).
+//
+// This is the only target that links Sparkle. The Mac App Store forbids
+// third-party updaters, so App-MAS.xcconfig deliberately omits everything here.
+
+#include "App-Common.xcconfig"
+
+CODE_SIGN_ENTITLEMENTS = MenuBarCalendar/MenuBarCalendar.entitlements
+ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO
