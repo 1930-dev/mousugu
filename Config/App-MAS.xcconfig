@@ -1,0 +1,20 @@
+// App-MAS.xcconfig — the Mac App Store channel.
+//
+// This target deliberately does NOT link Sparkle: Apple rejects apps that bundle
+// their own updater, and the App Store ships updates itself. Everything Sparkle
+// needs — the SPARKLE compilation condition, outgoing network access, the
+// mach-lookup entitlements, SUFeedURL — lives in App-Direct.xcconfig and must
+// never leak in here. What keeps Sparkle out is the target's empty
+// packageProductDependencies; this file only makes that intent explicit.
+//
+// No CODE_SIGN_ENTITLEMENTS: the ENABLE_* capability settings in
+// App-Common.xcconfig generate the complete entitlement set for this channel.
+//
+// CONFIGURATION_BUILD_DIR is overridden because both targets produce
+// MenuBarCalendar.app; without it they would clobber each other in
+// BUILT_PRODUCTS_DIR.
+
+#include "App-Common.xcconfig"
+
+CONFIGURATION_BUILD_DIR = $(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/MAS
+ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO

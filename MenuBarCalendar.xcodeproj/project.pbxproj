@@ -12,6 +12,10 @@
 		E222CDE02FE60286003481F8 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E222CDDF2FE60286003481F8 /* InfoPlist.xcstrings */; };
 		E222CDE22FE74AB1003481F8 /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E222CDE12FE74AB1003481F8 /* UpdateChecker.swift */; };
 		E222CDE52FE74C93003481F8 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = E222CDE42FE74C93003481F8 /* Sparkle */; };
+		E2A11E012FF3000000000009 /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E222CDE12FE74AB1003481F8 /* UpdateChecker.swift */; };
+		E2A11E012FF300000000000A /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E222CDDB2FE5D4F2003481F8 /* DesignSystem.swift */; };
+		E2A11E012FF300000000000B /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E222CDDF2FE60286003481F8 /* InfoPlist.xcstrings */; };
+		E2A11E012FF300000000000C /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E222CDDD2FE6027C003481F8 /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +28,8 @@
 		E2A11E012FF2000000000003 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		E2A11E012FF2000000000004 /* App-Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "App-Common.xcconfig"; sourceTree = "<group>"; };
 		E2A11E012FF2000000000005 /* App-Direct.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "App-Direct.xcconfig"; sourceTree = "<group>"; };
+		E2A11E012FF2000000000006 /* App-MAS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "App-MAS.xcconfig"; sourceTree = "<group>"; };
+		E2A11E012FF3000000000002 /* MenuBarCalendar.app (App Store) */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MenuBarCalendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2B6B6FC2FC4E825007255BA /* MenuBarCalendar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MenuBarCalendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -35,6 +41,13 @@
 			);
 			target = E2B6B6FB2FC4E825007255BA /* MenuBarCalendar */;
 		};
+		E2A11E012FF1000000000002 /* Exceptions for "MenuBarCalendar" folder in "MenuBarCalendar-MAS" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				".claude/settings.local.json",
+			);
+			target = E2A11E012FF3000000000001 /* MenuBarCalendar-MAS */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -42,6 +55,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				E2A11E012FF1000000000001 /* Exceptions for "MenuBarCalendar" folder in "MenuBarCalendar" target */,
+				E2A11E012FF1000000000002 /* Exceptions for "MenuBarCalendar" folder in "MenuBarCalendar-MAS" target */,
 			);
 			path = MenuBarCalendar;
 			sourceTree = "<group>";
@@ -49,6 +63,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		E2A11E012FF3000000000004 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E2B6B6F92FC4E825007255BA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -68,6 +89,7 @@
 				E2A11E012FF2000000000003 /* Release.xcconfig */,
 				E2A11E012FF2000000000004 /* App-Common.xcconfig */,
 				E2A11E012FF2000000000005 /* App-Direct.xcconfig */,
+				E2A11E012FF2000000000006 /* App-MAS.xcconfig */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -89,6 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				E2B6B6FC2FC4E825007255BA /* MenuBarCalendar.app */,
+				E2A11E012FF3000000000002 /* MenuBarCalendar.app (App Store) */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -96,6 +119,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		E2A11E012FF3000000000001 /* MenuBarCalendar-MAS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2A11E012FF3000000000006 /* Build configuration list for PBXNativeTarget "MenuBarCalendar-MAS" */;
+			buildPhases = (
+				E2A11E012FF3000000000003 /* Sources */,
+				E2A11E012FF3000000000004 /* Frameworks */,
+				E2A11E012FF3000000000005 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				E2B6B6FE2FC4E825007255BA /* MenuBarCalendar */,
+			);
+			name = "MenuBarCalendar-MAS";
+			packageProductDependencies = (
+			);
+			productName = MenuBarCalendar;
+			productReference = E2A11E012FF3000000000002 /* MenuBarCalendar.app (App Store) */;
+			productType = "com.apple.product-type.application";
+		};
 		E2B6B6FB2FC4E825007255BA /* MenuBarCalendar */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E2B6B7072FC4E827007255BA /* Build configuration list for PBXNativeTarget "MenuBarCalendar" */;
@@ -129,6 +174,9 @@
 				LastSwiftUpdateCheck = 2650;
 				LastUpgradeCheck = 2650;
 				TargetAttributes = {
+					E2A11E012FF3000000000001 = {
+						CreatedOnToolsVersion = 26.5;
+					};
 					E2B6B6FB2FC4E825007255BA = {
 						CreatedOnToolsVersion = 26.5;
 					};
@@ -153,11 +201,21 @@
 			projectRoot = "";
 			targets = (
 				E2B6B6FB2FC4E825007255BA /* MenuBarCalendar */,
+				E2A11E012FF3000000000001 /* MenuBarCalendar-MAS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		E2A11E012FF3000000000005 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2A11E012FF300000000000B /* InfoPlist.xcstrings in Resources */,
+				E2A11E012FF300000000000C /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E2B6B6FA2FC4E825007255BA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -170,6 +228,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		E2A11E012FF3000000000003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2A11E012FF3000000000009 /* UpdateChecker.swift in Sources */,
+				E2A11E012FF300000000000A /* DesignSystem.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E2B6B6F82FC4E825007255BA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -182,6 +249,20 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		E2A11E012FF3000000000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E2A11E012FF2000000000006 /* App-MAS.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		E2A11E012FF3000000000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E2A11E012FF2000000000006 /* App-MAS.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
 		E2B6B7052FC4E827007255BA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E2A11E012FF2000000000002 /* Debug.xcconfig */;
@@ -213,6 +294,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		E2A11E012FF3000000000006 /* Build configuration list for PBXNativeTarget "MenuBarCalendar-MAS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2A11E012FF3000000000007 /* Debug */,
+				E2A11E012FF3000000000008 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E2B6B6F72FC4E825007255BA /* Build configuration list for PBXProject "MenuBarCalendar" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
