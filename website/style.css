@@ -1,0 +1,201 @@
+/* MenuBarCalendar — shared styles.
+   Self-contained on purpose: the site is published as static files under
+   agu.uy/MenuBarCalendar with no build step. */
+
+:root {
+    --ink: #1c1b16;
+    --ink-2: #24231d;
+    --ink-3: #35342c;
+    --accent: #df4b3b;
+
+    --bg: #ffffff;
+    --bg-2: #f6f6f4;
+    --text: #24231d;
+    --text-dim: #6b6a61;
+    --rule: #e3e2dd;
+    --radius: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #171612;
+        --bg-2: #1f1e19;
+        --text: #ecebe6;
+        --text-dim: #9b9a91;
+        --rule: #302f28;
+    }
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+    max-width: 44rem;
+    margin: 0 auto;
+    padding: 4rem 1.5rem 5rem;
+}
+
+a {
+    color: var(--accent);
+    text-underline-offset: 2px;
+}
+
+a:hover {
+    text-decoration-thickness: 2px;
+}
+
+h1,
+h2,
+h3 {
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin: 2.5rem 0 0.75rem;
+}
+
+h1 {
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    margin-top: 0;
+}
+
+h2 {
+    font-size: 1.35rem;
+}
+
+h3 {
+    font-size: 1.05rem;
+}
+
+p,
+ul {
+    margin: 0 0 1rem;
+}
+
+ul {
+    padding-left: 1.25rem;
+}
+
+li {
+    margin-bottom: 0.4rem;
+}
+
+code {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.9em;
+    background: var(--bg-2);
+    padding: 0.1em 0.35em;
+    border-radius: 5px;
+}
+
+.lede {
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    margin-bottom: 2rem;
+}
+
+.masthead {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.masthead img {
+    width: 72px;
+    height: 72px;
+    flex: none;
+}
+
+.meta {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+}
+
+/* Wide content must scroll inside its own box, never the page. */
+.scroll-x {
+    overflow-x: auto;
+}
+
+.cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 2rem 0;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 550;
+    border: 1px solid var(--rule);
+    color: var(--text);
+    background: var(--bg-2);
+}
+
+.btn--primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.btn:hover {
+    filter: brightness(1.06);
+}
+
+.features {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    margin: 2rem 0;
+}
+
+.features h3 {
+    margin: 0 0 0.25rem;
+}
+
+.features p {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 0.95rem;
+}
+
+.note {
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 0 0.75rem 1rem;
+    background: var(--bg-2);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 1.5rem 0;
+}
+
+.note p:last-child {
+    margin-bottom: 0;
+}
+
+footer {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+}

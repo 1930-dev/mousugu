@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MenuBarCalendar — your next meeting, always one glance away</title>
+<meta name="description" content="A tiny, native macOS menu bar app that counts down to your next event and joins the call in one click.">
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+
+<div class="masthead">
+    <img src="icon.png" alt="" width="72" height="72">
+    <div>
+        <h1>MenuBarCalendar</h1>
+        <p class="meta">Free · macOS 15 or later · Open source</p>
+    </div>
+</div>
+
+<p class="lede">
+    Your next meeting, always one glance away. A live countdown in the menu bar, and
+    the button to join the call right next to it.
+</p>
+
+<div class="cta">
+    <a class="btn btn--primary" href="https://github.com/1930-dev/MenuBarCalendar/releases">Download for macOS</a>
+    <a class="btn" href="https://github.com/1930-dev/MenuBarCalendar">Source on GitHub</a>
+</div>
+
+<h2>Why</h2>
+<p>
+    Your Mac already knows your schedule — your menu bar doesn't. MenuBarCalendar puts
+    the one thing you actually care about where you are already looking: how long until
+    your next meeting, and the button to join it. No window to open, no app to switch
+    to, no tab to hunt for.
+</p>
+
+<h2>What it does</h2>
+<ul class="features">
+    <li>
+        <h3>Live countdown</h3>
+        <p><code>in 12m: Standup</code>. Updates every minute and rolls over to the next event on its own.</p>
+    </li>
+    <li>
+        <h3>One-click join</h3>
+        <p>Finds Zoom, Meet, Teams and Webex links in the event and surfaces a Join button.</p>
+    </li>
+    <li>
+        <h3>Smart join states</h3>
+        <p>Keeps the button around for an hour after a meeting ends, and switches to Rejoin once you're well into a call.</p>
+    </li>
+    <li>
+        <h3>Today at a glance</h3>
+        <p>A popover with the rest of your day, colour-coded to match each calendar.</p>
+    </li>
+    <li>
+        <h3>Pick your calendars</h3>
+        <p>Toggle exactly which calendars feed the bar, and hide events you're marked free for.</p>
+    </li>
+    <li>
+        <h3>Native throughout</h3>
+        <p>SwiftUI, SF Symbols, translucent Control-Centre glass, full light and dark support. English and Spanish.</p>
+    </li>
+</ul>
+
+<h2>Private by design</h2>
+<p>
+    MenuBarCalendar reads your calendar locally and sends it nowhere. There is no
+    account, no analytics, and no server. The Mac App Store build ships without the
+    network entitlement altogether, so it is not merely promising not to phone home —
+    macOS would refuse to let it.
+</p>
+<div class="note">
+    <p>
+        The direct download checks for its own updates, which is the only network request
+        it ever makes. The full detail is in the <a href="privacy.html">privacy policy</a>.
+    </p>
+</div>
+
+<h2>Install</h2>
+<p>
+    Download the signed, notarised <code>.dmg</code> from
+    <a href="https://github.com/1930-dev/MenuBarCalendar/releases">Releases</a>, open it,
+    and drag MenuBarCalendar to your Applications folder. Grant calendar access on first
+    launch and you're done.
+</p>
+
+<footer>
+    <a href="privacy.html">Privacy</a>
+    <a href="https://github.com/1930-dev/MenuBarCalendar">Source</a>
+    <a href="https://github.com/1930-dev/MenuBarCalendar/issues">Report an issue</a>
+    <span>MIT licensed</span>
+</footer>
+
+</main>
+</body>
+</html>
