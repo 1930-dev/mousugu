@@ -58,10 +58,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" \
-            "${{ steps.dmg.outputs.dmg }}" \
-            --title "MenuBarCalendar ${{ steps.dmg.outputs.version }}" \
-            --generate-notes
+          # Idempotent: update the asset if a release for this tag already exists
+          # (e.g. a re-run), otherwise create the release.
+          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            gh release upload "${GITHUB_REF_NAME}" "${{ steps.dmg.outputs.dmg }}" --clobber
+          else
+            gh release create "${GITHUB_REF_NAME}" \
+              "${{ steps.dmg.outputs.dmg }}" \
+              --title "MenuBarCalendar ${{ steps.dmg.outputs.version }}" \
+              --generate-notes
+          fi
 
       - name: Upload appcast as artifact
         uses: actions/upload-artifact@v4

@@ -147,6 +147,20 @@ create-dmg \
     "$DMG_PATH" \
     "$EXPORT_DIR"
 
+# The DMG is the artifact users download, so notarize + staple the DMG itself —
+# otherwise double-clicking the quarantined download is blocked by Gatekeeper
+# ("Apple cannot check it"), even though the app inside is notarized. Stapling
+# the DMG must happen BEFORE the appcast is generated, since it rewrites the DMG.
+echo "▸ Notarizing the DMG (this can take several minutes)"
+xcrun notarytool submit "$DMG_PATH" \
+    --key "$ASC_KEY_FILE" \
+    --key-id "$ASC_KEY_ID" \
+    --issuer "$ASC_ISSUER_ID" \
+    --wait
+echo "▸ Stapling notarization ticket onto the DMG"
+xcrun stapler staple "$DMG_PATH"
+xcrun stapler validate "$DMG_PATH"
+
 echo "▸ Regenerating the Sparkle appcast"
 # Sparkle ships generate_appcast inside the SPM binary artifact, resolved into
 # DerivedData during the archive above (so we look it up here, not before).
