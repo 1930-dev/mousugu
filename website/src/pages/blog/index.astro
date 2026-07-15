@@ -1,0 +1,80 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const posts = [
+  {
+    href: '/blog/meetingbar-alternative',
+    title: 'MeetingBar vs Mou Sugu: an honest comparison',
+    blurb: 'Both put your next meeting in the menu bar. Breadth versus focus — how to pick.',
+    date: '2026-07-15',
+  },
+  {
+    href: '/blog/itsycal-alternative',
+    title: 'Itsycal vs Mou Sugu: which menu bar calendar fits you?',
+    blurb: 'A mini month calendar or a live meeting countdown — they solve different problems.',
+    date: '2026-07-15',
+  },
+  {
+    href: '/blog/dato-alternative',
+    title: 'Dato vs Mou Sugu: power tool or pocket knife?',
+    blurb: 'Dato packs world clocks, reminders and deep settings for $16. Mou Sugu does one thing, free.',
+    date: '2026-07-15',
+  },
+];
+
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Mou Sugu', item: 'https://mousugu.app/' },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://mousugu.app/blog' },
+    ],
+  },
+];
+---
+
+<Base
+  title="Blog — Mou Sugu, the Menu Bar Calendar for Mac"
+  description="Comparisons and guides about menu bar calendars, meeting countdowns, and joining calls faster on macOS."
+  path="/blog"
+  lang="en"
+  schemas={schemas}
+>
+  <main class="wrap prose">
+    <nav class="nav" aria-label="Main">
+      <a class="brand" href="/">
+        <img src="/icon.png" alt="Mou Sugu app icon" width="28" height="28" />
+        Mou Sugu <span class="kana" aria-hidden="true">もうすぐ</span>
+      </a>
+      <div class="links">
+        <a href="/changelog">Changelog</a>
+        <a href="https://github.com/1930-dev/mousugu">GitHub</a>
+      </div>
+    </nav>
+
+    <h1>Blog</h1>
+    <p class="lede">Menu bar calendars, meeting countdowns, and getting to your calls on time.</p>
+
+    <ul class="post-list">
+      {posts.map(({ href, title, blurb, date }) => (
+        <li>
+          <a href={href}>{title}</a>
+          <p>{blurb}</p>
+          <p class="meta"><time datetime={date}>{date}</time></p>
+        </li>
+      ))}
+    </ul>
+
+    <footer>
+      <div class="cols">
+        <div class="col">
+          <a href="/">← Mou Sugu</a>
+        </div>
+        <div class="col">
+          <a href="https://github.com/1930-dev/mousugu">Source on GitHub</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+</Base>

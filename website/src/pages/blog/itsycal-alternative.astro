@@ -1,0 +1,69 @@
+---
+import Post from '../../layouts/Post.astro';
+---
+
+<Post
+  title="Itsycal vs Mou Sugu: Menu Bar Calendars for Mac Compared"
+  description="Itsycal is a beloved free mini calendar for the Mac menu bar. Mou Sugu focuses on one job: counting down to your next meeting. Which one fits you?"
+  path="/blog/itsycal-alternative"
+  h1="Itsycal vs Mou Sugu: which menu bar calendar fits you?"
+  datePublished="2026-07-15"
+>
+  <p class="lede">
+    Short version: they solve different problems. Itsycal puts a <strong>mini month calendar</strong>
+    in your menu bar; Mou Sugu puts a <strong>live countdown to your next meeting</strong> there.
+  </p>
+
+  <p>
+    <a href="https://www.mowglii.com/itsycal/">Itsycal</a> has earned its place as a Mac classic:
+    a tiny, free, open-source calendar that drops a month view into the menu bar, lists your
+    events, lets you create new ones, and stays impressively light. If what you miss on macOS is
+    a <em>calendar you can glance at</em>, Itsycal remains a lovely answer.
+  </p>
+
+  <p>
+    Mou Sugu starts from a different question: not <em>“what day is it?”</em> but
+    <em>“how long until I have to be somewhere?”</em>. The menu bar shows
+    <code>in 12m: Standup</code>, updates every minute, and puts a Join button for Zoom, Google
+    Meet, Microsoft Teams, and Webex one click away.
+  </p>
+
+  <h2>Side by side</h2>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Feature</th><th>Itsycal</th><th>Mou Sugu</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Price</td><td>Free, open source</td><td>Free, open source (MIT)</td></tr>
+        <tr><td>Menu bar shows</td><td>Date / calendar icon, configurable format</td><td>Live countdown to your next event, with its title</td></tr>
+        <tr><td>Main view</td><td>Month mini-calendar with event list</td><td>Today's remaining events, color-coded</td></tr>
+        <tr><td>Join meetings</td><td>Yes, from the event list</td><td>Yes — Join button in the bar, plus a Rejoin state if you drop mid-call</td></tr>
+        <tr><td>Create events</td><td>Yes (create and delete)</td><td>No — it reads your calendar, it doesn't edit it</td></tr>
+        <tr><td>Hide "free" events</td><td>—</td><td>Yes, focus blocks and tentative holds are hidden by default</td></tr>
+        <tr><td>UI toolkit</td><td>AppKit, extremely lightweight</td><td>SwiftUI MenuBarExtra, Control-Center-style glass</td></tr>
+        <tr><td>Languages</td><td>English + community localizations</td><td>English and Spanish</td></tr>
+        <tr><td>macOS</td><td>Broad version support</td><td>macOS 15+</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Choose Itsycal if…</h2>
+  <ul>
+    <li>You want a month calendar you can open from the menu bar.</li>
+    <li>You create quick events all day and want to do it from the bar.</li>
+    <li>You run an older version of macOS.</li>
+  </ul>
+
+  <h2>Choose Mou Sugu if…</h2>
+  <ul>
+    <li>Your day is meetings, and the thing you check is <em>how long until the next one</em>.</li>
+    <li>You want the Join button where your eyes already are — no popover required.</li>
+    <li>You prefer an app that reads your calendar and touches nothing.</li>
+  </ul>
+
+  <p>
+    They also coexist happily: plenty of people run a mini calendar <em>and</em> a meeting
+    countdown side by side. Both are free, so trying costs nothing.
+  </p>
+</Post>

@@ -148,3 +148,15 @@ footer .col strong { display: block; margin-bottom: 0.3rem; }
   .menubar-mock .dot { animation: pulse 2.4s ease-in-out infinite; }
   @keyframes pulse { 50% { opacity: 0.55; } }
 }
+
+/* Blog */
+.prose .table-scroll { overflow-x: auto; margin: 1.2rem 0; }
+.prose table { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+.prose th, .prose td { border: 1px solid var(--glass-border); padding: 0.55rem 0.75rem; text-align: left; vertical-align: top; }
+.prose th { color: var(--paper); background: var(--sumi-2); }
+.prose td { color: var(--muted); }
+.prose td:first-child { color: var(--paper); white-space: nowrap; }
+.post-list { list-style: none; padding: 0; }
+.post-list li { border-bottom: 1px solid var(--glass-border); padding: 1.3rem 0; }
+.post-list a { text-decoration: none; font-weight: 600; font-size: 1.15rem; }
+.post-list p { margin: 0.35rem 0 0; font-size: 0.95rem; }

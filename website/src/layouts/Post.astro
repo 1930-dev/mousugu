@@ -1,0 +1,87 @@
+---
+// Post.astro — blog article layout: Article + BreadcrumbList JSON-LD, prose styling.
+import Base from './Base.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Path under /blog, e.g. "/blog/itsycal-alternative". */
+  path: string;
+  h1: string;
+  datePublished: string; // YYYY-MM-DD
+}
+
+const { title, description, path, h1, datePublished } = Astro.props;
+const site = 'https://mousugu.app';
+
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: h1,
+    description,
+    datePublished,
+    dateModified: datePublished,
+    author: { '@type': 'Organization', name: 'Mou Sugu', url: site },
+    publisher: { '@type': 'Organization', name: 'Mou Sugu', url: site },
+    mainEntityOfPage: new URL(path, site).href,
+    image: `${site}/og-image.png`,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Mou Sugu', item: `${site}/` },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${site}/blog` },
+      { '@type': 'ListItem', position: 3, name: h1, item: new URL(path, site).href },
+    ],
+  },
+];
+
+const displayDate = new Date(datePublished + 'T00:00:00Z').toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+<Base title={title} description={description} path={path} lang="en" schemas={schemas}>
+  <main class="wrap prose">
+    <nav class="nav" aria-label="Main">
+      <a class="brand" href="/">
+        <img src="/icon.png" alt="Mou Sugu app icon" width="28" height="28" />
+        Mou Sugu <span class="kana" aria-hidden="true">もうすぐ</span>
+      </a>
+      <div class="links">
+        <a href="/blog">Blog</a>
+        <a href="https://github.com/1930-dev/mousugu">GitHub</a>
+      </div>
+    </nav>
+
+    <article>
+      <h1>{h1}</h1>
+      <p class="meta"><time datetime={datePublished}>{displayDate}</time></p>
+      <slot />
+    </article>
+
+    <section style="text-align:center; padding: 3rem 0 1rem">
+      <h2>Try Mou Sugu</h2>
+      <p>Free, open source, and ready in the time it takes to grant calendar access.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/1930-dev/mousugu/releases">Download Mou Sugu for macOS</a>
+      </div>
+    </section>
+
+    <footer>
+      <div class="cols">
+        <div class="col">
+          <a href="/blog">← All posts</a>
+        </div>
+        <div class="col">
+          <a href="/">Mou Sugu</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+</Base>

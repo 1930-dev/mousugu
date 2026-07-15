@@ -1,0 +1,72 @@
+---
+import Post from '../../layouts/Post.astro';
+---
+
+<Post
+  title="MeetingBar vs Mou Sugu: Meeting Countdown Apps for Mac"
+  description="MeetingBar and Mou Sugu both put your next meeting in the Mac menu bar. Here is an honest comparison — integrations, design, privacy — to pick the right one."
+  path="/blog/meetingbar-alternative"
+  h1="MeetingBar vs Mou Sugu: an honest comparison"
+  datePublished="2026-07-15"
+>
+  <p class="lede">
+    This is the closest comparison on this blog: both apps show your <strong>next meeting in the
+    menu bar</strong> and let you <strong>join with one click</strong>. The differences are
+    breadth versus focus.
+  </p>
+
+  <p>
+    <a href="https://meetingbar.app/">MeetingBar</a> is a mature, free, open-source app with an
+    impressive superpower: it detects meeting links for <strong>50+ services</strong> — Zoom,
+    Meet, Teams, Webex, but also Slack Huddles, Discord, Tuple, Gather, and a long tail of tools.
+    If your meetings live in unusual places, MeetingBar almost certainly recognizes them.
+  </p>
+
+  <p>
+    Mou Sugu deliberately covers the big four (Zoom, Google Meet, Microsoft Teams, Webex) and
+    spends its energy on the experience around them: a glanceable countdown that rolls over on
+    its own, a Join button with a grace window after meetings end, a Rejoin state when you drop
+    off a call, and a popover that shows the rest of your day without any configuration.
+  </p>
+
+  <h2>Side by side</h2>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Feature</th><th>MeetingBar</th><th>Mou Sugu</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Price</td><td>Free, open source (donations)</td><td>Free, open source (MIT)</td></tr>
+        <tr><td>Meeting services</td><td>50+ detected</td><td>Zoom, Google Meet, Microsoft Teams, Webex</td></tr>
+        <tr><td>Menu bar countdown</td><td>Yes, configurable</td><td>Yes — <code>in 12m: Standup</code>, updates every minute</td></tr>
+        <tr><td>Rejoin mid-call</td><td>—</td><td>Yes, switches to Rejoin 5 minutes into a meeting</td></tr>
+        <tr><td>Hide "free" events</td><td>Filtering options</td><td>Hidden by default, one toggle</td></tr>
+        <tr><td>Configuration surface</td><td>Extensive preferences</td><td>Deliberately small: calendars, free events, login</td></tr>
+        <tr><td>UI toolkit</td><td>AppKit</td><td>SwiftUI MenuBarExtra, translucent glass, light/dark</td></tr>
+        <tr><td>Languages</td><td>Many community localizations</td><td>English and Spanish</td></tr>
+        <tr><td>macOS</td><td>Broad version support</td><td>macOS 15+</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Choose MeetingBar if…</h2>
+  <ul>
+    <li>Your calls happen on services beyond the big four — Slack Huddles, Discord, Tuple…</li>
+    <li>You enjoy tuning behavior with lots of preferences.</li>
+    <li>You need support for older macOS versions.</li>
+  </ul>
+
+  <h2>Choose Mou Sugu if…</h2>
+  <ul>
+    <li>Your meetings are on Zoom, Meet, Teams, or Webex — the common case.</li>
+    <li>You want something that looks and feels like a native part of macOS 15.</li>
+    <li>You value zero-configuration defaults over settings depth.</li>
+    <li>You want Spanish localization out of the box.</li>
+  </ul>
+
+  <p>
+    Genuinely: MeetingBar is excellent software, and if you need its integration breadth, use it.
+    Mou Sugu exists for people who want the same core idea with less surface and more polish on
+    the minutes that matter.
+  </p>
+</Post>
