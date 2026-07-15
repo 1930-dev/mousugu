@@ -151,11 +151,13 @@ footer .col strong { display: block; margin-bottom: 0.3rem; }
 
 /* Blog */
 .prose .table-scroll { overflow-x: auto; margin: 1.2rem 0; }
-.prose table { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
-.prose th, .prose td { border: 1px solid var(--glass-border); padding: 0.55rem 0.75rem; text-align: left; vertical-align: top; }
+/* fixed layout: the two product columns get identical widths — no visual favoritism */
+.prose table { width: 100%; border-collapse: collapse; font-size: 0.93rem; table-layout: fixed; min-width: 540px; }
+.prose th, .prose td { border: 1px solid var(--glass-border); padding: 0.55rem 0.75rem; text-align: left; vertical-align: top; overflow-wrap: break-word; }
+.prose th:first-child, .prose td:first-child { width: 26%; }
 .prose th { color: var(--paper); background: var(--sumi-2); }
 .prose td { color: var(--muted); }
-.prose td:first-child { color: var(--paper); white-space: nowrap; }
+.prose td:first-child { color: var(--paper); }
 .post-list { list-style: none; padding: 0; }
 .post-list li { border-bottom: 1px solid var(--glass-border); padding: 1.3rem 0; }
 .post-list a { text-decoration: none; font-weight: 600; font-size: 1.15rem; }
