@@ -11,6 +11,8 @@
 A tiny, native macOS menu bar app that shows a live countdown to your next event
 and lets you jump into the call with a single click.
 
+**[mousugu.app](https://mousugu.app)** · [Español](https://mousugu.app/es) · [日本語](https://mousugu.app/ja) · [Blog](https://mousugu.app/blog)
+
 [![Platform](https://img.shields.io/badge/platform-macOS%2015%2B-blue?logo=apple)](https://www.apple.com/macos/)
 [![Swift](https://img.shields.io/badge/Swift-SwiftUI-orange?logo=swift)](https://developer.apple.com/swift/)
 [![License](https://img.shields.io/badge/license-MIT-green)](#license)
@@ -21,23 +23,23 @@ and lets you jump into the call with a single click.
 
 ## Why
 
-System Settings already knows your schedule — your menu bar doesn't. Mou Sugu
+Your Mac already knows your schedule — your menu bar doesn't. Mou Sugu
 puts the one thing you actually care about right where you're looking: **how long
 until your next meeting, and the button to join it.** No window to open, no app to
 switch to, no tab to hunt for.
 
+The name is the product: *mou sugu* is what you say in Japanese when something is
+almost here — the train pulling in, the show about to start. The red dot in the
+icon is your next meeting, rising.
+
 ## Features
 
-- **Live countdown in the menu bar** — `in 12m: Standup`, `in 2h: 1:1`, or `Now: Design review`. Updates every minute and rolls over to the next event on its own.
-- **One-click join** — detects Zoom, Google Meet, Microsoft Teams, and Webex links in the event URL or notes, and surfaces a **Join** button on the next upcoming meeting.
-- **Smart join states** — keeps the button around for a 1h grace window after a meeting ends, and switches to **Rejoin** once you're more than 5 minutes into a call.
+- **Live meeting countdown** — `in 12m: Standup`, `in 2h: 1:1`, or `Now: Design review`. The menu bar updates every minute and rolls over to the next event on its own.
+- **One-click meeting join** — detects Zoom, Google Meet, Microsoft Teams, and Webex links in the event URL or notes and surfaces a **Join** button on your next call. The button sticks around for a 1h grace window after a meeting ends, and switches to **Rejoin** once you're more than 5 minutes into a call.
 - **Today at a glance** — a clean popover lists the rest of today's events, color-coded to match each calendar.
-- **Pick your calendars** — toggle exactly which calendars feed the bar.
-- **Hide busywork** — events you're marked *free* for (focus blocks, tentative holds) are hidden by default.
-- **Start at login** — opt in with one toggle, powered by `SMAppService`.
-- **Native through and through** — SwiftUI `MenuBarExtra`, translucent Control-Center-style glass, SF Symbols, full light/dark support.
-- **Localized** — English and Spanish, following your system language automatically.
-- **Private by design** — runs in the App Sandbox, reads your calendar locally, and talks to no server.
+- **Your calendars, your rules** — works with iCloud, Google Calendar, and Outlook. Toggle exactly which calendars feed the bar; events you're marked *free* for (focus blocks, tentative holds) are hidden by default.
+- **Native and weightless** — SwiftUI `MenuBarExtra`, translucent Control-Center-style glass, SF Symbols, full light/dark support, English and Spanish localization, and opt-in start at login via `SMAppService`.
+- **Private by design** — runs in the App Sandbox, reads your calendar locally, and talks to no server. No account, no analytics, no tracking.
 
 ## Screenshots
 
