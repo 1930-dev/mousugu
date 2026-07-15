@@ -101,32 +101,6 @@ updater, and SPM links per target rather than per configuration.
 [APP_STORE.md](APP_STORE.md) explains how the split works and what App Store
 Connect still needs. See each script's header for one-time prerequisites.
 
-## Architecture
-
-| File | Responsibility |
-| --- | --- |
-| [CalendarBarApp.swift](MouSugu/CalendarBarApp.swift) | App entry point, menu bar extra, popover UI, join-button logic |
-| [CalendarStore.swift](MouSugu/CalendarStore.swift) | EventKit access, today's events, countdown, meeting-URL detection |
-| [SettingsView.swift](MouSugu/SettingsView.swift) | Preferences window — General and Calendars panes |
-| [UpdateChecker.swift](UpdateChecker.swift) | Sparkle wrapper, compiled in only for the direct channel |
-| [Constants.swift](MouSugu/Constants.swift) | Localized strings catalog |
-| [DesignSystem.swift](DesignSystem.swift) | Spacing, radius, and layout tokens |
-| [Config/](Config) | Build settings — shared, then per channel |
-| [website/](website) | Landing page, privacy policy, and the Sparkle appcast |
-
-## Icon & legal
-
-The app icon is an original design — a charcoal rounded square holding a 5x5 grid of
-dots, with today marked in red — that follows the macOS visual language using
-geometry and shadows consistent with Apple's design guidelines. It does **not**
-reproduce any copyrighted asset or trademark of Apple Inc. It is rendered from
-[scripts/generate_icon.swift](scripts/generate_icon.swift); run that and re-export
-the sizes in `AppIcon.appiconset` to change it. The glyphs in the app's interface
-come from **SF Symbols**, licensed by Apple for use within its ecosystem.
-
-Apple, macOS, and the Calendar icon are trademarks of Apple Inc., registered in the
-U.S. and other countries.
-
 ## License
 
 MIT — see [LICENSE](LICENSE).
