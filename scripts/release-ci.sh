@@ -30,7 +30,7 @@ BUILD_DIR="$ROOT_DIR/build"
 ARCHIVE_PATH="$BUILD_DIR/$APP_NAME.xcarchive"
 EXPORT_DIR="$BUILD_DIR/export"
 APP_PATH="$EXPORT_DIR/$APP_NAME.app"
-APPCAST="$ROOT_DIR/website/appcast.xml"
+APPCAST="$ROOT_DIR/website/public/appcast.xml"
 
 : "${ASC_KEY_ID:?set ASC_KEY_ID}"
 : "${ASC_ISSUER_ID:?set ASC_ISSUER_ID}"

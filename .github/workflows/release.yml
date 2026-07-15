@@ -73,12 +73,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: appcast
-          path: website/appcast.xml
+          path: website/public/appcast.xml
 
       - name: Summary
         run: |
           {
             echo "### Released ${GITHUB_REF_NAME}"
             echo "- Notarized, stapled DMG attached to the GitHub Release."
-            echo "- **Next:** publish \`website/appcast.xml\` (see the *appcast* artifact) to mousugu.app so Sparkle advertises the update."
+            echo "- **Next:** publish \`website/public/appcast.xml\` (see the *appcast* artifact) to mousugu.app so Sparkle advertises the update."
           } >> "$GITHUB_STEP_SUMMARY"

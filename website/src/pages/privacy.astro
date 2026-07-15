@@ -1,0 +1,114 @@
+---
+import Base from '../layouts/Base.astro';
+
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Mou Sugu', item: 'https://mousugu.app/' },
+      { '@type': 'ListItem', position: 2, name: 'Privacy Policy', item: 'https://mousugu.app/privacy' },
+    ],
+  },
+];
+---
+
+<Base
+  title="Privacy Policy — Mou Sugu"
+  description="Mou Sugu reads your calendar on your Mac and sends it nowhere. No account, no analytics, no tracking, no server."
+  path="/privacy"
+  lang="en"
+  schemas={schemas}
+>
+  <main class="wrap prose">
+    <nav class="nav" aria-label="Main">
+      <a class="brand" href="/">
+        <img src="/icon.png" alt="Mou Sugu app icon" width="28" height="28" />
+        Mou Sugu <span class="kana" aria-hidden="true">もうすぐ</span>
+      </a>
+    </nav>
+
+    <h1>Privacy Policy</h1>
+    <p class="lede">Mou Sugu reads your calendar on your Mac and sends it nowhere.</p>
+    <p class="meta">
+      Last updated 14 July 2026. Applies to Mou Sugu for macOS, both the Mac App Store and the
+      direct download.
+    </p>
+
+    <h2>The short version</h2>
+    <p>
+      Mou Sugu collects nothing, stores nothing about you, and has no server to send anything to.
+      There is no account, no analytics, no tracking, no advertising, and no third-party SDK of
+      any kind.
+    </p>
+
+    <h2>What the app reads</h2>
+    <p>
+      To show your next event and a countdown to it, the app reads your calendar events through
+      <a href="https://developer.apple.com/documentation/eventkit">EventKit</a>, Apple's calendar
+      framework. macOS asks for your permission the first time, and you can withdraw it at any
+      point in <strong>System Settings → Privacy &amp; Security → Calendars</strong>.
+    </p>
+    <p>
+      Event data is read into memory to draw the menu bar and the popover. It is not copied,
+      exported, or written to disk by the app.
+    </p>
+
+    <h2>What the app stores</h2>
+    <p>Only your own preferences, in the app's sandbox container on your Mac:</p>
+    <ul>
+      <li>which calendars you have hidden (their identifiers, not their contents);</li>
+      <li>whether to hide events you are marked free for;</li>
+      <li>whether to start at login;</li>
+      <li>which Settings tab you last had open.</li>
+    </ul>
+    <p>Deleting the app deletes all of it. None of it is ever transmitted.</p>
+
+    <h2>Network access</h2>
+    <p>This is the one place the two versions differ, so it is worth being precise.</p>
+
+    <h3>Mac App Store version</h3>
+    <p>
+      It makes no network connections at all. The app is sandboxed without the
+      <code>com.apple.security.network.client</code> entitlement, so macOS itself would refuse
+      the attempt — it is not a promise, it is a capability the app does not have.
+    </p>
+
+    <h3>Direct download (.dmg) version</h3>
+    <p>
+      This version checks for its own updates using
+      <a href="https://sparkle-project.org">Sparkle</a>. To do that it requests an update feed
+      from <code>mousugu.app</code> and, if you choose to update, downloads the new version.
+      Those requests carry no calendar data and no identifiers — they are the same requests your
+      browser would make fetching a file. As with any HTTP request, the server sees your IP
+      address and the app version you asked from.
+    </p>
+    <p>The Mac App Store version has no updater, because Apple ships updates itself.</p>
+
+    <h2>Children</h2>
+    <p>The app collects no data from anyone, including children.</p>
+
+    <h2>Changes</h2>
+    <p>
+      If this policy ever changes, the updated version will be posted here with a new date.
+      Material changes will be noted in the release notes.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      Questions, or something here that does not match what you observe? Open an issue at
+      <a href="https://github.com/1930-dev/mousugu/issues">github.com/1930-dev/mousugu</a>.
+    </p>
+
+    <footer>
+      <div class="cols">
+        <div class="col">
+          <a href="/">← Mou Sugu</a>
+        </div>
+        <div class="col">
+          <a href="https://github.com/1930-dev/mousugu">Source</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+</Base>

@@ -1,0 +1,76 @@
+---
+import Base from '../layouts/Base.astro';
+
+// One entry per released version. Newest first. Keep in sync with GitHub Releases;
+// this page exists for humans and for search engines (freshness + feature keywords).
+const releases: { version: string; date: string; notes: string[] }[] = [
+  {
+    version: '1.0.0',
+    date: 'July 2026',
+    notes: [
+      'First public release.',
+      'Live countdown to your next meeting in the macOS menu bar.',
+      'One-click Join for Zoom, Google Meet, Microsoft Teams, and Webex — with a Rejoin state when you drop mid-call.',
+      'Today popover with color-coded events per calendar.',
+      'Per-calendar visibility toggles and hiding of events you are marked free for.',
+      'Start at login, English and Spanish localization, full light/dark support.',
+    ],
+  },
+];
+
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Mou Sugu', item: 'https://mousugu.app/' },
+      { '@type': 'ListItem', position: 2, name: 'Changelog', item: 'https://mousugu.app/changelog' },
+    ],
+  },
+];
+---
+
+<Base
+  title="Changelog — Mou Sugu for macOS"
+  description="Release notes for Mou Sugu, the menu bar calendar for Mac with a live meeting countdown and one-click join."
+  path="/changelog"
+  lang="en"
+  schemas={schemas}
+>
+  <main class="wrap prose">
+    <nav class="nav" aria-label="Main">
+      <a class="brand" href="/">
+        <img src="/icon.png" alt="Mou Sugu app icon" width="28" height="28" />
+        Mou Sugu <span class="kana" aria-hidden="true">もうすぐ</span>
+      </a>
+    </nav>
+
+    <h1>Changelog</h1>
+    <p class="lede">What's new in each release of Mou Sugu.</p>
+    <p class="meta">
+      Signed DMGs for every version live on
+      <a href="https://github.com/1930-dev/mousugu/releases">GitHub Releases</a>. The direct
+      download updates itself through Sparkle.
+    </p>
+
+    {releases.map(({ version, date, notes }) => (
+      <section>
+        <h2>v{version} <small style="color:var(--muted);font-weight:400">— {date}</small></h2>
+        <ul>
+          {notes.map((n) => <li>{n}</li>)}
+        </ul>
+      </section>
+    ))}
+
+    <footer>
+      <div class="cols">
+        <div class="col">
+          <a href="/">← Mou Sugu</a>
+        </div>
+        <div class="col">
+          <a href="https://github.com/1930-dev/mousugu/releases">GitHub Releases</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+</Base>

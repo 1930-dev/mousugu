@@ -1,0 +1,218 @@
+---
+import Base from '../layouts/Base.astro';
+
+const faq = [
+  {
+    q: '¿Cómo veo mi calendario en la barra de menú de la Mac?',
+    a: 'Instalá Mou Sugu y otorgá acceso al calendario cuando macOS te lo pida. Tu próximo evento y una cuenta regresiva en vivo aparecen en la barra de menú al instante — sin ventanas que abrir ni nada que configurar. Hacé clic en la cuenta regresiva para ver el resto de tu día.',
+  },
+  {
+    q: '¿Puedo unirme a reuniones de Zoom, Google Meet o Teams con un clic?',
+    a: 'Sí. Mou Sugu detecta enlaces de Zoom, Google Meet, Microsoft Teams y Webex en la URL o las notas del evento y muestra un botón Unirse directamente en la barra de menú. Un clic abre la llamada.',
+  },
+  {
+    q: '¿Mou Sugu es gratis?',
+    a: 'Sí — gratis y open source bajo licencia MIT. Podés descargar la app notarizada o compilarla vos mismo desde el código en GitHub.',
+  },
+  {
+    q: '¿Mou Sugu envía mis datos de calendario a algún lado?',
+    a: 'No. La app lee tu calendario localmente a través de EventKit, corre en el App Sandbox de macOS y no tiene servidor. La versión de Mac App Store ni siquiera puede hacer conexiones de red — lo garantiza el propio macOS.',
+  },
+  {
+    q: '¿Qué significa “Mou Sugu”?',
+    a: 'Mou Sugu (もうすぐ) es japonés y significa “ya casi” — que es lo que la barra de menú te dice todo el día: tu próxima reunión, ya casi.',
+  },
+  {
+    q: '¿Qué versiones de macOS soporta?',
+    a: 'Mou Sugu requiere macOS 15 (Sequoia) o posterior y corre nativo en Apple Silicon y en Macs Intel.',
+  },
+  {
+    q: '¿Funciona con Google Calendar y Outlook?',
+    a: 'Sí. Mou Sugu muestra todas las cuentas que conoce la app Calendario de tu Mac — iCloud, Google Calendar, Outlook/Exchange y cualquier cuenta CalDAV — y vos elegís exactamente qué calendarios alimentan la barra.',
+  },
+];
+
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Mou Sugu',
+    operatingSystem: 'macOS 15.0 o posterior',
+    applicationCategory: 'BusinessApplication',
+    description:
+      'Calendario en la barra de menú de tu Mac con cuenta regresiva a tu próxima reunión y un clic para unirte a Zoom, Google Meet, Microsoft Teams y Webex.',
+    url: 'https://mousugu.app/es',
+    downloadUrl: 'https://github.com/1930-dev/mousugu/releases',
+    license: 'https://opensource.org/license/mit',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    inLanguage: 'es',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  },
+];
+---
+
+<Base
+  title="Mou Sugu — Calendario en la barra de menú de tu Mac"
+  description="Calendario gratis y open source para la barra de menú de tu Mac. Cuenta regresiva en vivo a tu próxima reunión y un clic para unirte a Zoom, Meet o Teams."
+  path="/es"
+  altPath="/"
+  lang="es"
+  schemas={schemas}
+>
+  <div class="wrap">
+    <nav class="nav" aria-label="Principal">
+      <a class="brand" href="/es">
+        <img src="/icon.png" alt="Ícono de Mou Sugu" width="28" height="28" />
+        Mou Sugu <span class="kana" aria-hidden="true">もうすぐ</span>
+      </a>
+      <div class="links">
+        <a href="#features">Funciones</a>
+        <a href="#faq">Preguntas</a>
+        <a href="/changelog">Novedades</a>
+        <a href="https://github.com/1930-dev/mousugu">GitHub</a>
+        <a href="/" lang="en">English</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <h1>Tu próxima reunión,<br />siempre a un vistazo.</h1>
+      <p class="sub">
+        Mou Sugu es un <strong>calendario para la barra de menú de tu Mac</strong>, chiquito y
+        nativo, que muestra la cuenta regresiva a tu próximo evento — y el botón para unirte a la
+        llamada.
+      </p>
+      <p class="kana-line"><em>もうすぐ</em> · mou sugu · “ya casi” en japonés</p>
+
+      <div class="menubar-mock" role="img" aria-label="La barra de menú de macOS mostrando: en 12 minutos, Standup, con un botón Unirse">
+        <span class="dot"></span>
+        <span>en 12m · Standup</span>
+        <span class="join">Unirse</span>
+      </div>
+
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/1930-dev/mousugu/releases">Descargar para macOS</a>
+        <a class="btn btn-ghost" href="https://github.com/1930-dev/mousugu">Ver el código</a>
+      </div>
+      <p class="free-note">Gratis y open source · macOS 15+ · notarizada por Apple</p>
+    </header>
+
+    <section id="why">
+      <h2>El calendario que le faltaba a tu barra de menú</h2>
+      <p>
+        Tu Mac ya conoce tu agenda — pero consultarla implica abrir una app, cambiar de ventana o
+        buscar una pestaña mientras la reunión arranca sin vos. Mou Sugu pone lo único que de
+        verdad te importa donde ya estás mirando: <strong>cuánto falta para tu próxima reunión y
+        un clic para entrar</strong>.
+      </p>
+    </section>
+
+    <section id="features">
+      <h2>Todo lo que un calendario de barra de menú tiene que hacer — y nada más</h2>
+      <div class="features">
+        <div class="card">
+          <h3><span class="mark">●</span>Cuenta regresiva en vivo</h3>
+          <p>
+            <code>en 12m: Standup</code>, <code>en 2h: 1:1</code>, <code>Ahora: Design review</code>.
+            La barra se actualiza cada minuto y pasa sola al siguiente evento.
+          </p>
+        </div>
+        <div class="card">
+          <h3><span class="mark">●</span>Unirse con un clic</h3>
+          <p>
+            Detecta enlaces de Zoom, Google Meet, Microsoft Teams y Webex y muestra el botón
+            Unirse en tu próxima llamada — y Reunirse si te caés a mitad de reunión.
+          </p>
+        </div>
+        <div class="card">
+          <h3><span class="mark">●</span>Tu día de un vistazo</h3>
+          <p>
+            Un clic abre un popover limpio con el resto de los eventos de hoy, con el color de
+            cada calendario.
+          </p>
+        </div>
+        <div class="card">
+          <h3><span class="mark">●</span>Tus calendarios, tus reglas</h3>
+          <p>
+            Funciona con iCloud, Google Calendar y Outlook. Elegí qué calendarios alimentan la
+            barra y ocultá los eventos donde figurás libre.
+          </p>
+        </div>
+        <div class="card">
+          <h3><span class="mark">●</span>Nativa y liviana</h3>
+          <p>
+            SwiftUI de punta a punta — vidrio translúcido, SF Symbols, modo claro y oscuro,
+            español e inglés. Arranca al iniciar sesión si querés.
+          </p>
+        </div>
+        <div class="card">
+          <h3><span class="mark">●</span>Privada por diseño</h3>
+          <p>
+            Lee tu calendario localmente, corre en el App Sandbox y no habla con ningún servidor.
+            Sin cuenta, sin analytics, sin tracking. <a href="/privacy">Leé la política de
+            privacidad</a>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="story">
+      <div class="story">
+        <span class="kana" aria-hidden="true">もうすぐ</span>
+        <h2>¿Por qué “Mou Sugu”?</h2>
+        <p>
+          Mou sugu es lo que se dice en japonés cuando algo está <strong>por llegar</strong> — el
+          tren entrando al andén, la función a punto de empezar. Es la sensación de una cuenta
+          regresiva latiendo en la esquina de tu pantalla: calma, puntualidad, cero sorpresas. El
+          punto rojo del ícono es tu próxima reunión, saliendo como el sol.
+        </p>
+      </div>
+    </section>
+
+    <section id="faq" class="faq">
+      <h2>Preguntas frecuentes</h2>
+      {faq.map(({ q, a }) => (
+        <details>
+          <summary>{q}</summary>
+          <p>{a}</p>
+        </details>
+      ))}
+    </section>
+
+    <section id="download" style="text-align:center">
+      <h2>Ya casi es hora de tu próxima reunión</h2>
+      <p>Poné la cuenta regresiva donde la puedas ver.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/1930-dev/mousugu/releases">Descargar Mou Sugu para macOS</a>
+      </div>
+      <p class="free-note">DMG firmado y notarizado · se actualiza solo · pronto en el Mac App Store</p>
+    </section>
+
+    <footer>
+      <div class="cols">
+        <div class="col">
+          <strong>Mou Sugu</strong>
+          <a href="/changelog">Novedades</a>
+          <a href="/privacy">Política de privacidad</a>
+        </div>
+        <div class="col">
+          <strong>Open source</strong>
+          <a href="https://github.com/1930-dev/mousugu">Código en GitHub</a>
+          <a href="https://github.com/1930-dev/mousugu/issues">Reportar un problema</a>
+          <a href="https://github.com/1930-dev/mousugu/releases">Versiones</a>
+        </div>
+        <div class="col">
+          <strong>Languages</strong>
+          <a href="/" lang="en">English</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</Base>

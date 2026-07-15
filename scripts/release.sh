@@ -26,7 +26,7 @@
 #
 # Output:
 #   build/MouSugu-<version>.dmg   — upload this to GitHub Releases
-#   website/appcast.xml                   — commit and publish this
+#   website/public/appcast.xml            — commit and publish this
 
 set -euo pipefail
 
@@ -45,7 +45,7 @@ ARCHIVE_PATH="$BUILD_DIR/$APP_NAME.xcarchive"
 EXPORT_DIR="$BUILD_DIR/export"
 EXPORT_OPTIONS="$ROOT_DIR/scripts/ExportOptions.plist"
 APP_PATH="$EXPORT_DIR/$APP_NAME.app"
-APPCAST="$ROOT_DIR/website/appcast.xml"
+APPCAST="$ROOT_DIR/website/public/appcast.xml"
 
 # Sparkle ships its tools inside the SPM artifact, whose path includes a hash.
 SPARKLE_BIN="$(find "$HOME/Library/Developer/Xcode/DerivedData" \

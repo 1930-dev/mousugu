@@ -1,0 +1,215 @@
+---
+import Base from '../layouts/Base.astro';
+
+const faq = [
+  {
+    q: 'How do I see my calendar in the Mac menu bar?',
+    a: 'Install Mou Sugu and grant calendar access when macOS asks. Your next event and a live countdown appear in the menu bar immediately — no window to open, no configuration required. Click the countdown to see the rest of your day.',
+  },
+  {
+    q: 'Can I join Zoom, Google Meet, or Teams meetings in one click?',
+    a: 'Yes. Mou Sugu detects Zoom, Google Meet, Microsoft Teams, and Webex links in the event URL or notes and shows a Join button right in the menu bar popover. One click opens the call.',
+  },
+  {
+    q: 'Is Mou Sugu free?',
+    a: 'Yes — free and open source under the MIT license. You can download the notarized app or build it yourself from the source on GitHub.',
+  },
+  {
+    q: 'Does Mou Sugu send my calendar data anywhere?',
+    a: 'No. The app reads your calendar locally through EventKit, runs in the macOS App Sandbox, and has no server. The Mac App Store build cannot make network connections at all — macOS enforces it.',
+  },
+  {
+    q: 'What does “Mou Sugu” mean?',
+    a: 'Mou Sugu (もうすぐ) is Japanese for “almost here” — which is what the menu bar tells you all day: your next meeting, almost here.',
+  },
+  {
+    q: 'Which versions of macOS are supported?',
+    a: 'Mou Sugu requires macOS 15 (Sequoia) or later and runs natively on Apple Silicon and Intel Macs.',
+  },
+  {
+    q: 'Does it work with Google Calendar and Outlook?',
+    a: 'Yes. Mou Sugu shows every account your Mac’s Calendar app knows about — iCloud, Google Calendar, Outlook/Exchange, and any CalDAV account — and you choose exactly which calendars feed the menu bar.',
+  },
+];
+
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Mou Sugu',
+    operatingSystem: 'macOS 15.0 or later',
+    applicationCategory: 'BusinessApplication',
+    description:
+      'A menu bar calendar for Mac with a live countdown to your next meeting and one-click join for Zoom, Google Meet, Microsoft Teams, and Webex.',
+    url: 'https://mousugu.app',
+    downloadUrl: 'https://github.com/1930-dev/mousugu/releases',
+    license: 'https://opensource.org/license/mit',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  },
+];
+---
+
+<Base
+  title="Mou Sugu — Menu Bar Calendar for Mac with Meeting Countdown"
+  description="Free, open-source menu bar calendar for Mac. See a live countdown to your next meeting and join Zoom, Google Meet, Teams, or Webex in one click."
+  path="/"
+  altPath="/es"
+  lang="en"
+  schemas={schemas}
+>
+  <div class="wrap">
+    <nav class="nav" aria-label="Main">
+      <a class="brand" href="/">
+        <img src="/icon.png" alt="Mou Sugu app icon" width="28" height="28" />
+        Mou Sugu <span class="kana" aria-hidden="true">もうすぐ</span>
+      </a>
+      <div class="links">
+        <a href="#features">Features</a>
+        <a href="#faq">FAQ</a>
+        <a href="/changelog">Changelog</a>
+        <a href="https://github.com/1930-dev/mousugu">GitHub</a>
+        <a href="/es" lang="es">Español</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <h1>Your next meeting,<br />always one glance away.</h1>
+      <p class="sub">
+        Mou Sugu is a tiny, native <strong>menu bar calendar for Mac</strong> that shows a live
+        countdown to your next event — and the button to join the call.
+      </p>
+      <p class="kana-line"><em>もうすぐ</em> · mou sugu · Japanese for “almost here”</p>
+
+      <div class="menubar-mock" role="img" aria-label="The macOS menu bar showing: in 12 minutes, Standup, with a Join button">
+        <span class="dot"></span>
+        <span>in 12m · Standup</span>
+        <span class="join">Join</span>
+      </div>
+
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/1930-dev/mousugu/releases">Download for macOS</a>
+        <a class="btn btn-ghost" href="https://github.com/1930-dev/mousugu">View source</a>
+      </div>
+      <p class="free-note">Free &amp; open source · macOS 15+ · notarized by Apple</p>
+    </header>
+
+    <section id="why">
+      <h2>The calendar your menu bar was missing</h2>
+      <p>
+        Your Mac already knows your schedule — but checking it means opening an app, switching a
+        window, or hunting for a tab while the meeting starts without you. Mou Sugu puts the one
+        thing you actually care about where you are already looking: <strong>how long until your
+        next meeting, and one click to join it</strong>.
+      </p>
+    </section>
+
+    <section id="features">
+      <h2>Everything a menu bar calendar should do — nothing else</h2>
+      <div class="features">
+        <div class="card">
+          <h3><span class="mark">●</span>Live meeting countdown</h3>
+          <p>
+            <code>in 12m: Standup</code>, <code>in 2h: 1:1</code>, <code>Now: Design review</code>.
+            The menu bar updates every minute and rolls over to the next event on its own.
+          </p>
+        </div>
+        <div class="card">
+          <h3><span class="mark">●</span>One-click meeting join</h3>
+          <p>
+            Detects Zoom, Google Meet, Microsoft Teams, and Webex links and surfaces a Join button
+            on your next call — plus a Rejoin button when you drop mid-meeting.
+          </p>
+        </div>
+        <div class="card">
+          <h3><span class="mark">●</span>Today at a glance</h3>
+          <p>
+            One click opens a clean popover with the rest of today’s events, color-coded to match
+            each calendar.
+          </p>
+        </div>
+        <div class="card">
+          <h3><span class="mark">●</span>Your calendars, your rules</h3>
+          <p>
+            Works with iCloud, Google Calendar, and Outlook. Toggle exactly which calendars feed
+            the bar, and hide events you are marked free for.
+          </p>
+        </div>
+        <div class="card">
+          <h3><span class="mark">●</span>Native and weightless</h3>
+          <p>
+            SwiftUI through and through — translucent glass, SF Symbols, full light and dark mode,
+            English and Spanish. Starts at login if you want it to.
+          </p>
+        </div>
+        <div class="card">
+          <h3><span class="mark">●</span>Private by design</h3>
+          <p>
+            Reads your calendar locally, runs in the App Sandbox, and talks to no server. No
+            account, no analytics, no tracking. <a href="/privacy">Read the privacy policy</a>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="story">
+      <div class="story">
+        <span class="kana" aria-hidden="true">もうすぐ</span>
+        <h2>Why “Mou Sugu”?</h2>
+        <p>
+          Mou sugu is what you say in Japanese when something is <strong>almost here</strong> —
+          the train pulling in, the show about to start. It is the feeling of a countdown ticking
+          in the corner of your screen: calm, punctual, never caught off guard. The red dot in the
+          icon is your next meeting, rising.
+        </p>
+      </div>
+    </section>
+
+    <section id="faq" class="faq">
+      <h2>Frequently asked questions</h2>
+      {faq.map(({ q, a }) => (
+        <details>
+          <summary>{q}</summary>
+          <p set:html={a.replace('EventKit', '<a href="https://developer.apple.com/documentation/eventkit">EventKit</a>')} />
+        </details>
+      ))}
+    </section>
+
+    <section id="download" style="text-align:center">
+      <h2>Almost time for your next meeting</h2>
+      <p>Put the countdown where you can see it.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/1930-dev/mousugu/releases">Download Mou Sugu for macOS</a>
+      </div>
+      <p class="free-note">Signed &amp; notarized DMG · keeps itself updated · also on the Mac App Store soon</p>
+    </section>
+
+    <footer>
+      <div class="cols">
+        <div class="col">
+          <strong>Mou Sugu</strong>
+          <a href="/changelog">Changelog</a>
+          <a href="/privacy">Privacy policy</a>
+        </div>
+        <div class="col">
+          <strong>Open source</strong>
+          <a href="https://github.com/1930-dev/mousugu">Source on GitHub</a>
+          <a href="https://github.com/1930-dev/mousugu/issues">Report an issue</a>
+          <a href="https://github.com/1930-dev/mousugu/releases">Releases</a>
+        </div>
+        <div class="col">
+          <strong>Idiomas</strong>
+          <a href="/es" lang="es">Español</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</Base>
