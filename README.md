@@ -57,7 +57,7 @@ switch to, no tab to hunt for.
 
 ### Download
 
-Grab the latest signed, notarized `.dmg` from the [Releases](../../releases) page,
+Grab the latest `.dmg` from the [Releases](../../releases) page,
 open it, and drag **Mou Sugu** to your Applications folder. This build keeps
 itself up to date through [Sparkle](https://github.com/sparkle-project/Sparkle).
 
