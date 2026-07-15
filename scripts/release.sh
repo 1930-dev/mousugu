@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# release.sh — build, sign, notarize, and package MenuBarCalendar as a DMG,
+# release.sh — build, sign, notarize, and package MouSugu as a DMG,
 #              then regenerate the Sparkle appcast that advertises it.
 #
 # This is the DIRECT channel (Developer ID + notarized DMG + Sparkle).
@@ -12,7 +12,7 @@
 #   2. "Developer ID Application" certificate installed in your Keychain.
 #      Xcode → Settings → Accounts → your Apple ID → Manage Certificates → +
 #   3. App-specific password for notarization, saved in Keychain via:
-#        xcrun notarytool store-credentials "MenuBarCalendarNotary" \
+#        xcrun notarytool store-credentials "MouSuguNotary" \
 #            --apple-id "you@example.com" \
 #            --team-id "ABCD123456" \
 #            --password "abcd-efgh-ijkl-mnop"   # app-specific password
@@ -25,18 +25,19 @@
 #   ./scripts/release.sh
 #
 # Output:
-#   build/MenuBarCalendar-<version>.dmg   — upload this to GitHub Releases
+#   build/MouSugu-<version>.dmg   — upload this to GitHub Releases
 #   website/appcast.xml                   — commit and publish this
 
 set -euo pipefail
 
-APP_NAME="MenuBarCalendar"
-SCHEME="MenuBarCalendar"
-NOTARY_PROFILE="MenuBarCalendarNotary"
+APP_NAME="MouSugu"
+APP_DISPLAY="Mou Sugu"
+SCHEME="MouSugu"
+NOTARY_PROFILE="MouSuguNotary"
 # The appcast advertises the DMG from GitHub Releases while the feed itself is
-# served from agu.uy — SUFeedURL in Config/Direct-Info.plist points at the feed.
-RELEASE_URL_PREFIX="https://github.com/1930-dev/MenuBarCalendar/releases/download"
-PRODUCT_LINK="https://agu.uy/MenuBarCalendar/"
+# served from mousugu.app — SUFeedURL in Config/Direct-Info.plist points at the feed.
+RELEASE_URL_PREFIX="https://github.com/1930-dev/mousugu/releases/download"
+PRODUCT_LINK="https://mousugu.app/"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_DIR="$ROOT_DIR/build"
@@ -62,7 +63,7 @@ mkdir -p "$BUILD_DIR"
 
 echo "▸ Archiving Release build"
 xcodebuild \
-    -project "$ROOT_DIR/MenuBarCalendar.xcodeproj" \
+    -project "$ROOT_DIR/MouSugu.xcodeproj" \
     -scheme "$SCHEME" \
     -configuration Release \
     -archivePath "$ARCHIVE_PATH" \
@@ -102,7 +103,7 @@ spctl --assess --type execute --verbose=2 "$APP_PATH"
 
 echo "▸ Building DMG"
 create-dmg \
-    --volname "$APP_NAME" \
+    --volname "$APP_DISPLAY" \
     --window-pos 200 120 \
     --window-size 500 320 \
     --icon-size 100 \
@@ -132,4 +133,4 @@ echo "✅ Ready to ship:"
 echo "   DMG     $DMG_PATH"
 echo "           → upload to $RELEASE_URL_PREFIX/v$VERSION/"
 echo "   Appcast $APPCAST"
-echo "           → commit, then publish to https://agu.uy/MenuBarCalendar/"
+echo "           → commit, then publish to https://mousugu.app/"

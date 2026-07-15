@@ -3,7 +3,7 @@
 // and App-MAS.xcconfig (Mac App Store, no updater).
 //
 // PRODUCT_NAME is spelled out rather than $(TARGET_NAME): both channels ship
-// the same user-facing app, so both targets must produce MenuBarCalendar.app.
+// the same user-facing app, so both targets must produce MouSugu.app.
 
 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
 ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor
@@ -22,15 +22,16 @@ ENABLE_RESOURCE_ACCESS_LOCATION = NO
 ENABLE_RESOURCE_ACCESS_PRINTING = NO
 ENABLE_RESOURCE_ACCESS_USB = NO
 GENERATE_INFOPLIST_FILE = YES
+INFOPLIST_KEY_CFBundleDisplayName = Mou Sugu
 INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO
 INFOPLIST_KEY_LSApplicationCategoryType = public.app-category.productivity
 INFOPLIST_KEY_LSUIElement = YES
-INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = MenuBarCalendar uses your calendar to show the next event and remaining time directly in the menu bar.
+INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = Mou Sugu uses your calendar to show the next event and remaining time directly in the menu bar.
 LD_RUNPATH_SEARCH_PATHS = @executable_path/../Frameworks
 MACOSX_DEPLOYMENT_TARGET = 15.0
 MARKETING_VERSION = 1.0.0
-PRODUCT_BUNDLE_IDENTIFIER = dev.1930.MenuBarCalendar
-PRODUCT_NAME = MenuBarCalendar
+PRODUCT_BUNDLE_IDENTIFIER = dev.1930.MouSugu
+PRODUCT_NAME = MouSugu
 SDKROOT = macosx
 STRING_CATALOG_GENERATE_SYMBOLS = YES
 SUPPORTED_PLATFORMS = macosx

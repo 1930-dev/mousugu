@@ -3,7 +3,7 @@
 // seed_demo_calendar.swift — create (or remove) a throwaway calendar of made-up
 // events, so screenshots never show anyone's real schedule.
 //
-// App Store screenshots are public and MenuBarCalendar renders event titles
+// App Store screenshots are public and Mou Sugu renders event titles
 // verbatim. Shooting against your own calendar publishes your meetings and the
 // people in them. So: seed this, hide every other calendar in the app's
 // Settings, shoot, then remove it.
@@ -21,7 +21,7 @@
 import EventKit
 import Foundation
 
-let calendarTitle = "MenuBarCalendar Demo"
+let calendarTitle = "Mou Sugu Demo"
 let store = EKEventStore()
 let removing = CommandLine.arguments.contains("--remove")
 
@@ -97,7 +97,7 @@ func seed() throws {
     print("✓ Created \"\(calendarTitle)\" with \(events.count) events in the local source.")
     print("")
     print("Next:")
-    print("  1. Open MenuBarCalendar → Preferences → Calendars.")
+    print("  1. Open Mou Sugu → Preferences → Calendars.")
     print("  2. Untick every calendar except \"\(calendarTitle)\".")
     print("  3. Take the screenshots.")
     print("  4. swift scripts/seed_demo_calendar.swift --remove")

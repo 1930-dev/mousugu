@@ -8,7 +8,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "MenuBarCalendar"
+            "value" : "Mou Sugu"
           }
         }
       }
@@ -19,13 +19,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MenuBarCalendar uses your calendar to show the next event and remaining time directly in the menu bar."
+            "value" : "Mou Sugu uses your calendar to show the next event and remaining time directly in the menu bar."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MenuBarCalendar utiliza tu calendario para mostrarte el próximo evento y el tiempo restante directamente en la barra de menú."
+            "value" : "Mou Sugu utiliza tu calendario para mostrarte el próximo evento y el tiempo restante directamente en la barra de menú."
           }
         }
       }

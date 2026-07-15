@@ -17,12 +17,13 @@
 #
 set -euo pipefail
 
-APP_NAME="MenuBarCalendar"
-SCHEME="MenuBarCalendar"
+APP_NAME="MouSugu"
+APP_DISPLAY="Mou Sugu"
+SCHEME="MouSugu"
 TEAM_ID="7RX5GXJ5V3"
 SIGN_IDENTITY="Developer ID Application"
-RELEASE_URL_PREFIX="https://github.com/1930-dev/MenuBarCalendar/releases/download"
-PRODUCT_LINK="https://agu.uy/MenuBarCalendar/"
+RELEASE_URL_PREFIX="https://github.com/1930-dev/mousugu/releases/download"
+PRODUCT_LINK="https://mousugu.app/"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_DIR="$ROOT_DIR/build"
@@ -78,7 +79,7 @@ rm -rf "$BUILD_DIR"; mkdir -p "$BUILD_DIR"
 
 echo "▸ Archiving (Release) signed with Developer ID"
 xcodebuild \
-    -project "$ROOT_DIR/MenuBarCalendar.xcodeproj" \
+    -project "$ROOT_DIR/MouSugu.xcodeproj" \
     -scheme "$SCHEME" \
     -configuration Release \
     -archivePath "$ARCHIVE_PATH" \
@@ -136,7 +137,7 @@ spctl --assess --type execute --verbose=2 "$APP_PATH"
 
 echo "▸ Building DMG"
 create-dmg \
-    --volname "$APP_NAME" \
+    --volname "$APP_DISPLAY" \
     --window-pos 200 120 \
     --window-size 500 320 \
     --icon-size 100 \

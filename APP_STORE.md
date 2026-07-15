@@ -1,13 +1,13 @@
 # Publishing to the Mac App Store
 
-MenuBarCalendar ships through two channels from this one repo:
+Mou Sugu ships through two channels from this one repo:
 
 | Channel | Target | Scheme | Updater | Script |
 | --- | --- | --- | --- | --- |
-| Direct (DMG) | `MenuBarCalendar` | `MenuBarCalendar` | Sparkle | `scripts/release.sh` |
-| Mac App Store | `MenuBarCalendar-MAS` | `MenuBarCalendar-MAS` | Apple's | `scripts/release-appstore.sh` |
+| Direct (DMG) | `MouSugu` | `MouSugu` | Sparkle | `scripts/release.sh` |
+| Mac App Store | `MouSugu-MAS` | `MouSugu-MAS` | Apple's | `scripts/release-appstore.sh` |
 
-Both build the same sources and produce `MenuBarCalendar.app`. They differ only
+Both build the same sources and produce `MouSugu.app`. They differ only
 in what the target links and what it is allowed to do.
 
 ## How the two channels stay apart
@@ -17,7 +17,7 @@ not contain Sparkle. Swift Package Manager links products **per target**, not
 per configuration — there is no way to link Sparkle in Release-Direct but not in
 Release-AppStore within one target.
 
-So there are two targets. `MenuBarCalendar-MAS` has an empty
+So there are two targets. `MouSugu-MAS` has an empty
 `packageProductDependencies`; that, and nothing else, is what keeps Sparkle out.
 Both targets share the same synchronized root group, so the sources live in one
 place and neither can drift from the other.
@@ -55,12 +55,12 @@ regression fails locally instead of at review.
 
 ## App Store Connect — one-time setup (needs your Apple account)
 
-1. Register the bundle id `dev.1930.MenuBarCalendar` in the Developer portal
+1. Register the bundle id `dev.1930.MouSugu` in the Developer portal
    under team `7RX5GXJ5V3`.
 2. Create the app record in App Store Connect (name, primary language, SKU).
 3. **Privacy Policy URL** — required because the app accesses Calendar. Publish
-   `website/` to <https://agu.uy/MenuBarCalendar/> and use
-   <https://agu.uy/MenuBarCalendar/privacy.html>.
+   `website/` to <https://mousugu.app/> and use
+   <https://mousugu.app/privacy.html>.
 4. **App Privacy ("nutrition label")** — declare calendar access; mark data as
    **not collected / not linked to the user**. The App Store build ships without
    the network entitlement, so it cannot transmit anything.
@@ -77,6 +77,6 @@ regression fails locally instead of at review.
 ```
 
 Then attach the build to the version in App Store Connect, finish the metadata,
-and submit for review. Xcode's `Product → Archive` on the `MenuBarCalendar-MAS`
+and submit for review. Xcode's `Product → Archive` on the `MouSugu-MAS`
 scheme followed by `Distribute App → App Store Connect` does the same thing by
 hand.

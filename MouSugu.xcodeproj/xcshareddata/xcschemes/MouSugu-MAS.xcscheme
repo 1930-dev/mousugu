@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E2A11E012FF3000000000001"
-               BuildableName = "MenuBarCalendar.app"
-               BlueprintName = "MenuBarCalendar-MAS"
-               ReferencedContainer = "container:MenuBarCalendar.xcodeproj">
+               BuildableName = "MouSugu.app"
+               BlueprintName = "MouSugu-MAS"
+               ReferencedContainer = "container:MouSugu.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E2A11E012FF3000000000001"
-            BuildableName = "MenuBarCalendar.app"
-            BlueprintName = "MenuBarCalendar-MAS"
-            ReferencedContainer = "container:MenuBarCalendar.xcodeproj">
+            BuildableName = "MouSugu.app"
+            BlueprintName = "MouSugu-MAS"
+            ReferencedContainer = "container:MouSugu.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E2A11E012FF3000000000001"
-            BuildableName = "MenuBarCalendar.app"
-            BlueprintName = "MenuBarCalendar-MAS"
-            ReferencedContainer = "container:MenuBarCalendar.xcodeproj">
+            BuildableName = "MouSugu.app"
+            BlueprintName = "MouSugu-MAS"
+            ReferencedContainer = "container:MouSugu.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

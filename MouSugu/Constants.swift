@@ -36,7 +36,7 @@ struct Strings {
 
     struct Access {
         static var title: String { String(localized: "Calendar access needed") }
-        static var message: String { String(localized: "MenuBarCalendar needs access to your calendar to show your next event. Grant access in System Settings, then reopen the app.") }
+        static var message: String { String(localized: "Mou Sugu needs access to your calendar to show your next event. Grant access in System Settings, then reopen the app.") }
         static var openSettings: String { String(localized: "Open Privacy Settings") }
     }
 

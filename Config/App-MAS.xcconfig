@@ -11,7 +11,7 @@
 // App-Common.xcconfig generate the complete entitlement set for this channel.
 //
 // CONFIGURATION_BUILD_DIR is overridden because both targets produce
-// MenuBarCalendar.app; without it they would clobber each other in
+// MouSugu.app; without it they would clobber each other in
 // BUILT_PRODUCTS_DIR.
 
 #include "App-Common.xcconfig"

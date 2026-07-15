@@ -2,16 +2,16 @@
 #
 # release-appstore.sh — archive the Mac App Store build and hand it to Apple.
 #
-# This is the MAS channel: the MenuBarCalendar-MAS target, which never links
+# This is the MAS channel: the MouSugu-MAS target, which never links
 # Sparkle. For the direct/DMG channel use release.sh. See APP_STORE.md.
 #
 # Prerequisites (one-time):
-#   1. The bundle id dev.1930.MenuBarCalendar registered to the team, and an app
+#   1. The bundle id dev.1930.MouSugu registered to the team, and an app
 #      record created in App Store Connect.
 #   2. An "Apple Distribution" certificate and a Mac App Store provisioning
 #      profile — automatic signing fetches both.
 #   3. App Store Connect credentials in your Keychain:
-#        xcrun notarytool store-credentials "MenuBarCalendarASC" \
+#        xcrun notarytool store-credentials "MouSuguASC" \
 #            --apple-id "you@example.com" \
 #            --team-id "ABCD123456" \
 #            --password "abcd-efgh-ijkl-mnop"   # app-specific password
@@ -25,9 +25,9 @@
 
 set -euo pipefail
 
-APP_NAME="MenuBarCalendar"
-SCHEME="MenuBarCalendar-MAS"
-ASC_PROFILE="MenuBarCalendarASC"
+APP_NAME="MouSugu"
+SCHEME="MouSugu-MAS"
+ASC_PROFILE="MouSuguASC"
 
 UPLOAD=false
 [[ "${1:-}" == "--upload" ]] && UPLOAD=true
@@ -44,7 +44,7 @@ mkdir -p "$BUILD_DIR"
 
 echo "▸ Archiving Release build ($SCHEME)"
 xcodebuild \
-    -project "$ROOT_DIR/MenuBarCalendar.xcodeproj" \
+    -project "$ROOT_DIR/MouSugu.xcodeproj" \
     -scheme "$SCHEME" \
     -configuration Release \
     -archivePath "$ARCHIVE_PATH" \

@@ -16,7 +16,7 @@
 	<key>SUEnableInstallerLauncherService</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://agu.uy/MenuBarCalendar/appcast.xml</string>
+	<string>https://mousugu.app/appcast.xml</string>
 	<!-- Public half of the Ed25519 pair. The private key lives in the Keychain
 	     and is never committed; release.sh signs the DMG with it. -->
 	<key>SUPublicEDKey</key>

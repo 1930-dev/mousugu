@@ -44,9 +44,9 @@ jobs:
         id: dmg
         run: |
           set -euo pipefail
-          DMG=$(ls build/MenuBarCalendar-*.dmg | head -1)
+          DMG=$(ls build/MouSugu-*.dmg | head -1)
           [ -n "$DMG" ] || { echo "::error::No DMG produced"; exit 1; }
-          VER=$(basename "$DMG" .dmg | sed 's/^MenuBarCalendar-//')
+          VER=$(basename "$DMG" .dmg | sed 's/^MouSugu-//')
           if [ "v$VER" != "${GITHUB_REF_NAME}" ]; then
             echo "::error::Tag ${GITHUB_REF_NAME} != app MARKETING_VERSION ($VER). Bump MARKETING_VERSION to ${GITHUB_REF_NAME#v} or retag."
             exit 1
@@ -65,7 +65,7 @@ jobs:
           else
             gh release create "${GITHUB_REF_NAME}" \
               "${{ steps.dmg.outputs.dmg }}" \
-              --title "MenuBarCalendar ${{ steps.dmg.outputs.version }}" \
+              --title "Mou Sugu ${{ steps.dmg.outputs.version }}" \
               --generate-notes
           fi
 
@@ -80,5 +80,5 @@ jobs:
           {
             echo "### Released ${GITHUB_REF_NAME}"
             echo "- Notarized, stapled DMG attached to the GitHub Release."
-            echo "- **Next:** publish \`website/appcast.xml\` (see the *appcast* artifact) to agu.uy so Sparkle advertises the update."
+            echo "- **Next:** publish \`website/appcast.xml\` (see the *appcast* artifact) to mousugu.app so Sparkle advertises the update."
           } >> "$GITHUB_STEP_SUMMARY"

@@ -1,6 +1,6 @@
-/* MenuBarCalendar — shared styles.
+/* MouSugu — shared styles.
    Self-contained on purpose: the site is published as static files under
-   agu.uy/MenuBarCalendar with no build step. */
+   mousugu.app with no build step. */
 
 :root {
     --ink: #1c1b16;

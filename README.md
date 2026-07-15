@@ -1,10 +1,12 @@
 <div align="center">
 
-<img src="MenuBarCalendar/Assets.xcassets/AppIcon.appiconset/icon_256.png" width="128" height="128" alt="MenuBarCalendar icon" />
+<img src="MouSugu/Assets.xcassets/AppIcon.appiconset/icon_256.png" width="128" height="128" alt="Mou Sugu icon" />
 
-# MenuBarCalendar
+# Mou Sugu
 
 **Your next meeting, always one glance away.**
+
+*Mou Sugu (もうすぐ) is Japanese for "almost here".*
 
 A tiny, native macOS menu bar app that shows a live countdown to your next event
 and lets you jump into the call with a single click.
@@ -19,7 +21,7 @@ and lets you jump into the call with a single click.
 
 ## Why
 
-System Settings already knows your schedule — your menu bar doesn't. MenuBarCalendar
+System Settings already knows your schedule — your menu bar doesn't. Mou Sugu
 puts the one thing you actually care about right where you're looking: **how long
 until your next meeting, and the button to join it.** No window to open, no app to
 switch to, no tab to hunt for.
@@ -56,7 +58,7 @@ switch to, no tab to hunt for.
 ### Download
 
 Grab the latest signed, notarized `.dmg` from the [Releases](../../releases) page,
-open it, and drag **MenuBarCalendar** to your Applications folder. This build keeps
+open it, and drag **Mou Sugu** to your Applications folder. This build keeps
 itself up to date through [Sparkle](https://github.com/sparkle-project/Sparkle).
 
 A Mac App Store build is also published — same app, minus the updater, since the
@@ -65,9 +67,9 @@ App Store ships updates itself.
 ### Build from source
 
 ```bash
-git clone https://github.com/1930-dev/MenuBarCalendar.git
-cd MenuBarCalendar
-open MenuBarCalendar.xcodeproj
+git clone https://github.com/1930-dev/mousugu.git
+cd mousugu
+open MouSugu.xcodeproj
 ```
 
 Then **Product → Run** in Xcode. On first launch, grant calendar access when prompted.
@@ -84,8 +86,8 @@ Two channels ship from this repo, as two targets over the same sources:
 
 | Channel | Scheme | Updater | Script |
 | --- | --- | --- | --- |
-| Direct (DMG) | `MenuBarCalendar` | Sparkle | `scripts/release.sh` |
-| Mac App Store | `MenuBarCalendar-MAS` | Apple's | `scripts/release-appstore.sh` |
+| Direct (DMG) | `MouSugu` | Sparkle | `scripts/release.sh` |
+| Mac App Store | `MouSugu-MAS` | Apple's | `scripts/release-appstore.sh` |
 
 `release.sh` archives, signs with your Developer ID, notarizes, staples, packages
 a DMG, and regenerates `website/appcast.xml` signed with the Ed25519 key in your
@@ -101,11 +103,11 @@ Connect still needs. See each script's header for one-time prerequisites.
 
 | File | Responsibility |
 | --- | --- |
-| [CalendarBarApp.swift](MenuBarCalendar/CalendarBarApp.swift) | App entry point, menu bar extra, popover UI, join-button logic |
-| [CalendarStore.swift](MenuBarCalendar/CalendarStore.swift) | EventKit access, today's events, countdown, meeting-URL detection |
-| [SettingsView.swift](MenuBarCalendar/SettingsView.swift) | Preferences window — General and Calendars panes |
+| [CalendarBarApp.swift](MouSugu/CalendarBarApp.swift) | App entry point, menu bar extra, popover UI, join-button logic |
+| [CalendarStore.swift](MouSugu/CalendarStore.swift) | EventKit access, today's events, countdown, meeting-URL detection |
+| [SettingsView.swift](MouSugu/SettingsView.swift) | Preferences window — General and Calendars panes |
 | [UpdateChecker.swift](UpdateChecker.swift) | Sparkle wrapper, compiled in only for the direct channel |
-| [Constants.swift](MenuBarCalendar/Constants.swift) | Localized strings catalog |
+| [Constants.swift](MouSugu/Constants.swift) | Localized strings catalog |
 | [DesignSystem.swift](DesignSystem.swift) | Spacing, radius, and layout tokens |
 | [Config/](Config) | Build settings — shared, then per channel |
 | [website/](website) | Landing page, privacy policy, and the Sparkle appcast |

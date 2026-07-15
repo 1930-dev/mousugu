@@ -31,35 +31,35 @@
 		E2A11E012FF2000000000006 /* App-MAS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "App-MAS.xcconfig"; sourceTree = "<group>"; };
 		E2A11E012FF2000000000007 /* Sparkle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sparkle.entitlements; sourceTree = "<group>"; };
 		E2A11E012FF2000000000008 /* Direct-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Direct-Info.plist"; sourceTree = "<group>"; };
-		E2A11E012FF3000000000002 /* MenuBarCalendar.app (App Store) */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MenuBarCalendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		E2B6B6FC2FC4E825007255BA /* MenuBarCalendar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MenuBarCalendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2A11E012FF3000000000002 /* MouSugu.app (App Store) */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MouSugu.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2B6B6FC2FC4E825007255BA /* MouSugu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MouSugu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		E2A11E012FF1000000000001 /* Exceptions for "MenuBarCalendar" folder in "MenuBarCalendar" target */ = {
+		E2A11E012FF1000000000001 /* Exceptions for "MouSugu" folder in "MouSugu" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				".claude/settings.local.json",
 			);
-			target = E2B6B6FB2FC4E825007255BA /* MenuBarCalendar */;
+			target = E2B6B6FB2FC4E825007255BA /* MouSugu */;
 		};
-		E2A11E012FF1000000000002 /* Exceptions for "MenuBarCalendar" folder in "MenuBarCalendar-MAS" target */ = {
+		E2A11E012FF1000000000002 /* Exceptions for "MouSugu" folder in "MouSugu-MAS" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				".claude/settings.local.json",
 			);
-			target = E2A11E012FF3000000000001 /* MenuBarCalendar-MAS */;
+			target = E2A11E012FF3000000000001 /* MouSugu-MAS */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E2B6B6FE2FC4E825007255BA /* MenuBarCalendar */ = {
+		E2B6B6FE2FC4E825007255BA /* MouSugu */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				E2A11E012FF1000000000001 /* Exceptions for "MenuBarCalendar" folder in "MenuBarCalendar" target */,
-				E2A11E012FF1000000000002 /* Exceptions for "MenuBarCalendar" folder in "MenuBarCalendar-MAS" target */,
+				E2A11E012FF1000000000001 /* Exceptions for "MouSugu" folder in "MouSugu" target */,
+				E2A11E012FF1000000000002 /* Exceptions for "MouSugu" folder in "MouSugu-MAS" target */,
 			);
-			path = MenuBarCalendar;
+			path = MouSugu;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -102,7 +102,7 @@
 			isa = PBXGroup;
 			children = (
 				E2A11E012FF2000000000010 /* Config */,
-				E2B6B6FE2FC4E825007255BA /* MenuBarCalendar */,
+				E2B6B6FE2FC4E825007255BA /* MouSugu */,
 				E2B6B6FD2FC4E825007255BA /* Products */,
 				E222CDDB2FE5D4F2003481F8 /* DesignSystem.swift */,
 				E222CDDD2FE6027C003481F8 /* Localizable.xcstrings */,
@@ -114,8 +114,8 @@
 		E2B6B6FD2FC4E825007255BA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E2B6B6FC2FC4E825007255BA /* MenuBarCalendar.app */,
-				E2A11E012FF3000000000002 /* MenuBarCalendar.app (App Store) */,
+				E2B6B6FC2FC4E825007255BA /* MouSugu.app */,
+				E2A11E012FF3000000000002 /* MouSugu.app (App Store) */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -123,9 +123,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E2A11E012FF3000000000001 /* MenuBarCalendar-MAS */ = {
+		E2A11E012FF3000000000001 /* MouSugu-MAS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E2A11E012FF3000000000006 /* Build configuration list for PBXNativeTarget "MenuBarCalendar-MAS" */;
+			buildConfigurationList = E2A11E012FF3000000000006 /* Build configuration list for PBXNativeTarget "MouSugu-MAS" */;
 			buildPhases = (
 				E2A11E012FF3000000000003 /* Sources */,
 				E2A11E012FF3000000000004 /* Frameworks */,
@@ -136,18 +136,18 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				E2B6B6FE2FC4E825007255BA /* MenuBarCalendar */,
+				E2B6B6FE2FC4E825007255BA /* MouSugu */,
 			);
-			name = "MenuBarCalendar-MAS";
+			name = "MouSugu-MAS";
 			packageProductDependencies = (
 			);
-			productName = MenuBarCalendar;
-			productReference = E2A11E012FF3000000000002 /* MenuBarCalendar.app (App Store) */;
+			productName = MouSugu;
+			productReference = E2A11E012FF3000000000002 /* MouSugu.app (App Store) */;
 			productType = "com.apple.product-type.application";
 		};
-		E2B6B6FB2FC4E825007255BA /* MenuBarCalendar */ = {
+		E2B6B6FB2FC4E825007255BA /* MouSugu */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E2B6B7072FC4E827007255BA /* Build configuration list for PBXNativeTarget "MenuBarCalendar" */;
+			buildConfigurationList = E2B6B7072FC4E827007255BA /* Build configuration list for PBXNativeTarget "MouSugu" */;
 			buildPhases = (
 				E2B6B6F82FC4E825007255BA /* Sources */,
 				E2B6B6F92FC4E825007255BA /* Frameworks */,
@@ -158,14 +158,14 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				E2B6B6FE2FC4E825007255BA /* MenuBarCalendar */,
+				E2B6B6FE2FC4E825007255BA /* MouSugu */,
 			);
-			name = MenuBarCalendar;
+			name = MouSugu;
 			packageProductDependencies = (
 				E222CDE42FE74C93003481F8 /* Sparkle */,
 			);
-			productName = MenuBarCalendar;
-			productReference = E2B6B6FC2FC4E825007255BA /* MenuBarCalendar.app */;
+			productName = MouSugu;
+			productReference = E2B6B6FC2FC4E825007255BA /* MouSugu.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -186,7 +186,7 @@
 					};
 				};
 			};
-			buildConfigurationList = E2B6B6F72FC4E825007255BA /* Build configuration list for PBXProject "MenuBarCalendar" */;
+			buildConfigurationList = E2B6B6F72FC4E825007255BA /* Build configuration list for PBXProject "MouSugu" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -204,8 +204,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E2B6B6FB2FC4E825007255BA /* MenuBarCalendar */,
-				E2A11E012FF3000000000001 /* MenuBarCalendar-MAS */,
+				E2B6B6FB2FC4E825007255BA /* MouSugu */,
+				E2A11E012FF3000000000001 /* MouSugu-MAS */,
 			);
 		};
 /* End PBXProject section */
@@ -298,7 +298,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E2A11E012FF3000000000006 /* Build configuration list for PBXNativeTarget "MenuBarCalendar-MAS" */ = {
+		E2A11E012FF3000000000006 /* Build configuration list for PBXNativeTarget "MouSugu-MAS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E2A11E012FF3000000000007 /* Debug */,
@@ -307,7 +307,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E2B6B6F72FC4E825007255BA /* Build configuration list for PBXProject "MenuBarCalendar" */ = {
+		E2B6B6F72FC4E825007255BA /* Build configuration list for PBXProject "MouSugu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E2B6B7052FC4E827007255BA /* Debug */,
@@ -316,7 +316,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E2B6B7072FC4E827007255BA /* Build configuration list for PBXNativeTarget "MenuBarCalendar" */ = {
+		E2B6B7072FC4E827007255BA /* Build configuration list for PBXNativeTarget "MouSugu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E2B6B7082FC4E827007255BA /* Debug */,

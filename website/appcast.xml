@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Sparkle update feed for the direct/DMG channel. Published at
-  https://agu.uy/MenuBarCalendar/appcast.xml, which is what SUFeedURL in
+  https://mousugu.app/appcast.xml, which is what SUFeedURL in
   Config/Direct-Info.plist points at.
 
   Do not hand-edit the <item> entries: scripts/release.sh regenerates this file
@@ -10,9 +10,9 @@
 -->
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
     <channel>
-        <title>MenuBarCalendar</title>
-        <link>https://agu.uy/MenuBarCalendar/appcast.xml</link>
-        <description>Update feed for the direct download of MenuBarCalendar.</description>
+        <title>Mou Sugu</title>
+        <link>https://mousugu.app/appcast.xml</link>
+        <description>Update feed for the direct download of Mou Sugu.</description>
         <language>en</language>
     </channel>
 </rss>
