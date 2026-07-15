@@ -53,14 +53,29 @@ struct MainMenuView: View {
         return store.todayEvents.firstIndex { $0.endDate > now } ?? store.todayEvents.count
     }
 
+    /// Tallest the event list may grow before scrolling: the screen's visible
+    /// height minus the popover's fixed chrome, so the scroll bar only shows
+    /// up when today genuinely doesn't fit on screen.
+    private var eventListMaxHeight: CGFloat {
+        let visibleHeight = NSScreen.main?.visibleFrame.height
+            ?? DesignSystem.Layout.eventListMaxHeight
+        return max(DesignSystem.Layout.eventListMaxHeight,
+                   visibleHeight - DesignSystem.Layout.popoverChromeAllowance)
+    }
+
     var body: some View {
+        // Horizontal margins live on each section rather than on this stack,
+        // so the ScrollView reaches the popover's edge and its scroll bar
+        // hugs the window border instead of overlapping the event rows.
         VStack(spacing: 0) {
             eventsCard
             Divider()
                 .padding(.vertical, DesignSystem.Spacing.xs)
+                .padding(.horizontal, DesignSystem.Spacing.md)
             actionsCard
+                .padding(.horizontal, DesignSystem.Spacing.md)
         }
-        .padding(DesignSystem.Spacing.md)
+        .padding(.vertical, DesignSystem.Spacing.md)
         .frame(width: DesignSystem.Layout.popoverWidth)
         // Sets the popover window's background material at the chrome level
         // (not an overlay), so MenuBarExtra's default chrome doesn't override
@@ -106,7 +121,7 @@ struct MainMenuView: View {
             Text(Strings.Menu.today)
                 .font(.subheadline)
                 .fontWeight(.semibold)
-                .padding(.horizontal, DesignSystem.Spacing.md)
+                .padding(.horizontal, DesignSystem.Spacing.md + DesignSystem.Spacing.md)
                 .padding(.top, DesignSystem.Spacing.md)
                 .padding(.bottom, DesignSystem.Spacing.xs)
 
@@ -129,8 +144,11 @@ struct MainMenuView: View {
                             NowLine()
                         }
                     }
+                    // Row margin lives inside the scroll content, keeping the
+                    // scroll bar in its own gutter at the popover's edge.
+                    .padding(.horizontal, DesignSystem.Spacing.md)
                 }
-                .frame(maxHeight: DesignSystem.Layout.eventListMaxHeight)
+                .frame(maxHeight: eventListMaxHeight)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -196,7 +214,7 @@ struct MainMenuView: View {
             .controlSize(.small)
         }
         .frame(maxWidth: .infinity)
-        .padding(.horizontal, DesignSystem.Spacing.md)
+        .padding(.horizontal, DesignSystem.Spacing.md + DesignSystem.Spacing.md)
         .padding(.vertical, DesignSystem.Spacing.xl)
     }
 }

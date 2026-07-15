@@ -52,8 +52,12 @@ enum DesignSystem {
         static let popoverWidth: CGFloat = 300
         /// Height of the Settings pane.
         static let settingsHeight: CGFloat = 400
-        /// Max height of the event list before scrolling kicks in.
+        /// Floor for the event list's max height. The popover grows past this
+        /// to fill the screen's visible height before scrolling kicks in.
         static let eventListMaxHeight: CGFloat = 360
+        /// Vertical space reserved for the popover's fixed chrome (header,
+        /// actions card, margins) when sizing the event list to the screen.
+        static let popoverChromeAllowance: CGFloat = 200
         /// Width of the calendar-color accent bar in an event row.
         static let eventAccentWidth: CGFloat = 3
         /// Diameter of the dot on the current-time indicator line.
