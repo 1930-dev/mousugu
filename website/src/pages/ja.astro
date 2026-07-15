@@ -1,0 +1,210 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+
+const alternates = [
+  { lang: 'en', path: '/' },
+  { lang: 'es', path: '/es' },
+  { lang: 'ja', path: '/ja' },
+];
+
+const faq = [
+  {
+    q: 'Mac のメニューバーにカレンダーを表示するには？',
+    a: 'Mou Sugu をインストールして、macOS のカレンダーアクセスを許可するだけ。次の予定と残り時間のカウントダウンがすぐにメニューバーに表示されます。ウィンドウも設定も不要です。クリックすると今日の残りの予定が見られます。',
+  },
+  {
+    q: 'Zoom・Google Meet・Teams の会議にワンクリックで参加できますか？',
+    a: 'はい。Mou Sugu は予定の URL やメモから Zoom・Google Meet・Microsoft Teams・Webex のリンクを検出し、「参加」ボタンを表示します。ワンクリックで通話が開きます。',
+  },
+  {
+    q: 'Mou Sugu は無料ですか？',
+    a: 'はい。MIT ライセンスの無料・オープンソースソフトウェアです。公証済みのアプリをダウンロードするか、GitHub のソースコードから自分でビルドできます。',
+  },
+  {
+    q: 'カレンダーのデータはどこかに送信されますか？',
+    a: 'いいえ。アプリは EventKit を通じてローカルでカレンダーを読み取り、macOS の App Sandbox 内で動作し、サーバーを持ちません。Mac App Store 版はネットワーク接続そのものができない設計です — macOS が保証します。',
+  },
+  {
+    q: 'アプリ名の「Mou Sugu」の意味は？',
+    a: '日本語の「もうすぐ」です。メニューバーが一日中伝えてくれること — 次の会議は、もうすぐ — をそのまま名前にしました。',
+  },
+  {
+    q: '対応する macOS のバージョンは？',
+    a: 'macOS 15（Sequoia）以降に対応し、Apple シリコンと Intel の両方でネイティブに動作します。',
+  },
+  {
+    q: 'アプリの表示言語は？',
+    a: '現在、アプリの UI は英語とスペイン語に対応しています。日本語対応も検討中です。',
+  },
+];
+
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Mou Sugu',
+    operatingSystem: 'macOS 15.0 以降',
+    applicationCategory: 'BusinessApplication',
+    description:
+      'Mac のメニューバーに次の会議までのカウントダウンを表示し、Zoom・Google Meet・Microsoft Teams・Webex にワンクリックで参加できるカレンダーアプリ。',
+    url: 'https://mousugu.app/ja',
+    downloadUrl: 'https://github.com/1930-dev/mousugu/releases',
+    license: 'https://opensource.org/license/mit',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    inLanguage: 'ja',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  },
+];
+---
+
+<Base
+  title="Mou Sugu（もうすぐ）— Mac メニューバーの会議カウントダウン"
+  description="無料・オープンソースの Mac メニューバーカレンダー。次の会議までの残り時間を常に表示し、Zoom・Google Meet・Teams・Webex にワンクリックで参加。"
+  path="/ja"
+  lang="ja"
+  alternates={alternates}
+  schemas={schemas}
+>
+  <div class="wrap">
+    <Nav lang="ja" home="/ja" labels={{ features: '機能', faq: 'よくある質問', blog: 'ブログ' }} />
+
+    <header class="hero">
+      <h1>次の会議まで、<br />いつでもひと目で。</h1>
+      <p class="sub">
+        Mou Sugu は、次の予定までのカウントダウンと会議への参加ボタンを
+        <strong>メニューバー</strong>に表示する、小さくネイティブな Mac 用カレンダーアプリです。
+      </p>
+      <p class="kana-line"><em>もうすぐ</em> — 名前はそのまま、日本語から。</p>
+
+      <div class="menubar-mock" role="img" aria-label="macOS のメニューバー：12分後、スタンドアップ、参加ボタン">
+        <span class="dot"></span>
+        <span>12分後 · スタンドアップ</span>
+        <span class="join">参加</span>
+      </div>
+
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/1930-dev/mousugu/releases">macOS 版をダウンロード</a>
+        <a class="btn btn-ghost" href="https://github.com/1930-dev/mousugu">ソースコード</a>
+      </div>
+      <p class="free-note">無料・オープンソース · macOS 15+ · Apple 公証済み</p>
+    </header>
+
+    <section id="why">
+      <h2>メニューバーに足りなかったカレンダー</h2>
+      <p>
+        Mac はあなたの予定を知っています。でも確認するには、アプリを開き、ウィンドウを切り替え、
+        タブを探す — そのあいだに会議は始まってしまう。Mou Sugu は本当に知りたいことだけを、
+        いつも見ている場所に置きます：<strong>次の会議までの残り時間と、参加ボタン</strong>。
+      </p>
+    </section>
+
+    <section id="features">
+      <h2>メニューバーカレンダーに必要なすべてを — それ以外は何も</h2>
+      <div class="features">
+        <div class="card">
+          <h3><span class="mark">●</span>ライブカウントダウン</h3>
+          <p>
+            <code>12分後: スタンドアップ</code>、<code>2時間後: 1on1</code>。
+            毎分更新され、次の予定へ自動的に切り替わります。
+          </p>
+        </div>
+        <div class="card">
+          <h3><span class="mark">●</span>ワンクリック参加</h3>
+          <p>
+            Zoom・Google Meet・Microsoft Teams・Webex のリンクを検出して「参加」ボタンを表示。
+            通話が途中で切れたら「再参加」に切り替わります。
+          </p>
+        </div>
+        <div class="card">
+          <h3><span class="mark">●</span>今日をひと目で</h3>
+          <p>
+            クリックすると、今日の残りの予定がカレンダーごとの色付きで表示されます。
+          </p>
+        </div>
+        <div class="card">
+          <h3><span class="mark">●</span>カレンダーはあなたが選ぶ</h3>
+          <p>
+            iCloud・Google カレンダー・Outlook に対応。表示するカレンダーを自由に選べて、
+            「予定なし」扱いのイベントは非表示にできます。
+          </p>
+        </div>
+        <div class="card">
+          <h3><span class="mark">●</span>ネイティブで軽い</h3>
+          <p>
+            SwiftUI 製 — 半透明のガラス、SF Symbols、ライト／ダークモード対応。
+            ログイン時の自動起動も選べます。
+          </p>
+        </div>
+        <div class="card">
+          <h3><span class="mark">●</span>プライバシー第一</h3>
+          <p>
+            カレンダーはローカルで読み取り、App Sandbox 内で動作し、サーバーとは一切通信しません。
+            アカウントも解析もトラッキングもなし。<a href="/privacy">プライバシーポリシー</a>。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="story">
+      <div class="story">
+        <span class="kana" aria-hidden="true">もうすぐ</span>
+        <h2>名前について</h2>
+        <p>
+          ホームに入ってくる電車、開演のベル — 「もうすぐ」。画面の隅で静かに時を刻む
+          カウントダウンの感覚を、そのまま名前にしました。アイコンの赤い丸は、
+          昇っていく次の会議です。
+        </p>
+      </div>
+    </section>
+
+    <section id="faq" class="faq">
+      <h2>よくある質問</h2>
+      {faq.map(({ q, a }) => (
+        <details>
+          <summary>{q}</summary>
+          <p>{a}</p>
+        </details>
+      ))}
+    </section>
+
+    <section id="download" style="text-align:center">
+      <h2>そろそろ、次の会議の時間です</h2>
+      <p>カウントダウンを、見える場所に。</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/1930-dev/mousugu/releases">Mou Sugu をダウンロード</a>
+      </div>
+      <p class="free-note">署名・公証済み DMG · 自動アップデート · Mac App Store 版も近日公開</p>
+    </section>
+
+    <footer>
+      <div class="cols">
+        <div class="col">
+          <strong>Mou Sugu</strong>
+          <a href="/blog">ブログ</a>
+          <a href="/changelog">更新履歴</a>
+          <a href="/privacy">プライバシーポリシー</a>
+        </div>
+        <div class="col">
+          <strong>オープンソース</strong>
+          <a href="https://github.com/1930-dev/mousugu">GitHub</a>
+          <a href="https://github.com/1930-dev/mousugu/issues">問題を報告</a>
+          <a href="https://github.com/1930-dev/mousugu/releases">リリース</a>
+        </div>
+        <div class="col">
+          <strong>Languages</strong>
+          <a href="/" lang="en">English</a>
+          <a href="/es" lang="es">Español</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</Base>

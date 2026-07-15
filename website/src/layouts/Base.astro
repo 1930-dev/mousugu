@@ -6,21 +6,21 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description: string;
-  /** Path of this page, e.g. "/" or "/es/" — used for canonical + hreflang. */
+  /** Path of this page, e.g. "/" or "/es" — used for canonical + hreflang. */
   path: string;
-  /** Path of the same page in the other language, if one exists. */
-  altPath?: string;
-  lang?: 'en' | 'es';
+  lang?: 'en' | 'es' | 'ja';
+  /** Language alternates of this page (include the page itself). x-default → en. */
+  alternates?: { lang: string; path: string }[];
   /** JSON-LD objects, serialized verbatim into script tags. */
   schemas?: object[];
 }
 
-const { title, description, path, altPath, lang = 'en', schemas = [] } = Astro.props;
+const { title, description, path, lang = 'en', alternates = [], schemas = [] } = Astro.props;
 const site = 'https://mousugu.app';
 const canonical = new URL(path, site).href;
 const ogImage = `${site}/og-image.png`;
-const enUrl = lang === 'en' ? canonical : new URL(altPath ?? '/', site).href;
-const esUrl = lang === 'es' ? canonical : altPath ? new URL(altPath, site).href : null;
+const ogLocale = { en: 'en_US', es: 'es_ES', ja: 'ja_JP' }[lang];
+const xDefault = alternates.find((a) => a.lang === 'en');
 ---
 
 <!doctype html>
@@ -31,9 +31,10 @@ const esUrl = lang === 'es' ? canonical : altPath ? new URL(altPath, site).href 
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="en" href={enUrl} />
-    {esUrl && <link rel="alternate" hreflang="es" href={esUrl} />}
-    <link rel="alternate" hreflang="x-default" href={enUrl} />
+    {alternates.map((a) => (
+      <link rel="alternate" hreflang={a.lang} href={new URL(a.path, site).href} />
+    ))}
+    {xDefault && <link rel="alternate" hreflang="x-default" href={new URL(xDefault.path, site).href} />}
     <link rel="icon" href="/icon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/icon.png" />
     <link rel="alternate" type="application/rss+xml" title="Mou Sugu updates" href="/appcast.xml" />
@@ -48,7 +49,7 @@ const esUrl = lang === 'es' ? canonical : altPath ? new URL(altPath, site).href 
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Mou Sugu — menu bar calendar for Mac with a live meeting countdown" />
-    <meta property="og:locale" content={lang === 'es' ? 'es_ES' : 'en_US'} />
+    <meta property="og:locale" content={ogLocale} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />

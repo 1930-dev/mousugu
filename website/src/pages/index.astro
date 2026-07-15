@@ -1,5 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+
+const alternates = [
+  { lang: 'en', path: '/' },
+  { lang: 'es', path: '/es' },
+  { lang: 'ja', path: '/ja' },
+];
 
 const faq = [
   {
@@ -62,26 +69,12 @@ const schemas = [
   title="Mou Sugu — Menu Bar Calendar for Mac with Meeting Countdown"
   description="Free, open-source menu bar calendar for Mac. See a live countdown to your next meeting and join Zoom, Google Meet, Teams, or Webex in one click."
   path="/"
-  altPath="/es"
   lang="en"
+  alternates={alternates}
   schemas={schemas}
 >
   <div class="wrap">
-    <nav class="nav" aria-label="Main">
-      <a class="brand" href="/">
-        <img src="/icon.png" alt="Mou Sugu app icon" width="28" height="28" />
-        Mou Sugu <span class="kana" aria-hidden="true">もうすぐ</span>
-      </a>
-      <div class="links">
-        <a href="#features">Features</a>
-        <a href="#faq">FAQ</a>
-        <a href="/blog">Blog</a>
-        <a href="/blog">Blog</a>
-          <a href="/changelog">Changelog</a>
-        <a href="https://github.com/1930-dev/mousugu">GitHub</a>
-        <a href="/es" lang="es">Español</a>
-      </div>
-    </nav>
+    <Nav lang="en" home="/" labels={{ features: 'Features', faq: 'FAQ', blog: 'Blog' }} />
 
     <header class="hero">
       <h1>Your next meeting,<br />always one glance away.</h1>
@@ -210,6 +203,7 @@ const schemas = [
         <div class="col">
           <strong>Idiomas</strong>
           <a href="/es" lang="es">Español</a>
+          <a href="/ja" lang="ja">日本語</a>
         </div>
       </div>
     </footer>
