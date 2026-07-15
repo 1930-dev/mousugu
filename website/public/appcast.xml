@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <!--
   Sparkle update feed for the direct/DMG channel. Published at
   https://mousugu.app/appcast.xml, which is what SUFeedURL in
@@ -8,11 +8,20 @@
   with Sparkle's generate_appcast, which signs each build with the Ed25519 key
   held in the Keychain. An empty channel is valid and simply means "no updates".
 -->
-<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
     <channel>
         <title>Mou Sugu</title>
         <link>https://mousugu.app/appcast.xml</link>
         <description>Update feed for the direct download of Mou Sugu.</description>
         <language>en</language>
+        <item>
+            <title>1.0.0</title>
+            <pubDate>Wed, 15 Jul 2026 15:36:58 +0000</pubDate>
+            <link>https://mousugu.app/</link>
+            <sparkle:version>1</sparkle:version>
+            <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+            <enclosure url="https://github.com/1930-dev/mousugu/releases/download/v1.0.0/MouSugu-1.0.0.dmg" length="1866375" type="application/octet-stream" sparkle:edSignature="TeZ9XE33+TzAMdtmgqFTwB9AgwOEjE7W8b5DTALZdo4dd+8YLPEsyCnMYVy6ix7B0O37/tEB3mBuqpLZYZK7CQ=="/>
+        </item>
     </channel>
 </rss>
