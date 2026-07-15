@@ -94,7 +94,8 @@ section { padding: 4.5rem 0; }
 .free-note { margin-top: 0.9rem; font-size: 0.88rem; color: var(--muted); }
 
 /* Feature grid */
-.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 2rem; }
+.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); grid-auto-rows: 1fr; gap: 1rem; margin-top: 2rem; }
+.card h3 { white-space: nowrap; }
 .card {
   background: var(--sumi-2); border: 1px solid var(--glass-border);
   border-radius: var(--radius); padding: 1.4rem;
