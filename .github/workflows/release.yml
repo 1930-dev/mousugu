@@ -5,7 +5,7 @@ name: Release (DMG · Developer ID)
 # Store channel is separate (release-appstore.sh).
 #
 # Tag must match the app's MARKETING_VERSION (e.g. tag v1.2.3 ↔ version 1.2.3).
-# Secrets live in the repo's GitHub Secrets (loaded from Infisical /menubarcalendar).
+# Secrets live in the repo's GitHub Secrets (loaded from Infisical /mousugu).
 
 on:
   push:
