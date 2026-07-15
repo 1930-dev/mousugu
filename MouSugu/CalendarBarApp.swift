@@ -43,6 +43,16 @@ struct MainMenuView: View {
             .eventIdentifier
     }
 
+    /// Where the current-time line sits in the list: before the first event
+    /// that hasn't ended yet — so in-progress events sit below the line and
+    /// the line tops the meeting you're currently in — or after the last row
+    /// once everything today is over. Recomputed each render, so the store's
+    /// per-minute tick keeps it moving.
+    private var nowLineIndex: Int {
+        let now = Date()
+        return store.todayEvents.firstIndex { $0.endDate > now } ?? store.todayEvents.count
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             eventsCard
@@ -105,12 +115,18 @@ struct MainMenuView: View {
             } else {
                 ScrollView {
                     VStack(spacing: DesignSystem.Spacing.xxs) {
-                        ForEach(store.todayEvents, id: \.eventIdentifier) { event in
+                        ForEach(Array(store.todayEvents.enumerated()), id: \.element.eventIdentifier) { index, event in
+                            if index == nowLineIndex {
+                                NowLine()
+                            }
                             EventRow(
                                 event: event,
                                 store: store,
                                 isNextUpcomingMeeting: event.eventIdentifier == nextUpcomingMeetingID
                             )
+                        }
+                        if nowLineIndex == store.todayEvents.count {
+                            NowLine()
                         }
                     }
                 }
@@ -182,6 +198,22 @@ struct MainMenuView: View {
         .frame(maxWidth: .infinity)
         .padding(.horizontal, DesignSystem.Spacing.md)
         .padding(.vertical, DesignSystem.Spacing.xl)
+    }
+}
+
+/// Apple-Calendar-style current-time indicator — a tiny red dot and hairline
+/// that separates the events that already started from the ones still to come.
+struct NowLine: View {
+    var body: some View {
+        HStack(spacing: 0) {
+            Circle()
+                .frame(width: DesignSystem.Layout.nowDotSize,
+                       height: DesignSystem.Layout.nowDotSize)
+            Rectangle()
+                .frame(height: DesignSystem.Layout.nowLineHeight)
+        }
+        .foregroundStyle(.red)
+        .padding(.horizontal, DesignSystem.Spacing.xs)
     }
 }
 

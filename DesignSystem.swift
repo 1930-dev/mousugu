@@ -56,6 +56,10 @@ enum DesignSystem {
         static let eventListMaxHeight: CGFloat = 360
         /// Width of the calendar-color accent bar in an event row.
         static let eventAccentWidth: CGFloat = 3
+        /// Diameter of the dot on the current-time indicator line.
+        static let nowDotSize: CGFloat = 5
+        /// Thickness of the current-time indicator line.
+        static let nowLineHeight: CGFloat = 1
         /// Diameter of the calendar-color dot in Settings rows.
         static let calendarDotSize: CGFloat = 8
     }
