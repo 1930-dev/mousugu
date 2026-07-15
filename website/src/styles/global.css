@@ -167,13 +167,19 @@ footer .col strong { display: block; margin-bottom: 0.3rem; }
 .nav .links { align-items: center; }
 .nav .icon-link { display: inline-flex; align-items: center; color: var(--muted); }
 .nav .icon-link:hover { color: var(--paper); }
-.lang { position: relative; }
+.lang { position: relative; display: inline-flex; align-items: center; }
 .lang summary {
   list-style: none; cursor: pointer; display: inline-flex; align-items: center;
   color: var(--muted);
 }
+.lang summary svg, .nav .icon-link svg { display: block; }
 .lang summary::-webkit-details-marker { display: none; }
 .lang summary:hover { color: var(--paper); }
+/* invisible full-screen backdrop while open: any outside click hits the
+   summary and toggles the menu closed — no JS needed */
+.lang[open] summary::before {
+  content: ""; position: fixed; inset: 0; z-index: 9; cursor: default;
+}
 .lang .lang-menu {
   position: absolute; right: 0; top: 2rem; z-index: 10; min-width: 8.5rem;
   background: var(--sumi-2); border: 1px solid var(--glass-border);
