@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Page not found — Mou Sugu"
+  description="This page does not exist. Your next meeting probably does — Mou Sugu keeps it one glance away in the Mac menu bar."
+  path="/404"
+  lang="en"
+>
+  <main class="wrap" style="text-align:center; padding: 6rem 0">
+    <nav class="nav" aria-label="Main" style="text-align:left">
+      <a class="brand" href="/">
+        <img src="/icon.png" alt="Mou Sugu app icon" width="28" height="28" />
+        Mou Sugu <span class="kana" aria-hidden="true">もうすぐ</span>
+      </a>
+    </nav>
+    <h1 style="margin-top:4rem">404</h1>
+    <p style="margin-top:1rem">This page is not here — but your next meeting is <em>almost</em> here.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="/">Back to Mou Sugu</a>
+      <a class="btn btn-ghost" href="/blog">Read the blog</a>
+    </div>
+  </main>
+</Base>
