@@ -11,7 +11,7 @@
 A tiny, native macOS menu bar app that shows a live countdown to your next event
 and lets you jump into the call with a single click.
 
-**[mousugu.app](https://mousugu.app)** · [Español](https://mousugu.app/es) · [日本語](https://mousugu.app/ja) · [Blog](https://mousugu.app/blog)
+**[mousugu.app](https://mousugu.app)** · [Blog](https://mousugu.app/blog) · [Español](https://mousugu.app/es) · [日本語](https://mousugu.app/ja)
 
 [![Platform](https://img.shields.io/badge/platform-macOS%2015%2B-blue?logo=apple)](https://www.apple.com/macos/)
 [![Swift](https://img.shields.io/badge/Swift-SwiftUI-orange?logo=swift)](https://developer.apple.com/swift/)
