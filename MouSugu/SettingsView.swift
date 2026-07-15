@@ -19,13 +19,14 @@ private enum SettingsTab: String {
 /// - Window sizes to its content (default behavior of the `Settings` scene).
 struct CalendarSettingsView: View {
     @ObservedObject var store: CalendarStore
+    @ObservedObject var updater: UpdateChecker
     @AppStorage("selectedSettingsTab") private var selection: SettingsTab = .general
 
     var body: some View {
         // `.tabItem`/`.tag` rather than the newer `Tab(_:value:)` API, which is
         // macOS 15+; this keeps the deployment target at macOS 14.
         TabView(selection: $selection) {
-            GeneralPane(store: store)
+            GeneralPane(store: store, updater: updater)
                 .tabItem { Label(Strings.Settings.general, systemImage: "gearshape") }
                 .tag(SettingsTab.general)
             CalendarsPane(store: store)
@@ -38,6 +39,7 @@ struct CalendarSettingsView: View {
 
 private struct GeneralPane: View {
     @ObservedObject var store: CalendarStore
+    @ObservedObject var updater: UpdateChecker
     @AppStorage("hideFreeTimeEvents") private var hideFreeTimeEvents = true
     @AppStorage("autoStartEnabled") private var autoStartEnabled = false
 
@@ -51,6 +53,15 @@ private struct GeneralPane: View {
                 .onChange(of: autoStartEnabled) { _, newValue in
                     toggleAutoStart(enabled: newValue)
                 }
+            // Only the direct/DMG channel ships Sparkle — in the App Store
+            // build `isAvailable` is false and the row disappears.
+            if updater.isAvailable {
+                Section {
+                    Button(Strings.General.checkForUpdates) {
+                        updater.checkForUpdates()
+                    }
+                }
+            }
         }
         .formStyle(.grouped)
     }

@@ -8,7 +8,7 @@ struct CalendarBarApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            MainMenuView(store: store, updater: updater)
+            MainMenuView(store: store)
         } label: {
             HStack(spacing: DesignSystem.Spacing.xs) {
                 Image(systemName: "calendar")
@@ -22,7 +22,7 @@ struct CalendarBarApp: App {
         .menuBarExtraStyle(.window)
 
         Settings {
-            CalendarSettingsView(store: store)
+            CalendarSettingsView(store: store, updater: updater)
         }
         .defaultPosition(.center)
     }
@@ -30,7 +30,6 @@ struct CalendarBarApp: App {
 
 struct MainMenuView: View {
     @ObservedObject var store: CalendarStore
-    @ObservedObject var updater: UpdateChecker
     @Environment(\.openSettings) private var openSettings
 
     /// The first upcoming meeting today — the only future event that should
@@ -165,11 +164,6 @@ struct MainMenuView: View {
                 NSApp.activate(ignoringOtherApps: true)
                 Self.centerNextKeyWindow()
                 openSettings()
-            }
-            if updater.isAvailable {
-                MenuOption(title: Strings.General.checkForUpdates) {
-                    updater.checkForUpdates()
-                }
             }
             Divider()
                 .padding(.vertical, DesignSystem.Spacing.xs)
