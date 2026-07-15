@@ -18,19 +18,26 @@
 // different shape from, every neighbour in the Dock.
 //
 // Run:
-//   swift scripts/generate_icon.swift <output.png>
+//   swift scripts/generate_icon.swift <output.png> [--full-bleed]
+//
+// --full-bleed drops the macOS inset, shadow and corner rounding so the
+// artwork fills the bitmap edge to edge, fully opaque. That is the shape
+// favicons and apple-touch-icons need: browsers paint a white backing behind
+// dark icons that contain transparency, which is exactly the dirty white
+// frame this mode exists to avoid.
 
 import AppKit
 
 guard CommandLine.arguments.count >= 2 else {
-    fatalError("Usage: generate_icon.swift <output.png>")
+    fatalError("Usage: generate_icon.swift <output.png> [--full-bleed]")
 }
 let outputPath = CommandLine.arguments[1]
+let fullBleed = CommandLine.arguments.contains("--full-bleed")
 
 // The bitmap Apple asks for.
 let canvas: CGFloat = 1024
 // The icon shape inside it — Apple's template body for a 1024 canvas.
-let bodyEdge: CGFloat = 824
+let bodyEdge: CGFloat = fullBleed ? canvas : 824
 let body = NSRect(x: (canvas - bodyEdge) / 2, y: (canvas - bodyEdge) / 2,
                   width: bodyEdge, height: bodyEdge)
 
@@ -52,7 +59,7 @@ let ringColour = rgb(255, 255, 255, 0.04)
 
 // 185.4 on an 824 body — Apple's corner radius for the macOS icon grid. The
 // source's own 0.2237 rounds to the same shape, so this keeps the design intact.
-let cornerRadius = s(0.2249)
+let cornerRadius = fullBleed ? 0 : s(0.2249)
 // Drop shadow. NSShadow's blur radius is not a pixel extent — these were tuned
 // against the system icons' measured reach (L17 T5 R17 B29) and land within a
 // pixel of it. The offset is negative because the context below is flipped, so
@@ -106,15 +113,17 @@ let squircle = NSBezierPath(roundedRect: body, xRadius: cornerRadius, yRadius: c
 let icon = makeIcon { context in
     // The shadow the Dock expects to find already in the asset. Cast off an
     // opaque fill of the body, which the backdrop then paints over.
-    context.saveGState()
-    let dropShadow = NSShadow()
-    dropShadow.shadowOffset = NSSize(width: 0, height: shadowOffsetY)
-    dropShadow.shadowBlurRadius = shadowBlur
-    dropShadow.shadowColor = shadowColour
-    dropShadow.set()
-    NSColor.black.setFill()
-    squircle.fill()
-    context.restoreGState()
+    if !fullBleed {
+        context.saveGState()
+        let dropShadow = NSShadow()
+        dropShadow.shadowOffset = NSSize(width: 0, height: shadowOffsetY)
+        dropShadow.shadowBlurRadius = shadowBlur
+        dropShadow.shadowColor = shadowColour
+        dropShadow.set()
+        NSColor.black.setFill()
+        squircle.fill()
+        context.restoreGState()
+    }
 
     context.saveGState()
     squircle.setClip()
@@ -129,9 +138,9 @@ let icon = makeIcon { context in
     // The source's `inset 0 0 0 1px` hairline, which sits above the backdrop but
     // below the grid.
     let ringWidth: CGFloat = 1
+    let ringRadius = max(0, cornerRadius - ringWidth / 2)
     let ring = NSBezierPath(roundedRect: body.insetBy(dx: ringWidth / 2, dy: ringWidth / 2),
-                            xRadius: cornerRadius - ringWidth / 2,
-                            yRadius: cornerRadius - ringWidth / 2)
+                            xRadius: ringRadius, yRadius: ringRadius)
     ring.lineWidth = ringWidth
     ringColour.setStroke()
     ring.stroke()
