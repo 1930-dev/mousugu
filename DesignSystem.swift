@@ -64,7 +64,7 @@ enum DesignSystem {
     /// Layout dimensions specific to this app's chrome.
     enum Layout {
         /// Width of the menu bar popover.
-        static let popoverWidth: CGFloat = 300
+        static let popoverWidth: CGFloat = 260
         /// Height of the Settings pane.
         static let settingsHeight: CGFloat = 400
         /// Floor for the event list's max height. The popover grows past this
