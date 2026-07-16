@@ -36,9 +36,10 @@ Everything Sparkle needs is confined to `Config/App-Direct.xcconfig`:
 - `INFOPLIST_FILE = Config/Direct-Info.plist` — `SUFeedURL`, `SUPublicEDKey`,
   `SUEnableInstallerLauncherService`.
 
-None of it appears in `Config/App-MAS.xcconfig`. The App Store target needs no
-entitlements file at all: the `ENABLE_*` capability settings in
-`Config/App-Common.xcconfig` generate the whole set.
+None of it appears in `Config/App-MAS.xcconfig`. The App Store target carries
+only `Config/MAS.entitlements` — the Apple-events grant for opening
+Calendar.app on a clicked day; the `ENABLE_*` capability settings in
+`Config/App-Common.xcconfig` generate the rest of the set on top of it.
 
 `release-appstore.sh` refuses to export if Sparkle turns up in the archive, so a
 regression fails locally instead of at review.
