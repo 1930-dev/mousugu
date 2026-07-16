@@ -34,6 +34,14 @@ enum DesignSystem {
         static let xxl: CGFloat = 20
     }
 
+    /// Opacity levels for de-emphasized content and glass-friendly highlights.
+    enum Opacity {
+        /// Neutral hover wash for controls on glass (day cells, toolbar
+        /// icons): a translucent veil of `primary`, so it brightens on dark
+        /// and shades on light without going opaque.
+        static let hoverWash: Double = 0.1
+    }
+
     /// Corner radii tuned to match Apple's small-control rounding.
     enum Radius {
         /// 4pt — accent bars, pills.
@@ -60,6 +68,10 @@ enum DesignSystem {
         static let popoverChromeAllowance: CGFloat = 200
         /// Width of the calendar-color accent bar in an event row.
         static let eventAccentWidth: CGFloat = 3
+        /// Point size of a toolbar SF Symbol.
+        static let toolbarIconSize: CGFloat = 14
+        /// Square hit area of a toolbar icon button.
+        static let toolbarButtonSize: CGFloat = 26
         /// Diameter of the dot on the current-time indicator line.
         static let nowDotSize: CGFloat = 5
         /// Thickness of the current-time indicator line.

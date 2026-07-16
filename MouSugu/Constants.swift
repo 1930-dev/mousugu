@@ -34,6 +34,10 @@ struct Strings {
         static var today: String { String(localized: "Today") }
     }
 
+    struct Month {
+        static var openCalendar: String { String(localized: "Open Calendar") }
+    }
+
     struct Access {
         static var title: String { String(localized: "Calendar access needed") }
         static var message: String { String(localized: "Mou Sugu needs access to your calendar to show your next event. Grant access in System Settings, then reopen the app.") }

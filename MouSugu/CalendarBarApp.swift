@@ -153,11 +153,12 @@ struct MainMenuView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    /// Bottom section — Preferences + Quit actions, also floating on the
-    /// popover's glass.
+    /// Bottom toolbar — quick actions as compact icons, floating on the
+    /// popover's glass. Quit sits isolated on the right, away from misclicks.
     private var actionsCard: some View {
-        VStack(spacing: 0) {
-            MenuOption(title: Strings.General.preferences) {
+        HStack(spacing: DesignSystem.Spacing.xs) {
+            ToolbarIconButton(systemName: "gearshape",
+                              label: Strings.General.preferences) {
                 // Accessory apps (LSUIElement) don't surface windows to the
                 // front by default — activate before opening Settings so it
                 // appears above the active app.
@@ -165,9 +166,13 @@ struct MainMenuView: View {
                 Self.centerNextKeyWindow()
                 openSettings()
             }
-            Divider()
-                .padding(.vertical, DesignSystem.Spacing.xs)
-            MenuOption(title: Strings.General.exit) {
+            ToolbarIconButton(systemName: "calendar",
+                              label: Strings.Month.openCalendar) {
+                CalendarAppLauncher.open(showing: Date())
+            }
+            Spacer()
+            ToolbarIconButton(systemName: "power",
+                              label: Strings.General.exit) {
                 NSApplication.shared.terminate(nil)
             }
         }
@@ -330,38 +335,47 @@ struct EventRow: View {
     }
 }
 
-/// A native-macOS-menu-item-style row, sized for the Control-Center-style
-/// actions card.
+/// A compact icon button for the popover's toolbar and the month header.
 ///
-/// Full-width hit area with an inset, rounded hover highlight that uses the
-/// neutral gray (`unemphasizedSelectedContentBackgroundColor`) macOS reserves
-/// for low-emphasis selection — same look as the sidebars in System Settings,
-/// Notes, and Finder. The small outer inset assumes the parent is a card
-/// (which already provides outer breathing room); the inset stays small so
-/// the highlight nearly fills the card the way Control Center tiles do.
-struct MenuOption: View {
-    let title: String
+/// Square hit area with a translucent hover wash that plays along with the
+/// popover's glass. The label doubles as tooltip and accessibility label,
+/// since the icon is the only visible cue.
+struct ToolbarIconButton: View {
+    let systemName: String
+    let label: String
+    let iconSize: CGFloat
     let action: () -> Void
     @State private var isHovered = false
 
+    init(systemName: String,
+         label: String,
+         iconSize: CGFloat = DesignSystem.Layout.toolbarIconSize,
+         action: @escaping () -> Void) {
+        self.systemName = systemName
+        self.label = label
+        self.iconSize = iconSize
+        self.action = action
+    }
+
     var body: some View {
         Button(action: action) {
-            Text(title)
-                .font(Font(NSFont.menuFont(ofSize: 0)))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, DesignSystem.Spacing.md)
-                .padding(.vertical, DesignSystem.Spacing.sm)
-                .foregroundStyle(isHovered
-                    ? Color(nsColor: .selectedMenuItemTextColor)
-                    : Color.primary)
+            Image(systemName: systemName)
+                .font(.system(size: iconSize, weight: .medium))
+                .foregroundStyle(Color.primary)
+                .frame(width: DesignSystem.Layout.toolbarButtonSize,
+                       height: DesignSystem.Layout.toolbarButtonSize)
                 .background(
                     RoundedRectangle(cornerRadius: DesignSystem.Radius.sm)
-                        .fill(isHovered ? Color(nsColor: .controlAccentColor) : Color.clear)
+                        .fill(isHovered
+                            ? Color.primary.opacity(DesignSystem.Opacity.hoverWash)
+                            : Color.clear)
                 )
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .onHover { isHovered = $0 }
+        .help(label)
+        .accessibilityLabel(label)
     }
 }
 
