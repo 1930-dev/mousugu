@@ -13,7 +13,9 @@ struct CalendarBarApp: App {
             HStack(spacing: DesignSystem.Spacing.xs) {
                 Image(systemName: "calendar")
                 // Collapse to just the icon when idle (no upcoming event today);
-                // the store sets an empty label in that case.
+                // the store sets an empty label in that case. Long titles are
+                // truncated by the store — MenuBarExtra ignores layout
+                // modifiers on its label, so a maxWidth frame here is inert.
                 if !store.countdownLabel.isEmpty {
                     Text(store.countdownLabel)
                 }

@@ -235,10 +235,19 @@ final class CalendarStore: ObservableObject {
         }
     }
 
-    /// Event title with a localized fallback for untitled events.
+    /// Max characters of an event title in the menu bar label — the chip
+    /// truncates here because MenuBarExtra ignores layout modifiers on its
+    /// label and would otherwise let long titles eat the whole bar.
+    private static let maxBarTitleLength = 24
+
+    /// Event title for the menu bar label: localized fallback when untitled,
+    /// truncated with an ellipsis when long.
     private func eventTitle(_ event: EKEvent) -> String {
         let title = event.title ?? ""
-        return title.isEmpty ? Strings.General.untitledEvent : title
+        let resolved = title.isEmpty ? Strings.General.untitledEvent : title
+        guard resolved.count > Self.maxBarTitleLength else { return resolved }
+        return resolved.prefix(Self.maxBarTitleLength)
+            .trimmingCharacters(in: .whitespaces) + "…"
     }
 
     func toggleCalendar(_ calendar: EKCalendar) {
