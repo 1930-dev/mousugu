@@ -91,6 +91,16 @@
         }
       }
     },
+    "Keep Join button after meetings end" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantener el botón Unirse al terminar la reunión"
+          }
+        }
+      }
+    },
     "Loading…" : {
       "localizations" : {
         "es" : {
@@ -107,6 +117,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mou Sugu necesita acceso a tu calendario para mostrarte el próximo evento. Otorgá el acceso en Configuración del Sistema y volvé a abrir la app."
+          }
+        }
+      }
+    },
+    "Never" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nunca"
           }
         }
       }

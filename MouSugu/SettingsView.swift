@@ -42,6 +42,15 @@ private struct GeneralPane: View {
     @ObservedObject var updater: UpdateChecker
     @AppStorage("hideFreeTimeEvents") private var hideFreeTimeEvents = true
     @AppStorage("autoStartEnabled") private var autoStartEnabled = false
+    @AppStorage("joinGraceMinutes") private var joinGraceMinutes = 30
+
+    /// Localized "15 min" / "1 h" labels for the grace-window picker.
+    private static let graceFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute]
+        formatter.unitsStyle = .abbreviated
+        return formatter
+    }()
 
     var body: some View {
         Form {
@@ -53,6 +62,13 @@ private struct GeneralPane: View {
                 .onChange(of: autoStartEnabled) { _, newValue in
                     toggleAutoStart(enabled: newValue)
                 }
+            Picker(Strings.Settings.joinGraceWindow, selection: $joinGraceMinutes) {
+                Text(Strings.Settings.joinGraceOff).tag(0)
+                ForEach([15, 30, 60], id: \.self) { minutes in
+                    Text(Self.graceFormatter.string(from: TimeInterval(minutes * 60)) ?? "\(minutes)")
+                        .tag(minutes)
+                }
+            }
             // Only the direct/DMG channel ships Sparkle — in the App Store
             // build `isAvailable` is false and the row disappears.
             if updater.isAvailable {

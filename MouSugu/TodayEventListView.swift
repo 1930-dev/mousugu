@@ -129,13 +129,14 @@ struct EventRow: View {
         case rejoin
     }
 
-    /// Decides whether to show the join button and which label.
+    /// Decides whether to show the join button and which label. `Re-unirse`
+    /// appears once you actually joined from here (the store tracks the
+    /// clicks) instead of guessing from elapsed time.
     ///
-    /// - In progress: always show; `Re-unirse` once >5 min in (you almost
-    ///   certainly already joined and dropped) so it nudges differently from
-    ///   the initial join.
-    /// - Past: keep `Unirse` for a 1h grace window (handy if the meeting
-    ///   over-ran or someone restarted it); hide after.
+    /// - In progress: always show — `Re-unirse` if you already joined (you
+    ///   probably dropped), `Unirse` if you never did.
+    /// - Ended: same labels during a configurable grace window (handy if the
+    ///   meeting over-ran or someone restarted it); hidden afterwards.
     /// - Future: only on the very next upcoming meeting today — every later
     ///   one would just be noise.
     private var joinState: JoinState {
@@ -143,13 +144,13 @@ struct EventRow: View {
         let now = Date()
 
         if event.startDate <= now && event.endDate > now {
-            let minutesIn = now.timeIntervalSince(event.startDate) / 60
-            return minutesIn > 5 ? .rejoin : .join
+            return store.hasJoined(event) ? .rejoin : .join
         }
 
         if event.endDate <= now {
             let minutesSinceEnd = now.timeIntervalSince(event.endDate) / 60
-            return minutesSinceEnd < 60 ? .join : .hidden
+            guard minutesSinceEnd < Double(store.joinGraceMinutes) else { return .hidden }
+            return store.hasJoined(event) ? .rejoin : .join
         }
 
         return isNextUpcomingMeeting ? .join : .hidden
@@ -215,6 +216,7 @@ struct EventRow: View {
 
     private func openMeeting() {
         if let url = store.findMeetingURL(for: event) {
+            store.markJoined(event)
             NSWorkspace.shared.open(url)
         }
     }

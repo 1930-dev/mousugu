@@ -52,5 +52,7 @@ struct Strings {
         static var calendars: String { String(localized: "Calendars") }
         static var autoStart: String { String(localized: "Start at macOS login") }
         static var hideFreeEvents: String { String(localized: "Hide events where I'm free") }
+        static var joinGraceWindow: String { String(localized: "Keep Join button after meetings end") }
+        static var joinGraceOff: String { String(localized: "Never") }
     }
 }

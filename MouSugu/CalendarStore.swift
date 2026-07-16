@@ -33,6 +33,13 @@ final class CalendarStore: ObservableObject {
     // Hide events explicitly marked with availability == .free (focus blocks,
     // reminders, etc). Default ON. Matches Fantastical/Notion Calendar behaviour.
     @AppStorage("hideFreeTimeEvents") private var hideFreeTimeEvents: Bool = true
+    /// Minutes a finished meeting keeps its join button (0 hides immediately).
+    /// User-configurable from Settings → General.
+    @AppStorage("joinGraceMinutes") var joinGraceMinutes: Int = 30
+
+    /// Events actually joined from the popover today — the real signal behind
+    /// Unirse vs Re-unirse. In-memory only; cleared on day rollover.
+    @Published private var joinedEventKeys: Set<String> = []
     
     private var timer: AnyCancellable?
     private var cancellables = Set<AnyCancellable>()
@@ -129,9 +136,26 @@ final class CalendarStore: ObservableObject {
             }
         
         self.todayEvents = events
+        if start != loadedDay {
+            joinedEventKeys.removeAll()
+        }
         self.loadedDay = start
         updateCountdown()
         loadMonthDots()
+    }
+
+    func markJoined(_ event: EKEvent) {
+        joinedEventKeys.insert(joinKey(for: event))
+    }
+
+    func hasJoined(_ event: EKEvent) -> Bool {
+        joinedEventKeys.contains(joinKey(for: event))
+    }
+
+    /// Recurring events share their `eventIdentifier` across occurrences, so
+    /// the start date disambiguates two instances on the same day.
+    private func joinKey(for event: EKEvent) -> String {
+        "\(event.eventIdentifier ?? "")-\(event.startDate.timeIntervalSince1970)"
     }
 
     /// Called by the month view whenever the displayed month changes.
