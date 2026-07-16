@@ -15,6 +15,15 @@
         <description>Update feed for the direct download of Mou Sugu.</description>
         <language>en</language>
         <item>
+            <title>1.1.0</title>
+            <pubDate>Thu, 16 Jul 2026 22:44:18 +0000</pubDate>
+            <link>https://mousugu.app/</link>
+            <sparkle:version>2</sparkle:version>
+            <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+            <enclosure url="https://github.com/1930-dev/mousugu/releases/download/v1.1.0/MouSugu-1.1.0.dmg" length="1966461" type="application/octet-stream" sparkle:edSignature="8VKf8LokMtkyrrifWWs7+7zzeV0LbTpZKnfD+OhpITU8Fz4Yn9L58e4H2L+t0aqdHKfp/OItmd4heHOL8RmoAQ=="/>
+        </item>
+        <item>
             <title>1.0.0</title>
             <pubDate>Wed, 15 Jul 2026 15:36:58 +0000</pubDate>
             <link>https://mousugu.app/</link>
