@@ -116,12 +116,35 @@ struct MainMenuView: View {
                 .padding(.bottom, DesignSystem.Spacing.xs)
 
             if store.todayEvents.isEmpty {
-                emptyState
+                emptyState(icon: "calendar.badge.clock",
+                           message: Strings.Status.noEvents)
+            } else if dayIsOver {
+                // The day happened but nothing lies ahead — a quiet "done"
+                // beats a list of dimmed leftovers with the now line under it.
+                emptyState(icon: "checkmark.circle",
+                           message: Strings.General.noMoreEvents)
             } else {
                 TodayEventListView(store: store, maxHeight: eventListMaxHeight)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// Every event today already ended AND no meeting is still inside its
+    /// join grace window — flipping to the done state earlier would hide a
+    /// live join button. Recomputed each render, so the store's per-minute
+    /// tick flips the list on its own.
+    private var dayIsOver: Bool {
+        let now = Date()
+        let grace = TimeInterval(store.joinGraceMinutes * 60)
+        return store.todayEvents.allSatisfy { event in
+            guard event.endDate <= now else { return false }
+            if store.findMeetingURL(for: event) != nil,
+               now.timeIntervalSince(event.endDate) < grace {
+                return false
+            }
+            return true
+        }
     }
 
     /// Bottom toolbar — quick actions as compact icons, floating on the
@@ -149,12 +172,12 @@ struct MainMenuView: View {
         }
     }
 
-    private var emptyState: some View {
+    private func emptyState(icon: String, message: String) -> some View {
         VStack(spacing: DesignSystem.Spacing.md) {
-            Image(systemName: "calendar.badge.clock")
+            Image(systemName: icon)
                 .font(.system(size: 28))
                 .foregroundColor(.secondary)
-            Text(Strings.General.noMoreEvents)
+            Text(message)
                 .font(.callout)
                 .foregroundColor(.secondary)
         }
