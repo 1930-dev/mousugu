@@ -7,8 +7,10 @@
 // never leak in here. What keeps Sparkle out is the target's empty
 // packageProductDependencies; this file only makes that intent explicit.
 //
-// No CODE_SIGN_ENTITLEMENTS: the ENABLE_* capability settings in
-// App-Common.xcconfig generate the complete entitlement set for this channel.
+// MAS.entitlements carries only the Apple-events grant for opening
+// Calendar.app on a date (see CalendarAppLauncher.swift); the ENABLE_*
+// capability settings in App-Common.xcconfig generate the rest of the
+// entitlement set and merge on top of it.
 //
 // CONFIGURATION_BUILD_DIR is overridden because both targets produce
 // MouSugu.app; without it they would clobber each other in
@@ -16,5 +18,6 @@
 
 #include "App-Common.xcconfig"
 
+CODE_SIGN_ENTITLEMENTS = Config/MAS.entitlements
 CONFIGURATION_BUILD_DIR = $(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/MAS
 ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  Entitlements for the Mac App Store channel only.
+
+	  app-sandbox, personal-information.calendars and the rest of the baseline
+	  set are NOT listed here: the ENABLE_* capability settings in
+	  App-Common.xcconfig generate them and merge on top of this file. Only the
+	  Apple-events grant needs to live here, because the build settings have no
+	  equivalent for it.
+
+	  Month-grid day clicks send Calendar.app a "view calendar at" Apple event
+	  (see CalendarAppLauncher.swift). automation.apple-events is the hardened
+	  runtime side of that permission; scripting-targets is the sandbox side,
+	  scoped to Calendar's declared com.apple.iCal.UI access group — the
+	  App-Review-sanctioned mechanism (QA1888), not a temporary exception.
+	  Keep in sync with Sparkle.entitlements.
+	-->
+	<key>com.apple.security.automation.apple-events</key>
+	<true/>
+	<key>com.apple.security.scripting-targets</key>
+	<dict>
+		<key>com.apple.iCal</key>
+		<array>
+			<string>com.apple.iCal.UI</string>
+		</array>
+	</dict>
+</dict>
+</plist>

@@ -13,6 +13,23 @@
         }
       }
     },
+    "NSAppleEventsUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mou Sugu asks Calendar to show the day you clicked in the month view."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mou Sugu le pide a Calendario que muestre el día que hiciste clic en la vista mensual."
+          }
+        }
+      }
+    },
     "NSCalendarsFullAccessUsageDescription" : {
       "extractionState" : "manual",
       "localizations" : {

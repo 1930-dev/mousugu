@@ -26,6 +26,7 @@ INFOPLIST_KEY_CFBundleDisplayName = Mou Sugu
 INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO
 INFOPLIST_KEY_LSApplicationCategoryType = public.app-category.productivity
 INFOPLIST_KEY_LSUIElement = YES
+INFOPLIST_KEY_NSAppleEventsUsageDescription = Mou Sugu asks Calendar to show the day you clicked in the month view.
 INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = Mou Sugu uses your calendar to show the next event and remaining time directly in the menu bar.
 LD_RUNPATH_SEARCH_PATHS = @executable_path/../Frameworks
 MACOSX_DEPLOYMENT_TARGET = 15.0

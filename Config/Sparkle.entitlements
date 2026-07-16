@@ -24,5 +24,22 @@
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER)-spks</string>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER)-spki</string>
 	</array>
+
+	<!--
+	  Month-grid day clicks send Calendar.app a "view calendar at" Apple event
+	  (see CalendarAppLauncher.swift). automation.apple-events is the hardened
+	  runtime side of that permission; scripting-targets is the sandbox side,
+	  scoped to Calendar's declared com.apple.iCal.UI access group. Keep in
+	  sync with MAS.entitlements.
+	-->
+	<key>com.apple.security.automation.apple-events</key>
+	<true/>
+	<key>com.apple.security.scripting-targets</key>
+	<dict>
+		<key>com.apple.iCal</key>
+		<array>
+			<string>com.apple.iCal.UI</string>
+		</array>
+	</dict>
 </dict>
 </plist>
