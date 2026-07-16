@@ -54,13 +54,10 @@ private struct GeneralPane: View {
 
     var body: some View {
         Form {
+            // Event behavior first, app behavior after.
             Toggle(Strings.Settings.hideFreeEvents, isOn: $hideFreeTimeEvents)
                 .onChange(of: hideFreeTimeEvents) { _, _ in
                     store.loadEvents()
-                }
-            Toggle(Strings.Settings.autoStart, isOn: $autoStartEnabled)
-                .onChange(of: autoStartEnabled) { _, newValue in
-                    toggleAutoStart(enabled: newValue)
                 }
             Picker(Strings.Settings.joinGraceWindow, selection: $joinGraceMinutes) {
                 Text(Strings.Settings.joinGraceOff).tag(0)
@@ -69,6 +66,10 @@ private struct GeneralPane: View {
                         .tag(minutes)
                 }
             }
+            Toggle(Strings.Settings.autoStart, isOn: $autoStartEnabled)
+                .onChange(of: autoStartEnabled) { _, newValue in
+                    toggleAutoStart(enabled: newValue)
+                }
             // Only the direct/DMG channel ships Sparkle — in the App Store
             // build `isAvailable` is false and the row disappears.
             if updater.isAvailable {
