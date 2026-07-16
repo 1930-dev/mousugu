@@ -27,6 +27,8 @@ struct Strings {
         static var inMinutes: String { String(localized: "in %dm: ") }
         /// Format string — consumed via `String(format:)` with the hour count.
         static var inHours: String { String(localized: "in %dh: ") }
+        /// Format string — consumed via `String(format:)` with hour and minute counts.
+        static var inHoursMinutes: String { String(localized: "in %dh %dm: ") }
         static var noEvents: String { String(localized: "No events today") }
     }
 

@@ -227,8 +227,11 @@ final class CalendarStore: ObservableObject {
         let minutes = Int(next.startDate.timeIntervalSince(now) / 60)
         if minutes < 60 {
             countdownLabel = String(format: Strings.Status.inMinutes, minutes) + eventTitle(next)
-        } else {
+        } else if minutes % 60 == 0 {
             countdownLabel = String(format: Strings.Status.inHours, minutes / 60) + eventTitle(next)
+        } else {
+            // Truncating to hours alone reads wrong — 1h51m is not "in 1h".
+            countdownLabel = String(format: Strings.Status.inHoursMinutes, minutes / 60, minutes % 60) + eventTitle(next)
         }
     }
 
