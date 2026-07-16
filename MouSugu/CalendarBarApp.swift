@@ -67,6 +67,11 @@ struct MainMenuView: View {
         // so the ScrollView reaches the popover's edge and its scroll bar
         // hugs the window border instead of overlapping the event rows.
         VStack(spacing: 0) {
+            MonthCalendarView(store: store)
+                .padding(.horizontal, DesignSystem.Spacing.md)
+            Divider()
+                .padding(.vertical, DesignSystem.Spacing.xs)
+                .padding(.horizontal, DesignSystem.Spacing.md)
             eventsCard
             Divider()
                 .padding(.vertical, DesignSystem.Spacing.xs)

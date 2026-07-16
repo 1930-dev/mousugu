@@ -61,6 +61,16 @@
         }
       }
     },
+    "Go to today" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir a hoy"
+          }
+        }
+      }
+    },
     "Hide events where I'm free" : {
       "localizations" : {
         "es" : {
@@ -97,6 +107,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mou Sugu necesita acceso a tu calendario para mostrarte el próximo evento. Otorgá el acceso en Configuración del Sistema y volvé a abrir la app."
+          }
+        }
+      }
+    },
+    "Next month" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mes siguiente"
           }
         }
       }
@@ -167,6 +187,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Preferencias…"
+          }
+        }
+      }
+    },
+    "Previous month" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mes anterior"
           }
         }
       }

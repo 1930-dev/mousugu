@@ -13,6 +13,15 @@ final class CalendarStore: ObservableObject {
     /// `true` when calendar access was denied or restricted, so the popover can
     /// offer a way to fix it instead of showing an empty list.
     @Published var accessDenied: Bool = false
+    /// Calendar colors for each day visible in the month grid, keyed by
+    /// year/month/day components. Unlike the today list, all-day events count
+    /// here — a dot means "something happens this day".
+    @Published private(set) var monthDayColors: [DateComponents: [Color]] = [:]
+
+    /// Date span of the month grid currently on screen. Retained so calendar
+    /// changes and the day rollover refresh the dots without the view having
+    /// to ask again.
+    private var monthDotInterval: DateInterval?
 
     /// Start-of-day of the currently loaded event window. Lets the per-minute
     /// tick detect a day rollover and reload, rather than staying stuck on the
@@ -116,6 +125,51 @@ final class CalendarStore: ObservableObject {
         self.todayEvents = events
         self.loadedDay = start
         updateCountdown()
+        loadMonthDots()
+    }
+
+    /// Called by the month view whenever the displayed month changes.
+    func setMonthDotRange(_ interval: DateInterval) {
+        monthDotInterval = interval
+        loadMonthDots()
+    }
+
+    /// Recomputes `monthDayColors` for the current grid span with a single
+    /// EventKit query. Applies the same visibility filters as `loadEvents()`
+    /// except the all-day one, and marks every day a multi-day event covers.
+    private func loadMonthDots() {
+        guard let interval = monthDotInterval, !accessDenied else { return }
+
+        let hiddenIDs = getHiddenCalendarIDs()
+        let calendarsToFetch = eventStore.calendars(for: .event)
+            .filter { !hiddenIDs.contains($0.calendarIdentifier) }
+        let predicate = eventStore.predicateForEvents(
+            withStart: interval.start,
+            end: interval.end,
+            calendars: calendarsToFetch.isEmpty ? nil : calendarsToFetch
+        )
+        let events = eventStore.events(matching: predicate)
+            .filter { !hideFreeTimeEvents || $0.availability != .free }
+
+        let cal = Calendar.current
+        var colors: [DateComponents: [Color]] = [:]
+        var seenCalendars: [DateComponents: Set<String>] = [:]
+        for event in events {
+            var day = cal.startOfDay(for: max(event.startDate, interval.start))
+            let last = min(event.endDate, interval.end)
+            repeat {
+                let key = cal.dateComponents([.year, .month, .day], from: day)
+                // One dot per calendar per day, capped so busy days don't
+                // overflow the cell.
+                if colors[key, default: []].count < DesignSystem.Layout.monthMaxDotsPerDay,
+                   seenCalendars[key, default: []].insert(event.calendar.calendarIdentifier).inserted {
+                    colors[key, default: []].append(Color(event.calendar.color))
+                }
+                guard let next = cal.date(byAdding: .day, value: 1, to: day) else { break }
+                day = next
+            } while day < last
+        }
+        monthDayColors = colors
     }
 
     private func updateCountdown() {

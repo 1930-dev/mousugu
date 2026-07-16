@@ -35,6 +35,9 @@ struct Strings {
     }
 
     struct Month {
+        static var previousMonth: String { String(localized: "Previous month") }
+        static var nextMonth: String { String(localized: "Next month") }
+        static var goToToday: String { String(localized: "Go to today") }
         static var openCalendar: String { String(localized: "Open Calendar") }
     }
 

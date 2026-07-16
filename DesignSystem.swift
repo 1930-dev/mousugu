@@ -63,11 +63,24 @@ enum DesignSystem {
         /// Floor for the event list's max height. The popover grows past this
         /// to fill the screen's visible height before scrolling kicks in.
         static let eventListMaxHeight: CGFloat = 360
-        /// Vertical space reserved for the popover's fixed chrome (header,
-        /// actions card, margins) when sizing the event list to the screen.
-        static let popoverChromeAllowance: CGFloat = 200
+        /// Vertical space reserved for the popover's fixed chrome (month
+        /// calendar, header, toolbar, margins) when sizing the event list to
+        /// the screen.
+        static let popoverChromeAllowance: CGFloat = 400
         /// Width of the calendar-color accent bar in an event row.
         static let eventAccentWidth: CGFloat = 3
+        /// Height of one row in the month grid — the today circle plus the
+        /// dot row and its gap, with even slack above and below so the dots
+        /// never kiss the next row.
+        static let monthDayCellHeight: CGFloat = 28
+        /// Diameter of an event dot under a day number in the month grid.
+        static let monthEventDotSize: CGFloat = 3
+        /// Max event dots rendered per day in the month grid.
+        static let monthMaxDotsPerDay: Int = 3
+        /// Diameter of the filled circle behind today's day number.
+        static let monthTodayCircleSize: CGFloat = 18
+        /// Point size of the go-to-today dot icon in the month header.
+        static let monthTodayDotIconSize: CGFloat = 8
         /// Point size of a toolbar SF Symbol.
         static let toolbarIconSize: CGFloat = 14
         /// Square hit area of a toolbar icon button.
