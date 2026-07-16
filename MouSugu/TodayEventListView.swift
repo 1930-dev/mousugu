@@ -260,6 +260,6 @@ struct NowLine: View {
             Rectangle()
                 .frame(height: DesignSystem.Layout.nowLineHeight)
         }
-        .foregroundStyle(.red)
+        .foregroundStyle(DesignSystem.Colors.todayRed)
     }
 }

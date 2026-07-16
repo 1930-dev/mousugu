@@ -109,8 +109,9 @@ struct MainMenuView: View {
         VStack(alignment: .leading, spacing: 0) {
             Text(Strings.Menu.today)
                 .font(.subheadline)
-                .fontWeight(.semibold)
-                .padding(.horizontal, DesignSystem.Spacing.md + DesignSystem.Spacing.md)
+                // Same x as the month title and the row cards' left edge, so
+                // both section headers sit on one vertical line.
+                .padding(.horizontal, DesignSystem.Spacing.md)
                 .padding(.top, DesignSystem.Spacing.xs)
                 .padding(.bottom, DesignSystem.Spacing.xs)
 
@@ -197,16 +198,22 @@ struct ToolbarIconButton: View {
     let systemName: String
     let label: String
     let iconSize: CGFloat
+    let buttonSize: CGFloat
+    let iconColor: Color?
     let action: () -> Void
     @State private var isHovered = false
 
     init(systemName: String,
          label: String,
          iconSize: CGFloat = DesignSystem.Layout.toolbarIconSize,
+         buttonSize: CGFloat = DesignSystem.Layout.toolbarButtonSize,
+         iconColor: Color? = nil,
          action: @escaping () -> Void) {
         self.systemName = systemName
         self.label = label
         self.iconSize = iconSize
+        self.buttonSize = buttonSize
+        self.iconColor = iconColor
         self.action = action
     }
 
@@ -214,9 +221,8 @@ struct ToolbarIconButton: View {
         Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: iconSize, weight: .medium))
-                .foregroundStyle(Color.primary)
-                .frame(width: DesignSystem.Layout.toolbarButtonSize,
-                       height: DesignSystem.Layout.toolbarButtonSize)
+                .foregroundStyle(iconColor ?? Color.primary)
+                .frame(width: buttonSize, height: buttonSize)
                 .background(
                     RoundedRectangle(cornerRadius: DesignSystem.Radius.sm)
                         .fill(isHovered

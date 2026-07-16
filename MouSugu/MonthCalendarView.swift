@@ -55,6 +55,13 @@ struct MonthGrid {
 /// opens Calendar.app positioned on it — the popover's list stays on today.
 struct MonthCalendarView: View {
     @ObservedObject var store: CalendarStore
+    @Environment(\.colorScheme) private var colorScheme
+
+    /// Muted chevron color — explicit rather than `.secondary` so it stays
+    /// out of the glass's vibrancy pass.
+    private var navChevronColor: Color {
+        (colorScheme == .dark ? Color.white : Color.black).opacity(0.55)
+    }
 
     /// Any date within the displayed month. MenuBarExtra re-hosts the popover
     /// content on every open, so `onAppear` resets this to the current month
@@ -79,7 +86,7 @@ struct MonthCalendarView: View {
     }
 
     var body: some View {
-        VStack(spacing: DesignSystem.Spacing.xs) {
+        VStack(spacing: DesignSystem.Spacing.sm) {
             header
             weekdayHeader
             daysGrid
@@ -93,20 +100,28 @@ struct MonthCalendarView: View {
     private var header: some View {
         HStack(spacing: DesignSystem.Spacing.xxs) {
             Text(monthTitle)
-                .font(.subheadline)
-                .fontWeight(.semibold)
+                .font(.callout)
+                .fontWeight(.bold)
             Spacer()
             ToolbarIconButton(systemName: "chevron.left",
-                              label: Strings.Month.previousMonth) {
+                              label: Strings.Month.previousMonth,
+                              iconSize: DesignSystem.Layout.monthNavIconSize,
+                              buttonSize: DesignSystem.Layout.monthNavButtonSize,
+                              iconColor: navChevronColor) {
                 shiftMonth(by: -1)
             }
             ToolbarIconButton(systemName: "circle.fill",
                               label: Strings.Month.goToToday,
-                              iconSize: DesignSystem.Layout.monthTodayDotIconSize) {
+                              iconSize: DesignSystem.Layout.monthTodayDotIconSize,
+                              buttonSize: DesignSystem.Layout.monthNavButtonSize,
+                              iconColor: DesignSystem.Colors.todayRed) {
                 show(month: Date())
             }
             ToolbarIconButton(systemName: "chevron.right",
-                              label: Strings.Month.nextMonth) {
+                              label: Strings.Month.nextMonth,
+                              iconSize: DesignSystem.Layout.monthNavIconSize,
+                              buttonSize: DesignSystem.Layout.monthNavButtonSize,
+                              iconColor: navChevronColor) {
                 shiftMonth(by: 1)
             }
         }
@@ -119,6 +134,7 @@ struct MonthCalendarView: View {
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity)
+                    .frame(height: DesignSystem.Layout.monthWeekdayHeaderHeight)
             }
         }
     }
@@ -148,62 +164,91 @@ struct MonthCalendarView: View {
     }
 }
 
-/// A single day in the month grid: the day number (today gets a filled accent
-/// circle) over up to `monthMaxDotsPerDay` calendar-colored event dots.
+/// A single day in the month grid: the day number over up to
+/// `monthMaxDotsPerDay` calendar-colored event dots. Today's whole cell is
+/// outlined in the icon's red — the same shape the hover wash fills.
 struct DayCell: View {
     let day: MonthGrid.Day
     let dotColors: [Color]
     @State private var isHovered = false
+    @Environment(\.colorScheme) private var colorScheme
+
+    /// Explicit black/white, NOT `Color.primary`: semantic colors render in
+    /// the glass's vibrancy pass, which composites OVER plain-color siblings
+    /// regardless of SwiftUI z-order — a primary-based wash visibly covered
+    /// today's red border.
+    private var hoverWashColor: Color {
+        (colorScheme == .dark ? Color.white : Color.black)
+            .opacity(DesignSystem.Opacity.hoverWash)
+    }
 
     /// Evaluated at render time so the highlight moves if the popover stays
     /// open across midnight.
     private var isToday: Bool { Calendar.current.isDateInToday(day.date) }
 
+    /// Explicit colors, not `.primary`: semantic colors render in the glass's
+    /// vibrancy pass, whose backing plate composites over the red border.
     private var numberColor: Color {
-        if isToday { return Color(nsColor: .selectedMenuItemTextColor) }
-        return day.isInDisplayedMonth ? .primary : Color(nsColor: .tertiaryLabelColor)
+        let base = colorScheme == .dark ? Color.white : Color.black
+        if isToday { return base }
+        return day.isInDisplayedMonth ? base : base.opacity(0.3)
     }
 
     var body: some View {
         Button {
             CalendarAppLauncher.open(showing: day.date)
         } label: {
-            VStack(spacing: DesignSystem.Spacing.xxs) {
-                // Phantom counterweight for the dot row below, so the day
-                // number sits dead-center in the cell instead of riding high.
-                Color.clear
-                    .frame(height: DesignSystem.Layout.monthEventDotSize)
-                Text("\(day.dayNumber)")
-                    .font(.caption)
-                    .fontWeight(isToday ? .bold : .regular)
-                    .foregroundStyle(numberColor)
-                    .frame(width: DesignSystem.Layout.monthTodayCircleSize,
-                           height: DesignSystem.Layout.monthTodayCircleSize)
-                    .background(
-                        Circle()
-                            .fill(isToday ? Color(nsColor: .controlAccentColor) : .clear)
-                    )
-                // Constant-height dot row so day numbers align across weeks.
-                HStack(spacing: DesignSystem.Spacing.xxs) {
-                    ForEach(dotColors.indices, id: \.self) { index in
-                        Circle()
-                            .fill(dotColors[index])
-                            .frame(width: DesignSystem.Layout.monthEventDotSize,
-                                   height: DesignSystem.Layout.monthEventDotSize)
+            // The number is the cell's only in-flow content, so it centers
+            // with equal air above and below. The dots don't participate in
+            // layout — they overlay the bottom band as an ornament, the way
+            // Itsycal tucks them under the date.
+            Text("\(day.dayNumber)")
+                .font(.callout)
+                .fontWeight(isToday ? .bold : .medium)
+                .foregroundStyle(numberColor)
+                .frame(width: DesignSystem.Layout.monthTodayCircleSize,
+                       height: DesignSystem.Layout.monthTodayCircleSize)
+                .frame(maxWidth: .infinity)
+                .frame(height: DesignSystem.Layout.monthDayCellHeight)
+                .overlay {
+                    // Today: a compact red box — wash for body plus outline —
+                    // inset from the cell so it clears neighbors and its own
+                    // dots instead of hugging every edge.
+                    if isToday {
+                        RoundedRectangle(cornerRadius: DesignSystem.Radius.xs)
+                            .fill(DesignSystem.Colors.todayRed.opacity(DesignSystem.Opacity.todayCellFill))
+                            .padding(.horizontal, DesignSystem.Spacing.xs + DesignSystem.Layout.monthTodayBorderWidth)
+                            .padding(.vertical, DesignSystem.Spacing.xs + DesignSystem.Layout.monthTodayBorderWidth)
+                        RoundedRectangle(cornerRadius: DesignSystem.Radius.xs)
+                            .strokeBorder(DesignSystem.Colors.todayRed,
+                                          lineWidth: DesignSystem.Layout.monthTodayBorderWidth)
+                            .padding(.horizontal, DesignSystem.Spacing.xs)
+                            .padding(.vertical, DesignSystem.Spacing.xs)
                     }
                 }
-                .frame(height: DesignSystem.Layout.monthEventDotSize)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: DesignSystem.Layout.monthDayCellHeight)
-            .background(
+                .overlay(alignment: .bottom) {
+                    HStack(spacing: DesignSystem.Spacing.xxs) {
+                        ForEach(dotColors.indices, id: \.self) { index in
+                            Circle()
+                                .fill(dotColors[index])
+                                .frame(width: DesignSystem.Layout.monthEventDotSize,
+                                       height: DesignSystem.Layout.monthEventDotSize)
+                        }
+                    }
+                    // Inset enough that today's border stroke never grazes
+                    // the dots.
+                    .padding(.bottom, DesignSystem.Spacing.sm + 1)
+                }
+                .background(
                 // Neutral translucent wash, not accent: the accent circle
                 // already marks today, and an opaque patch would break the
                 // popover's glass.
+                // Today skips the wash — the red box IS its highlight, and
+                // stacking the two muddies the border.
                 RoundedRectangle(cornerRadius: DesignSystem.Radius.sm)
-                    .fill(isHovered
-                        ? Color.primary.opacity(DesignSystem.Opacity.hoverWash)
-                        : Color.clear)
+                    .fill(isHovered && !isToday ? hoverWashColor : Color.clear)
+                    .padding(.horizontal, DesignSystem.Spacing.xs)
+                    .padding(.vertical, DesignSystem.Spacing.xs)
             )
             .contentShape(Rectangle())
         }

@@ -34,6 +34,13 @@ enum DesignSystem {
         static let xxl: CGFloat = 20
     }
 
+    /// Brand colors shared with the app icon.
+    enum Colors {
+        /// The icon's "today" red (#DF4B3B). Marks the present everywhere:
+        /// the now line and the border of today's cell in the month grid.
+        static let todayRed = Color(red: 223 / 255, green: 75 / 255, blue: 59 / 255)
+    }
+
     /// Opacity levels for de-emphasized content and glass-friendly highlights.
     enum Opacity {
         /// Events that already ended in the popover list.
@@ -43,6 +50,9 @@ enum DesignSystem {
         /// Event row fill while hovered — the row's own tint, deepened,
         /// instead of a solid accent slab that fights the glass.
         static let eventRowFillHovered: Double = 0.25
+        /// Red wash filling today's cell in the month grid — gives the
+        /// border body so the glass backdrop doesn't read as breaking it.
+        static let todayCellFill: Double = 0.12
         /// Neutral hover wash for controls on glass (day cells, toolbar
         /// icons): a translucent veil of `primary`, so it brightens on dark
         /// and shades on light without going opaque.
@@ -63,8 +73,11 @@ enum DesignSystem {
 
     /// Layout dimensions specific to this app's chrome.
     enum Layout {
-        /// Width of the menu bar popover.
-        static let popoverWidth: CGFloat = 260
+        /// Width of the menu bar popover. 261 on purpose: minus the 2×8pt
+        /// grid margins it leaves 245 = 7×35, so month cells land on whole
+        /// points and today's 1pt border rasterizes sharp instead of smearing
+        /// across fractional pixels.
+        static let popoverWidth: CGFloat = 261
         /// Height of the Settings pane.
         static let settingsHeight: CGFloat = 400
         /// Floor for the event list's max height. The popover grows past this
@@ -73,24 +86,39 @@ enum DesignSystem {
         /// Vertical space reserved for the popover's fixed chrome (month
         /// calendar, header, toolbar, margins) when sizing the event list to
         /// the screen.
-        static let popoverChromeAllowance: CGFloat = 400
+        static let popoverChromeAllowance: CGFloat = 440
         /// Width of the calendar-color accent bar in an event row.
         static let eventAccentWidth: CGFloat = 3
         /// Approximate height of one event row — the floor for the list's
         /// viewport before its real content height is measured.
         static let eventRowHeight: CGFloat = 46
-        /// Height of one row in the month grid — the today circle plus the
-        /// dot row and its gap, with even slack above and below so the dots
-        /// never kiss the next row.
-        static let monthDayCellHeight: CGFloat = 28
+        /// Height of the weekday-letters row. Fixed and integral: the text's
+        /// natural fractional height would shift every grid row onto half
+        /// pixels and blur today's border.
+        static let monthWeekdayHeaderHeight: CGFloat = 14
+        /// Height of one row in the month grid — equal to the cell width
+        /// ((popoverWidth − 16) / 7 = 35), so day cells are square. The day
+        /// number centers in it; the event dots overlay the bottom band and
+        /// don't take part in the layout.
+        static let monthDayCellHeight: CGFloat = 35
         /// Diameter of an event dot under a day number in the month grid.
-        static let monthEventDotSize: CGFloat = 3
+        static let monthEventDotSize: CGFloat = 2
         /// Max event dots rendered per day in the month grid.
         static let monthMaxDotsPerDay: Int = 3
-        /// Diameter of the filled circle behind today's day number.
-        static let monthTodayCircleSize: CGFloat = 18
+        /// Square frame that day numbers center in.
+        static let monthTodayCircleSize: CGFloat = 16
+        /// Stroke width of the border marking today's cell. Whole point on
+        /// purpose: fractional widths land on half-pixels over the grid's
+        /// fractional cell widths and render unevenly.
+        static let monthTodayBorderWidth: CGFloat = 1
         /// Point size of the go-to-today dot icon in the month header.
         static let monthTodayDotIconSize: CGFloat = 8
+        /// Hit box of the month header's nav buttons — tighter than the
+        /// bottom toolbar's so the ‹ ● › cluster doesn't sprawl.
+        static let monthNavButtonSize: CGFloat = 22
+        /// Point size of the month header's chevrons — smaller than the
+        /// bottom toolbar's icons to match the compact header.
+        static let monthNavIconSize: CGFloat = 11
         /// Point size of a toolbar SF Symbol.
         static let toolbarIconSize: CGFloat = 14
         /// Square hit area of a toolbar icon button.
