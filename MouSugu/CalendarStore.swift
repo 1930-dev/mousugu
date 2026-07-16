@@ -120,7 +120,13 @@ final class CalendarStore: ObservableObject {
         let events = eventStore.events(matching: predicate)
             .filter { !$0.isAllDay }
             .filter { !hideFreeTimeEvents || $0.availability != .free }
-            .sorted { $0.startDate < $1.startDate }
+            // Simultaneous starts: the event that ends first goes first, then
+            // title as the final tiebreaker — Swift's sort isn't stable, so a
+            // start-only comparator shuffles equal starts on every reload.
+            .sorted {
+                ($0.startDate, $0.endDate, $0.title ?? "")
+                    < ($1.startDate, $1.endDate, $1.title ?? "")
+            }
         
         self.todayEvents = events
         self.loadedDay = start

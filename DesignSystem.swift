@@ -36,6 +36,13 @@ enum DesignSystem {
 
     /// Opacity levels for de-emphasized content and glass-friendly highlights.
     enum Opacity {
+        /// Events that already ended in the popover list.
+        static let pastEvent: Double = 0.55
+        /// Calendar-color fill of an event row at rest.
+        static let eventRowFill: Double = 0.12
+        /// Event row fill while hovered — the row's own tint, deepened,
+        /// instead of a solid accent slab that fights the glass.
+        static let eventRowFillHovered: Double = 0.25
         /// Neutral hover wash for controls on glass (day cells, toolbar
         /// icons): a translucent veil of `primary`, so it brightens on dark
         /// and shades on light without going opaque.
@@ -69,6 +76,9 @@ enum DesignSystem {
         static let popoverChromeAllowance: CGFloat = 400
         /// Width of the calendar-color accent bar in an event row.
         static let eventAccentWidth: CGFloat = 3
+        /// Approximate height of one event row — the floor for the list's
+        /// viewport before its real content height is measured.
+        static let eventRowHeight: CGFloat = 46
         /// Height of one row in the month grid — the today circle plus the
         /// dot row and its gap, with even slack above and below so the dots
         /// never kiss the next row.

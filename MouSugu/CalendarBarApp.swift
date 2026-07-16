@@ -32,26 +32,6 @@ struct MainMenuView: View {
     @ObservedObject var store: CalendarStore
     @Environment(\.openSettings) private var openSettings
 
-    /// The first upcoming meeting today — the only future event that should
-    /// show a "Unirse" button. Recomputed each render so the bar/popover
-    /// stay accurate as time passes.
-    private var nextUpcomingMeetingID: String? {
-        let now = Date()
-        return store.todayEvents
-            .first { $0.startDate > now && store.findMeetingURL(for: $0) != nil }?
-            .eventIdentifier
-    }
-
-    /// Where the current-time line sits in the list: before the first event
-    /// that hasn't ended yet — so in-progress events sit below the line and
-    /// the line tops the meeting you're currently in — or after the last row
-    /// once everything today is over. Recomputed each render, so the store's
-    /// per-minute tick keeps it moving.
-    private var nowLineIndex: Int {
-        let now = Date()
-        return store.todayEvents.firstIndex { $0.endDate > now } ?? store.todayEvents.count
-    }
-
     /// Tallest the event list may grow before scrolling: the screen's visible
     /// height minus the popover's fixed chrome, so the scroll bar only shows
     /// up when today genuinely doesn't fit on screen.
@@ -79,7 +59,10 @@ struct MainMenuView: View {
             actionsCard
                 .padding(.horizontal, DesignSystem.Spacing.md)
         }
-        .padding(.vertical, DesignSystem.Spacing.md)
+        // Less air on top than on the bottom: the month header carries its
+        // own line height, while the toolbar icons need the full margin.
+        .padding(.top, DesignSystem.Spacing.xs)
+        .padding(.bottom, DesignSystem.Spacing.md)
         .frame(width: DesignSystem.Layout.popoverWidth)
         // Sets the popover window's background material at the chrome level
         // (not an overlay), so MenuBarExtra's default chrome doesn't override
@@ -126,33 +109,13 @@ struct MainMenuView: View {
                 .font(.subheadline)
                 .fontWeight(.semibold)
                 .padding(.horizontal, DesignSystem.Spacing.md + DesignSystem.Spacing.md)
-                .padding(.top, DesignSystem.Spacing.md)
+                .padding(.top, DesignSystem.Spacing.xs)
                 .padding(.bottom, DesignSystem.Spacing.xs)
 
             if store.todayEvents.isEmpty {
                 emptyState
             } else {
-                ScrollView {
-                    VStack(spacing: DesignSystem.Spacing.xxs) {
-                        ForEach(Array(store.todayEvents.enumerated()), id: \.element.eventIdentifier) { index, event in
-                            if index == nowLineIndex {
-                                NowLine()
-                            }
-                            EventRow(
-                                event: event,
-                                store: store,
-                                isNextUpcomingMeeting: event.eventIdentifier == nextUpcomingMeetingID
-                            )
-                        }
-                        if nowLineIndex == store.todayEvents.count {
-                            NowLine()
-                        }
-                    }
-                    // Row margin lives inside the scroll content, keeping the
-                    // scroll bar in its own gutter at the popover's edge.
-                    .padding(.horizontal, DesignSystem.Spacing.md)
-                }
-                .frame(maxHeight: eventListMaxHeight)
+                TodayEventListView(store: store, maxHeight: eventListMaxHeight)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -220,123 +183,6 @@ struct MainMenuView: View {
         .frame(maxWidth: .infinity)
         .padding(.horizontal, DesignSystem.Spacing.md + DesignSystem.Spacing.md)
         .padding(.vertical, DesignSystem.Spacing.xl)
-    }
-}
-
-/// Apple-Calendar-style current-time indicator — a tiny red dot and hairline
-/// that separates the events that already started from the ones still to come.
-struct NowLine: View {
-    var body: some View {
-        HStack(spacing: 0) {
-            Circle()
-                .frame(width: DesignSystem.Layout.nowDotSize,
-                       height: DesignSystem.Layout.nowDotSize)
-            Rectangle()
-                .frame(height: DesignSystem.Layout.nowLineHeight)
-        }
-        .foregroundStyle(.red)
-        .padding(.horizontal, DesignSystem.Spacing.xs)
-    }
-}
-
-struct EventRow: View {
-    let event: EKEvent
-    @ObservedObject var store: CalendarStore
-    let isNextUpcomingMeeting: Bool
-    @State private var isHovered = false
-
-    /// What kind of join button (if any) to display for this event.
-    private enum JoinState {
-        case hidden
-        case join
-        case rejoin
-    }
-
-    /// Decides whether to show the join button and which label.
-    ///
-    /// - In progress: always show; `Re-unirse` once >5 min in (you almost
-    ///   certainly already joined and dropped) so it nudges differently from
-    ///   the initial join.
-    /// - Past: keep `Unirse` for a 1h grace window (handy if the meeting
-    ///   over-ran or someone restarted it); hide after.
-    /// - Future: only on the very next upcoming meeting today — every later
-    ///   one would just be noise.
-    private var joinState: JoinState {
-        guard store.findMeetingURL(for: event) != nil else { return .hidden }
-        let now = Date()
-
-        if event.startDate <= now && event.endDate > now {
-            let minutesIn = now.timeIntervalSince(event.startDate) / 60
-            return minutesIn > 5 ? .rejoin : .join
-        }
-
-        if event.endDate <= now {
-            let minutesSinceEnd = now.timeIntervalSince(event.endDate) / 60
-            return minutesSinceEnd < 60 ? .join : .hidden
-        }
-
-        return isNextUpcomingMeeting ? .join : .hidden
-    }
-
-    var body: some View {
-        HStack(spacing: DesignSystem.Spacing.md) {
-            RoundedRectangle(cornerRadius: DesignSystem.Layout.eventAccentWidth / 2)
-                .fill(Color(event.calendar.color))
-                .frame(width: DesignSystem.Layout.eventAccentWidth)
-
-            VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxs) {
-                Text(event.title)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .lineLimit(1)
-                    .foregroundStyle(isHovered
-                        ? Color(nsColor: .selectedMenuItemTextColor)
-                        : Color.primary)
-
-                Text("\(event.startDate.formatted(date: .omitted, time: .shortened)) - \(event.endDate.formatted(date: .omitted, time: .shortened))")
-                    .font(.caption)
-                    .foregroundStyle(isHovered
-                        ? Color(nsColor: .selectedMenuItemTextColor).opacity(0.85)
-                        : Color.secondary)
-            }
-
-            Spacer()
-
-            joinButton
-        }
-        .padding(.horizontal, DesignSystem.Spacing.md)
-        .padding(.vertical, DesignSystem.Spacing.sm)
-        .background(
-            RoundedRectangle(cornerRadius: DesignSystem.Radius.sm)
-                .fill(isHovered
-                    ? Color(nsColor: .controlAccentColor)
-                    : Color(event.calendar.color).opacity(0.12))
-        )
-        .onHover { hovering in
-            isHovered = hovering
-        }
-    }
-
-    @ViewBuilder
-    private var joinButton: some View {
-        switch joinState {
-        case .hidden:
-            EmptyView()
-        case .join:
-            Button(Strings.General.join, action: openMeeting)
-                .buttonStyle(.borderedProminent)
-                .controlSize(.small)
-        case .rejoin:
-            Button(Strings.General.rejoin, action: openMeeting)
-                .buttonStyle(.borderedProminent)
-                .controlSize(.small)
-        }
-    }
-
-    private func openMeeting() {
-        if let url = store.findMeetingURL(for: event) {
-            NSWorkspace.shared.open(url)
-        }
     }
 }
 
