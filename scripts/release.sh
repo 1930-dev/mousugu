@@ -87,10 +87,15 @@ if [[ ! -d "$APP_PATH/Contents/Frameworks/Sparkle.framework" ]]; then
     exit 1
 fi
 
+# notarytool only takes zip/pkg/dmg, not a bare .app — ship it a zip and
+# staple the app itself afterwards (the DMG below carries the stapled app).
 echo "▸ Submitting to Apple's notary service (this can take several minutes)"
-xcrun notarytool submit "$APP_PATH" \
+NOTARY_ZIP="$BUILD_DIR/$APP_NAME-notary.zip"
+ditto -c -k --keepParent "$APP_PATH" "$NOTARY_ZIP"
+xcrun notarytool submit "$NOTARY_ZIP" \
     --keychain-profile "$NOTARY_PROFILE" \
     --wait
+rm "$NOTARY_ZIP"
 
 echo "▸ Stapling notarization ticket"
 xcrun stapler staple "$APP_PATH"
