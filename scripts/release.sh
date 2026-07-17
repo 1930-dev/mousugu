@@ -11,11 +11,9 @@
 #   1. Apple Developer Program membership (https://developer.apple.com/programs/).
 #   2. "Developer ID Application" certificate installed in your Keychain.
 #      Xcode → Settings → Accounts → your Apple ID → Manage Certificates → +
-#   3. App-specific password for notarization, saved in Keychain via:
-#        xcrun notarytool store-credentials "MouSuguNotary" \
-#            --apple-id "you@example.com" \
-#            --team-id "ABCD123456" \
-#            --password "abcd-efgh-ijkl-mnop"   # app-specific password
+#   3. App Store Connect API key in Infisical (engineering/prod):
+#      APP_STORE_CONNECT_KEY_ID / _ISSUER_ID / _PRIVATE_KEY — the same key
+#      release-appstore.sh uses. notarytool authenticates with it directly.
 #   4. Sparkle's Ed25519 signing key in your Keychain (`generate_keys`). The
 #      public half is already in Config/Direct-Info.plist as SUPublicEDKey; the
 #      private half never leaves the Keychain.
@@ -29,11 +27,11 @@
 #   website/public/appcast.xml            — commit and publish this
 
 set -euo pipefail
+export PATH="/opt/homebrew/bin:$HOME/.local/bin:$PATH"
 
 APP_NAME="MouSugu"
 APP_DISPLAY="Mou Sugu"
 SCHEME="MouSugu"
-NOTARY_PROFILE="MouSuguNotary"
 # The appcast advertises the DMG from GitHub Releases while the feed itself is
 # served from mousugu.app — SUFeedURL in Config/Direct-Info.plist points at the feed.
 RELEASE_URL_PREFIX="https://github.com/1930-dev/mousugu/releases/download"
@@ -87,13 +85,27 @@ if [[ ! -d "$APP_PATH/Contents/Frameworks/Sparkle.framework" ]]; then
     exit 1
 fi
 
+# ---- App Store Connect API key: Infisical -> runtime .p8 ------------------
+# Same key and mechanism as release-appstore.sh; nothing sensitive stays on
+# disk past the script's lifetime.
+INFISICAL_PID="0b3c27f1-21ae-4aa3-b8fb-a21857a6a35f"
+secret() { infisical-secret get "$1" --projectId "$INFISICAL_PID" --env prod --plain --silent; }
+ASC_KEY_ID="$(secret APP_STORE_CONNECT_KEY_ID)"
+ASC_ISSUER_ID="$(secret APP_STORE_CONNECT_ISSUER_ID)"
+ASC_KEY_PATH="$(mktemp -t asckey)"
+chmod 600 "$ASC_KEY_PATH"
+secret APP_STORE_CONNECT_PRIVATE_KEY > "$ASC_KEY_PATH"
+trap 'rm -f "$ASC_KEY_PATH"' EXIT
+
 # notarytool only takes zip/pkg/dmg, not a bare .app — ship it a zip and
 # staple the app itself afterwards (the DMG below carries the stapled app).
 echo "▸ Submitting to Apple's notary service (this can take several minutes)"
 NOTARY_ZIP="$BUILD_DIR/$APP_NAME-notary.zip"
 ditto -c -k --keepParent "$APP_PATH" "$NOTARY_ZIP"
 xcrun notarytool submit "$NOTARY_ZIP" \
-    --keychain-profile "$NOTARY_PROFILE" \
+    --key "$ASC_KEY_PATH" \
+    --key-id "$ASC_KEY_ID" \
+    --issuer "$ASC_ISSUER_ID" \
     --wait
 rm "$NOTARY_ZIP"
 
