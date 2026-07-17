@@ -22,18 +22,35 @@ struct CalendarSettingsView: View {
     @ObservedObject var updater: UpdateChecker
     @AppStorage("selectedSettingsTab") private var selection: SettingsTab = .general
 
+    /// "1.1.1 (3)" — marketing version plus build number, straight from the
+    /// bundle so both channels (direct and MAS) report what they really are.
+    private var versionLabel: String {
+        let info = Bundle.main.infoDictionary
+        let short = info?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info?["CFBundleVersion"] as? String ?? "?"
+        return "\(short) (\(build))"
+    }
+
     var body: some View {
-        // `.tabItem`/`.tag` rather than the newer `Tab(_:value:)` API, which is
-        // macOS 15+; this keeps the deployment target at macOS 14.
-        TabView(selection: $selection) {
-            GeneralPane(store: store, updater: updater)
-                .tabItem { Label(Strings.Settings.general, systemImage: "gearshape") }
-                .tag(SettingsTab.general)
-            CalendarsPane(store: store)
-                .tabItem { Label(Strings.Settings.calendars, systemImage: "calendar") }
-                .tag(SettingsTab.calendars)
+        VStack(spacing: 0) {
+            // `.tabItem`/`.tag` rather than the newer `Tab(_:value:)` API, which is
+            // macOS 15+; this keeps the deployment target at macOS 14.
+            TabView(selection: $selection) {
+                GeneralPane(store: store, updater: updater)
+                    .tabItem { Label(Strings.Settings.general, systemImage: "gearshape") }
+                    .tag(SettingsTab.general)
+                CalendarsPane(store: store)
+                    .tabItem { Label(Strings.Settings.calendars, systemImage: "calendar") }
+                    .tag(SettingsTab.calendars)
+            }
+            .frame(width: 440, height: 260)
+            Divider()
+            Text(versionLabel)
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, DesignSystem.Spacing.xs)
         }
-        .frame(width: 440, height: 260)
     }
 }
 
