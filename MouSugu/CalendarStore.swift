@@ -161,7 +161,13 @@ final class CalendarStore: ObservableObject {
     /// Called by the month view whenever the displayed month changes.
     func setMonthDotRange(_ interval: DateInterval) {
         monthDotInterval = interval
-        loadMonthDots()
+        // Deferred: this is called from `onAppear`, mid view-update, and
+        // publishing `monthDayColors` synchronously there is undefined
+        // behavior SwiftUI may drop — the prime suspect for a popover that
+        // once came up with no dots at all.
+        Task { @MainActor in
+            self.loadMonthDots()
+        }
     }
 
     /// Recomputes `monthDayColors` for the current grid span with a single
