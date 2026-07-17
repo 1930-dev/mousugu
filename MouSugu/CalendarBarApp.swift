@@ -151,6 +151,10 @@ struct MainMenuView: View {
     /// popover's glass. Quit sits isolated on the right, away from misclicks.
     private var actionsCard: some View {
         HStack(spacing: DesignSystem.Spacing.xs) {
+            ToolbarIconButton(systemName: "calendar",
+                              label: Strings.Month.openCalendar) {
+                CalendarAppLauncher.open(showing: Date())
+            }
             ToolbarIconButton(systemName: "gearshape",
                               label: Strings.General.preferences) {
                 // Accessory apps (LSUIElement) don't surface windows to the
@@ -159,10 +163,6 @@ struct MainMenuView: View {
                 NSApp.activate(ignoringOtherApps: true)
                 Self.centerNextKeyWindow()
                 openSettings()
-            }
-            ToolbarIconButton(systemName: "calendar",
-                              label: Strings.Month.openCalendar) {
-                CalendarAppLauncher.open(showing: Date())
             }
             Spacer()
             ToolbarIconButton(systemName: "power",
