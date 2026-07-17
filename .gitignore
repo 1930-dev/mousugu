@@ -10,8 +10,10 @@ xcuserdata/
 
 # Build output
 build/
+build-appstore/
 DerivedData/
 *.dmg
+*.pkg
 
 # SwiftPM
 .swiftpm/

@@ -5,16 +5,17 @@
 # This is the MAS channel: the MouSugu-MAS target, which never links
 # Sparkle. For the direct/DMG channel use release.sh. See APP_STORE.md.
 #
-# Prerequisites (one-time):
-#   1. The bundle id dev.1930.MouSugu registered to the team, and an app
-#      record created in App Store Connect.
-#   2. An "Apple Distribution" certificate and a Mac App Store provisioning
-#      profile — automatic signing fetches both.
-#   3. App Store Connect credentials in your Keychain:
-#        xcrun notarytool store-credentials "MouSuguASC" \
-#            --apple-id "you@example.com" \
-#            --team-id "ABCD123456" \
-#            --password "abcd-efgh-ijkl-mnop"   # app-specific password
+# Signing and upload auth are fully automatic via the App Store Connect API
+# key stored in Infisical (engineering/prod): APP_STORE_CONNECT_KEY_ID /
+# _ISSUER_ID / _PRIVATE_KEY. The .p8 is fetched at runtime into altool's
+# search path and removed on exit — nothing sensitive is left on disk.
+# xcodebuild uses the same key with -allowProvisioningUpdates to create or
+# refresh the Mac App Store provisioning profile and any missing
+# distribution/installer certificate, so there is no manual signing setup.
+#
+# Prerequisites (one-time, done via the App Store Connect API):
+#   1. Bundle id dev.1930.MouSugu registered to team 7RX5GXJ5V3.
+#   2. App record created in App Store Connect (name, primary language, SKU).
 #
 # Usage:
 #   ./scripts/release-appstore.sh            # build and validate only
@@ -24,10 +25,10 @@
 # server-side.
 
 set -euo pipefail
+export PATH="/opt/homebrew/bin:$HOME/.local/bin:$PATH"
 
 APP_NAME="MouSugu"
 SCHEME="MouSugu-MAS"
-ASC_PROFILE="MouSuguASC"
 
 UPLOAD=false
 [[ "${1:-}" == "--upload" ]] && UPLOAD=true
@@ -37,6 +38,24 @@ BUILD_DIR="$ROOT_DIR/build-appstore"
 ARCHIVE_PATH="$BUILD_DIR/$APP_NAME.xcarchive"
 EXPORT_DIR="$BUILD_DIR/export"
 EXPORT_OPTIONS="$ROOT_DIR/scripts/ExportOptions-appstore.plist"
+
+# ---- App Store Connect API key: Infisical -> runtime .p8 ------------------
+INFISICAL_PID="0b3c27f1-21ae-4aa3-b8fb-a21857a6a35f"
+secret() { infisical-secret get "$1" --projectId "$INFISICAL_PID" --env prod --plain --silent; }
+
+ASC_KEY_ID="$(secret APP_STORE_CONNECT_KEY_ID)"
+ASC_ISSUER_ID="$(secret APP_STORE_CONNECT_ISSUER_ID)"
+
+KEY_DIR="$HOME/.appstoreconnect/private_keys"
+KEY_PATH="$KEY_DIR/AuthKey_${ASC_KEY_ID}.p8"
+mkdir -p "$KEY_DIR"
+( umask 077; secret APP_STORE_CONNECT_PRIVATE_KEY > "$KEY_PATH" )
+trap 'rm -f "$KEY_PATH"' EXIT
+
+AUTH=(-allowProvisioningUpdates
+      -authenticationKeyPath "$KEY_PATH"
+      -authenticationKeyID "$ASC_KEY_ID"
+      -authenticationKeyIssuerID "$ASC_ISSUER_ID")
 
 echo "▸ Cleaning $BUILD_DIR"
 rm -rf "$BUILD_DIR"
@@ -48,6 +67,7 @@ xcodebuild \
     -scheme "$SCHEME" \
     -configuration Release \
     -archivePath "$ARCHIVE_PATH" \
+    "${AUTH[@]}" \
     archive
 
 ARCHIVED_APP="$ARCHIVE_PATH/Products/Applications/$APP_NAME.app"
@@ -68,7 +88,8 @@ xcodebuild \
     -exportArchive \
     -archivePath "$ARCHIVE_PATH" \
     -exportPath "$EXPORT_DIR" \
-    -exportOptionsPlist "$EXPORT_OPTIONS"
+    -exportOptionsPlist "$EXPORT_OPTIONS" \
+    "${AUTH[@]}"
 
 PKG_PATH="$(find "$EXPORT_DIR" -name "*.pkg" | head -1)"
 if [[ -z "$PKG_PATH" ]]; then
@@ -80,14 +101,16 @@ echo "▸ Validating with App Store Connect"
 xcrun altool --validate-app \
     --type macos \
     --file "$PKG_PATH" \
-    --keychain-profile "$ASC_PROFILE"
+    --apiKey "$ASC_KEY_ID" \
+    --apiIssuer "$ASC_ISSUER_ID"
 
 if [[ "$UPLOAD" == true ]]; then
     echo "▸ Uploading to App Store Connect"
     xcrun altool --upload-app \
         --type macos \
         --file "$PKG_PATH" \
-        --keychain-profile "$ASC_PROFILE"
+        --apiKey "$ASC_KEY_ID" \
+        --apiIssuer "$ASC_ISSUER_ID"
     echo ""
     echo "✅ Uploaded. Attach the build to a version in App Store Connect and submit."
 else
