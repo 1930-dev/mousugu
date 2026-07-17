@@ -15,6 +15,15 @@
         <description>Update feed for the direct download of Mou Sugu.</description>
         <language>en</language>
         <item>
+            <title>1.1.2</title>
+            <pubDate>Fri, 17 Jul 2026 16:35:15 -0300</pubDate>
+            <link>https://mousugu.app/</link>
+            <sparkle:version>4</sparkle:version>
+            <sparkle:shortVersionString>1.1.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+            <enclosure url="https://github.com/1930-dev/mousugu/releases/download/v1.1.2/MouSugu-1.1.2.dmg" length="2035296" type="application/octet-stream" sparkle:edSignature="NJE2mK/LDbN8n7jPQZ8mrC5VeS8m96QTnSGuSAdFxO6P/kdK/cG7NoRt/r30n2GU2i2NCSopEvf55MkgORcCCg=="/>
+        </item>
+        <item>
             <title>1.1.1</title>
             <pubDate>Fri, 17 Jul 2026 14:49:20 -0300</pubDate>
             <link>https://mousugu.app/</link>
@@ -31,15 +40,6 @@
             <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
             <enclosure url="https://github.com/1930-dev/mousugu/releases/download/v1.1.0/MouSugu-1.1.0.dmg" length="1966461" type="application/octet-stream" sparkle:edSignature="8VKf8LokMtkyrrifWWs7+7zzeV0LbTpZKnfD+OhpITU8Fz4Yn9L58e4H2L+t0aqdHKfp/OItmd4heHOL8RmoAQ=="/>
-        </item>
-        <item>
-            <title>1.0.0</title>
-            <pubDate>Wed, 15 Jul 2026 15:36:58 +0000</pubDate>
-            <link>https://mousugu.app/</link>
-            <sparkle:version>1</sparkle:version>
-            <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/1930-dev/mousugu/releases/download/v1.0.0/MouSugu-1.0.0.dmg" length="1866375" type="application/octet-stream" sparkle:edSignature="TeZ9XE33+TzAMdtmgqFTwB9AgwOEjE7W8b5DTALZdo4dd+8YLPEsyCnMYVy6ix7B0O37/tEB3mBuqpLZYZK7CQ=="/>
         </item>
     </channel>
 </rss>
