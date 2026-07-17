@@ -41,12 +41,12 @@
         }
       }
     },
-    "Error ⚠️" : {
+    "Error" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Error ⚠️"
+            "value" : "Error"
           }
         }
       }
@@ -161,12 +161,12 @@
         }
       }
     },
-    "No permission 📅" : {
+    "No permission" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sin permiso 📅"
+            "value" : "Sin permiso"
           }
         }
       }

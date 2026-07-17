@@ -10,8 +10,8 @@ import Foundation
 struct Strings {
     struct General {
         static var loading: String { String(localized: "Loading…") }
-        static var noPermission: String { String(localized: "No permission 📅") }
-        static var error: String { String(localized: "Error ⚠️") }
+        static var noPermission: String { String(localized: "No permission") }
+        static var error: String { String(localized: "Error") }
         static var noMoreEvents: String { String(localized: "No more events today") }
         static var untitledEvent: String { String(localized: "Untitled event") }
         static var join: String { String(localized: "Join") }
