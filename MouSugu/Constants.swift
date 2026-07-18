@@ -57,12 +57,14 @@ struct Strings {
     struct Settings {
         static var general: String { String(localized: "General") }
         static var calendars: String { String(localized: "Calendars") }
+        /// Section headers in the General pane.
+        static var eventsSection: String { String(localized: "Events") }
+        static var appSection: String { String(localized: "App") }
         static var autoStart: String { String(localized: "Start at macOS login") }
         static var hideFreeEvents: String { String(localized: "Hide events where I'm free") }
         static var joinGraceWindow: String { String(localized: "Keep Join button after meetings end") }
         static var joinGraceOff: String { String(localized: "Never") }
         static var dayDoneLabel: String { String(localized: "After the last event") }
         static var dayDoneText: String { String(localized: "Done for today") }
-        static var dayDoneIconOnly: String { String(localized: "Icon only") }
     }
 }

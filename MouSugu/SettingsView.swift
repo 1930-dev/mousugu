@@ -43,7 +43,7 @@ struct CalendarSettingsView: View {
                     .tabItem { Label(Strings.Settings.calendars, systemImage: "calendar") }
                     .tag(SettingsTab.calendars)
             }
-            .frame(width: 440, height: 260)
+            .frame(width: 400, height: 290)
             Divider()
             Text(versionLabel)
                 .font(.caption)
@@ -71,41 +71,44 @@ private struct GeneralPane: View {
     }()
 
     var body: some View {
+        // Rows are grouped by concern and, within each section, ordered
+        // alphabetically by their label.
         Form {
-            // Event behavior first, app behavior after.
-            Toggle(Strings.Settings.hideFreeEvents, isOn: $hideFreeTimeEvents)
-                .onChange(of: hideFreeTimeEvents) { _, _ in
+            Section(Strings.Settings.eventsSection) {
+                Picker(Strings.Settings.dayDoneLabel, selection: $dayDoneStyleRaw) {
+                    ForEach(DayDoneStyle.allCases, id: \.rawValue) { style in
+                        Text(style.pickerLabel).tag(style.rawValue)
+                    }
+                }
+                .onChange(of: dayDoneStyleRaw) { _, _ in
+                    // Re-derives the bar label so a day already wrapped reflects
+                    // the new choice immediately, not at the next minute tick.
                     store.loadEvents()
                 }
-            Picker(Strings.Settings.joinGraceWindow, selection: $joinGraceMinutes) {
-                Text(Strings.Settings.joinGraceOff).tag(0)
-                ForEach([15, 30, 60], id: \.self) { minutes in
-                    Text(Self.graceFormatter.string(from: TimeInterval(minutes * 60)) ?? "\(minutes)")
-                        .tag(minutes)
+                Toggle(Strings.Settings.hideFreeEvents, isOn: $hideFreeTimeEvents)
+                    .onChange(of: hideFreeTimeEvents) { _, _ in
+                        store.loadEvents()
+                    }
+                Picker(Strings.Settings.joinGraceWindow, selection: $joinGraceMinutes) {
+                    Text(Strings.Settings.joinGraceOff).tag(0)
+                    ForEach([15, 30, 60], id: \.self) { minutes in
+                        Text(Self.graceFormatter.string(from: TimeInterval(minutes * 60)) ?? "\(minutes)")
+                            .tag(minutes)
+                    }
                 }
             }
-            Picker(Strings.Settings.dayDoneLabel, selection: $dayDoneStyleRaw) {
-                ForEach(DayDoneStyle.allCases, id: \.rawValue) { style in
-                    Text(style.pickerLabel).tag(style.rawValue)
-                }
-            }
-            .onChange(of: dayDoneStyleRaw) { _, _ in
-                // Re-derives the bar label so a day already wrapped reflects
-                // the new choice immediately, not at the next minute tick.
-                store.loadEvents()
-            }
-            Toggle(Strings.Settings.autoStart, isOn: $autoStartEnabled)
-                .onChange(of: autoStartEnabled) { _, newValue in
-                    toggleAutoStart(enabled: newValue)
-                }
-            // Only the direct/DMG channel ships Sparkle — in the App Store
-            // build `isAvailable` is false and the row disappears.
-            if updater.isAvailable {
-                Section {
+            Section(Strings.Settings.appSection) {
+                // Only the direct/DMG channel ships Sparkle — in the App Store
+                // build `isAvailable` is false and the row disappears.
+                if updater.isAvailable {
                     Button(Strings.General.checkForUpdates) {
                         updater.checkForUpdates()
                     }
                 }
+                Toggle(Strings.Settings.autoStart, isOn: $autoStartEnabled)
+                    .onChange(of: autoStartEnabled) { _, newValue in
+                        toggleAutoStart(enabled: newValue)
+                    }
             }
         }
         .formStyle(.grouped)

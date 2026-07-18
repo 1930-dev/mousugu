@@ -8,23 +8,19 @@ enum DayDoneStyle: String, CaseIterable {
     case otsukaresama
     case doneForToday
     case checkmark
-    case iconOnly
 
-    /// The text next to the bar icon (empty collapses the bar to the icon).
+    /// The text next to the bar icon once the day's meetings ended.
     var barLabel: String {
         switch self {
         case .otsukaresama: Strings.Status.dayDone
         case .doneForToday: Strings.Settings.dayDoneText
         case .checkmark: "✓"
-        case .iconOnly: ""
         }
     }
 
     /// Row title in the Settings picker — the bar text itself, so the choice
-    /// previews what it does; only icon-only needs a descriptive name.
-    var pickerLabel: String {
-        self == .iconOnly ? Strings.Settings.dayDoneIconOnly : barLabel
-    }
+    /// previews exactly what it shows.
+    var pickerLabel: String { barLabel }
 }
 
 @MainActor

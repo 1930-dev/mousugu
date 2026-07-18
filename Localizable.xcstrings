@@ -101,16 +101,6 @@
         }
       }
     },
-    "Icon only" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solo el ícono"
-          }
-        }
-      }
-    },
     "Join" : {
       "localizations" : {
         "es" : {
@@ -333,6 +323,26 @@
     },
     "おつかれさま" : {
       "shouldTranslate" : false
+    },
+    "App" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App"
+          }
+        }
+      }
+    },
+    "Events" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eventos"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
