@@ -28,6 +28,44 @@ const xDefault = alternates.find((a) => a.lang === 'en');
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Language auto-detection. On the English root only, redirect a first-time
+         visitor whose browser prefers es/ja to that translation — exactly once.
+         A localStorage flag makes it stick: it is written before the redirect and
+         whenever the visitor clicks a language link (every switcher/footer lang
+         link carries a `lang` attribute), so a manual choice — including going
+         back to English — permanently stops the auto-redirect. Inline and early
+         so the replace happens before the body paints (no flash of English).
+         SEO is unaffected: hreflang + self-canonical still expose all three. -->
+    <script is:inline>
+      (function () {
+        var KEY = 'ms-lang';
+        var ROOT = { en: '/', es: '/es', ja: '/ja' };
+        try {
+          document.addEventListener('click', function (e) {
+            var a = e.target.closest && e.target.closest('a[lang]');
+            if (!a) return;
+            var code = a.getAttribute('lang');
+            if (ROOT[code] && a.getAttribute('href') === ROOT[code]) {
+              try { localStorage.setItem(KEY, code); } catch (_) {}
+            }
+          });
+          if (location.pathname === '/' && !localStorage.getItem(KEY)) {
+            var langs = navigator.languages || [navigator.language || 'en'];
+            for (var i = 0; i < langs.length; i++) {
+              var code = (langs[i] || '').slice(0, 2).toLowerCase();
+              if (code === 'en') break;
+              if (code === 'es' || code === 'ja') {
+                localStorage.setItem(KEY, code);
+                location.replace(ROOT[code]);
+                break;
+              }
+            }
+          }
+        } catch (_) {}
+      })();
+    </script>
+
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
