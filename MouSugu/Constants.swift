@@ -68,5 +68,6 @@ struct Strings {
         static var joinGraceOff: String { String(localized: "Never") }
         static var dayDoneLabel: String { String(localized: "After the last event") }
         static var dayDoneText: String { String(localized: "Done for today") }
+        static var version: String { String(localized: "Version") }
     }
 }

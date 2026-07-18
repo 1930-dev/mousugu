@@ -21,6 +21,16 @@
         }
       }
     },
+    "App" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App"
+          }
+        }
+      }
+    },
     "Calendar access needed" : {
       "localizations" : {
         "es" : {
@@ -67,6 +77,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error"
+          }
+        }
+      }
+    },
+    "Events" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eventos"
           }
         }
       }
@@ -221,6 +241,16 @@
         }
       }
     },
+    "Other" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otros"
+          }
+        }
+      }
+    },
     "Preferences…" : {
       "localizations" : {
         "es" : {
@@ -291,6 +321,16 @@
         }
       }
     },
+    "Version" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versión"
+          }
+        }
+      }
+    },
     "in %dh %dm: " : {
       "localizations" : {
         "es" : {
@@ -323,36 +363,6 @@
     },
     "おつかれさま" : {
       "shouldTranslate" : false
-    },
-    "App" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "App"
-          }
-        }
-      }
-    },
-    "Events" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eventos"
-          }
-        }
-      }
-    },
-    "Other" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Otros"
-          }
-        }
-      }
     }
   },
   "version" : "1.0"

@@ -22,35 +22,21 @@ struct CalendarSettingsView: View {
     @ObservedObject var updater: UpdateChecker
     @AppStorage("selectedSettingsTab") private var selection: SettingsTab = .general
 
-    /// "1.1.1 (3)" — marketing version plus build number, straight from the
-    /// bundle so both channels (direct and MAS) report what they really are.
-    private var versionLabel: String {
-        let info = Bundle.main.infoDictionary
-        let short = info?["CFBundleShortVersionString"] as? String ?? "?"
-        let build = info?["CFBundleVersion"] as? String ?? "?"
-        return "\(short) (\(build))"
-    }
-
     var body: some View {
-        VStack(spacing: 0) {
-            // `.tabItem`/`.tag` rather than the newer `Tab(_:value:)` API, which is
-            // macOS 15+; this keeps the deployment target at macOS 14.
-            TabView(selection: $selection) {
-                GeneralPane(store: store, updater: updater)
-                    .tabItem { Label(Strings.Settings.general, systemImage: "gearshape") }
-                    .tag(SettingsTab.general)
-                CalendarsPane(store: store)
-                    .tabItem { Label(Strings.Settings.calendars, systemImage: "calendar") }
-                    .tag(SettingsTab.calendars)
-            }
-            .frame(width: 400, height: 290)
-            Divider()
-            Text(versionLabel)
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, DesignSystem.Spacing.xs)
+        // `.tabItem`/`.tag` rather than the newer `Tab(_:value:)` API, which is
+        // macOS 15+; this keeps the deployment target at macOS 14.
+        // The fixed width pins the window to the form's content; the version
+        // now lives in a General-tab row, so there's no flexible footer to let
+        // the window stretch wider than it needs.
+        TabView(selection: $selection) {
+            GeneralPane(store: store, updater: updater)
+                .tabItem { Label(Strings.Settings.general, systemImage: "gearshape") }
+                .tag(SettingsTab.general)
+            CalendarsPane(store: store)
+                .tabItem { Label(Strings.Settings.calendars, systemImage: "calendar") }
+                .tag(SettingsTab.calendars)
         }
+        .frame(width: 360, height: 290)
     }
 }
 
@@ -70,9 +56,19 @@ private struct GeneralPane: View {
         return formatter
     }()
 
+    /// "1.1.1 (3)" — marketing version plus build number, straight from the
+    /// bundle so both channels (direct and MAS) report what they really are.
+    private var versionLabel: String {
+        let info = Bundle.main.infoDictionary
+        let short = info?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info?["CFBundleVersion"] as? String ?? "?"
+        return "\(short) (\(build))"
+    }
+
     var body: some View {
         // Rows are grouped by concern and, within each section, ordered
-        // alphabetically by their label.
+        // alphabetically by their label — except the App section, which ends
+        // with the version and its "Check for updates" action.
         Form {
             Section(Strings.Settings.eventsSection) {
                 Picker(Strings.Settings.dayDoneLabel, selection: $dayDoneStyleRaw) {
@@ -98,17 +94,21 @@ private struct GeneralPane: View {
                 }
             }
             Section(Strings.Settings.appSection) {
-                // Only the direct/DMG channel ships Sparkle — in the App Store
-                // build `isAvailable` is false and the row disappears.
+                Toggle(Strings.Settings.autoStart, isOn: $autoStartEnabled)
+                    .onChange(of: autoStartEnabled) { _, newValue in
+                        toggleAutoStart(enabled: newValue)
+                    }
+                LabeledContent(Strings.Settings.version, value: versionLabel)
+                // "Check for updates" is intentionally the last row — it reads
+                // as an action on the version shown just above, so it breaks the
+                // section's otherwise-alphabetical order. Only the direct/DMG
+                // channel ships Sparkle; in the App Store build `isAvailable` is
+                // false and the row disappears.
                 if updater.isAvailable {
                     Button(Strings.General.checkForUpdates) {
                         updater.checkForUpdates()
                     }
                 }
-                Toggle(Strings.Settings.autoStart, isOn: $autoStartEnabled)
-                    .onChange(of: autoStartEnabled) { _, newValue in
-                        toggleAutoStart(enabled: newValue)
-                    }
             }
         }
         .formStyle(.grouped)
