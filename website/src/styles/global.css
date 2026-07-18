@@ -66,23 +66,14 @@ section { padding: 4.5rem 0; }
 .hero .kana-line { margin-top: 0.9rem; color: var(--muted); font-size: 0.95rem; }
 .hero .kana-line em { font-style: normal; color: var(--shu); }
 
-/* Menu bar mock — pure CSS, doubles as the LCP element */
-.menubar-mock {
-  margin: 2.6rem auto 0; display: inline-flex; align-items: center; gap: 0.55rem;
-  background: var(--glass); border: 1px solid var(--glass-border);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  border-radius: 999px; padding: 0.55rem 1.1rem;
-  font-size: 0.95rem; font-variant-numeric: tabular-nums;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
+/* Hero shot — the LCP element */
+.hero-shot {
+  margin: 2.6rem auto 0; max-width: 760px;
+  border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
 }
-.menubar-mock .dot {
-  width: 10px; height: 10px; border-radius: 3px; background: var(--shu);
-  box-shadow: 0 0 12px rgba(230, 59, 46, 0.7);
-}
-.menubar-mock .join {
-  background: var(--shu); color: #fff; border-radius: 999px;
-  padding: 0.12rem 0.7rem; font-size: 0.83rem; font-weight: 600;
-}
+.hero-shot img { display: block; width: 100%; height: auto; }
 
 /* CTA buttons */
 .cta-row { display: flex; gap: 0.9rem; justify-content: center; margin-top: 2.4rem; flex-wrap: wrap; }
@@ -147,10 +138,6 @@ footer .col strong { display: block; margin-bottom: 0.3rem; }
   font-size: 0.9em;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .menubar-mock .dot { animation: pulse 2.4s ease-in-out infinite; }
-  @keyframes pulse { 50% { opacity: 0.55; } }
-}
 
 /* Blog */
 .prose .table-scroll { overflow-x: auto; margin: 1.2rem 0; }
@@ -212,7 +199,7 @@ footer .col strong { display: block; margin-bottom: 0.3rem; }
   .hero { padding: 2.8rem 0 2.4rem; }
   .nav { padding: 0.9rem 0; }
   .nav .brand .kana { display: none; }
-  .menubar-mock { margin-top: 2rem; }
+  .hero-shot { margin-top: 2rem; }
   /* Footer stacks; drop the big void above it and give links room to tap. */
   footer { margin-top: 1.5rem; padding: 1.8rem 0 2.4rem; }
   footer .cols { gap: 1.6rem; }
@@ -264,8 +251,4 @@ footer .col strong { display: block; margin-bottom: 0.3rem; }
 
 @media (prefers-reduced-motion: reduce) {
   .nav .links { transition: none; }
-}
-
-@media (max-width: 400px) {
-  .menubar-mock { font-size: 0.85rem; padding: 0.5rem 0.9rem; gap: 0.4rem; }
 }
