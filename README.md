@@ -45,23 +45,12 @@ icon is your next meeting, rising.
 - **Native and weightless** — SwiftUI `MenuBarExtra`, translucent Control-Center-style glass, SF Symbols, full light/dark support, English and Spanish localization, and opt-in start at login via `SMAppService`.
 - **Private by design** — runs in the App Sandbox, reads your calendar locally, and talks to no server. No account, no analytics, no tracking.
 
-## Screenshots
-
-<div align="center">
-
-<!-- Drop popover / menu-bar screenshots here -->
-<em>A live countdown in the bar; today's events and a Join button in the popover.</em>
-
-</div>
-
 ## Requirements
 
 - macOS 15 (Sequoia) or later
 - Calendar access (granted on first launch)
 
 ## Install
-
-### Download
 
 Grab the latest `.dmg` from the [Releases](../../releases) page,
 open it, and drag **Mou Sugu** to your Applications folder. This build keeps
@@ -70,40 +59,17 @@ itself up to date through [Sparkle](https://github.com/sparkle-project/Sparkle).
 A Mac App Store build is also published — same app, minus the updater, since the
 App Store ships updates itself.
 
-### Build from source
-
-```bash
-git clone https://github.com/1930-dev/mousugu.git
-cd mousugu
-open MouSugu.xcodeproj
-```
-
-Then **Product → Run** in Xcode. On first launch, grant calendar access when prompted.
-
 ## Usage
 
 1. Launch the app — a calendar icon with your next event appears in the menu bar.
 2. Click it to see the rest of today and to join your next call.
 3. Open **Preferences…** to choose calendars, hide free time, and enable start-at-login.
 
-## Releasing
+## Contributing
 
-Two channels ship from this repo, as two targets over the same sources:
-
-| Channel | Scheme | Updater | Script |
-| --- | --- | --- | --- |
-| Direct (DMG) | `MouSugu` | Sparkle | `scripts/release.sh` |
-| Mac App Store | `MouSugu-MAS` | Apple's | `scripts/release-appstore.sh` |
-
-`release.sh` archives, signs with your Developer ID, notarizes, staples, packages
-a DMG, and regenerates `website/appcast.xml` signed with the Ed25519 key in your
-Keychain. `release-appstore.sh` archives the App Store target, refuses to proceed
-if Sparkle somehow made it into the bundle, then validates and optionally uploads.
-
-Only the direct target links Sparkle — Apple rejects apps that bundle their own
-updater, and SPM links per target rather than per configuration.
-[APP_STORE.md](APP_STORE.md) explains how the split works and what App Store
-Connect still needs. See each script's header for one-time prerequisites.
+Want to build from source, translate the app, or cut a release? See
+[CONTRIBUTING.md](CONTRIBUTING.md). Bug reports and feature ideas are welcome in
+[Issues](../../issues).
 
 ## License
 
