@@ -52,7 +52,8 @@ struct MonthGrid {
 
 /// Itsycal-style month calendar: title and navigation, localized weekday
 /// headers, and a grid of days with per-calendar event dots. Clicking a day
-/// opens Calendar.app positioned on it — the popover's list stays on today.
+/// points the event list below at it; the menu bar countdown stays on today.
+/// The go-to-today control snaps both the grid and the selection back.
 struct MonthCalendarView: View {
     @ObservedObject var store: CalendarStore
     @Environment(\.colorScheme) private var colorScheme
@@ -93,6 +94,10 @@ struct MonthCalendarView: View {
         }
         .onAppear {
             displayedMonth = Date()
+            // MenuBarExtra keeps the store alive across opens, so the list
+            // could still be pointed at a day the user browsed last time —
+            // reset it to today whenever the popover reappears.
+            store.selectDay(Date())
             store.setMonthDotRange(grid.interval)
         }
     }
@@ -115,7 +120,7 @@ struct MonthCalendarView: View {
                               iconSize: DesignSystem.Layout.monthTodayDotIconSize,
                               buttonSize: DesignSystem.Layout.monthNavButtonSize,
                               iconColor: DesignSystem.Colors.todayRed) {
-                show(month: Date())
+                goToToday()
             }
             ToolbarIconButton(systemName: "chevron.right",
                               label: Strings.Month.nextMonth,
@@ -145,17 +150,32 @@ struct MonthCalendarView: View {
                 HStack(spacing: 0) {
                     ForEach(grid.weeks[week]) { day in
                         DayCell(day: day,
-                                dotColors: store.monthDayColors[day.key] ?? [])
+                                dotColors: store.monthDayColors[day.key] ?? [],
+                                isSelected: isSelected(day),
+                                onSelect: { store.selectDay(day.date) })
                     }
                 }
             }
         }
     }
 
+    /// True when `day` is the day the event list is currently showing.
+    private func isSelected(_ day: MonthGrid.Day) -> Bool {
+        Calendar.current.isDate(day.date, inSameDayAs: store.selectedDay)
+    }
+
     private func shiftMonth(by months: Int) {
         guard let shifted = Calendar.current.date(
             byAdding: .month, value: months, to: displayedMonth) else { return }
         show(month: shifted)
+    }
+
+    /// The go-to-today control: jump the grid to this month *and* point the
+    /// event list back at today. Plain month navigation leaves the selection
+    /// alone; only this resets it.
+    private func goToToday() {
+        show(month: Date())
+        store.selectDay(Date())
     }
 
     private func show(month: Date) {
@@ -170,8 +190,18 @@ struct MonthCalendarView: View {
 struct DayCell: View {
     let day: MonthGrid.Day
     let dotColors: [Color]
+    /// Whether the event list is currently showing this day.
+    let isSelected: Bool
+    /// Point the event list at this day.
+    let onSelect: () -> Void
     @State private var isHovered = false
     @Environment(\.colorScheme) private var colorScheme
+
+    /// Ring marking the browsed day when it isn't today. Explicit black/white,
+    /// not `.primary`: semantic colors render in the glass's vibrancy pass.
+    private var selectionColor: Color {
+        (colorScheme == .dark ? Color.white : Color.black).opacity(0.4)
+    }
 
     /// Explicit black/white, NOT `Color.primary`: semantic colors render in
     /// the glass's vibrancy pass, which composites OVER plain-color siblings
@@ -196,7 +226,7 @@ struct DayCell: View {
 
     var body: some View {
         Button {
-            CalendarAppLauncher.open(showing: day.date)
+            onSelect()
         } label: {
             // The number is the cell's only in-flow content, so it centers
             // with equal air above and below. The dots don't participate in
@@ -221,6 +251,14 @@ struct DayCell: View {
                             .padding(.vertical, DesignSystem.Spacing.xs + DesignSystem.Layout.monthTodayBorderWidth)
                         RoundedRectangle(cornerRadius: DesignSystem.Radius.xs)
                             .strokeBorder(DesignSystem.Colors.todayRed,
+                                          lineWidth: DesignSystem.Layout.monthTodayBorderWidth)
+                            .padding(.horizontal, DesignSystem.Spacing.xs)
+                            .padding(.vertical, DesignSystem.Spacing.xs)
+                    } else if isSelected {
+                        // A browsed day other than today: a quiet neutral ring,
+                        // distinct from today's red box.
+                        RoundedRectangle(cornerRadius: DesignSystem.Radius.xs)
+                            .strokeBorder(selectionColor,
                                           lineWidth: DesignSystem.Layout.monthTodayBorderWidth)
                             .padding(.horizontal, DesignSystem.Spacing.xs)
                             .padding(.vertical, DesignSystem.Spacing.xs)

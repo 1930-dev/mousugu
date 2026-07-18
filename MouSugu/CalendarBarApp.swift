@@ -107,7 +107,7 @@ struct MainMenuView: View {
     /// is granted.
     private var todayEventsList: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(Strings.Menu.today)
+            Text(sectionTitle)
                 .font(.subheadline)
                 // Same x as the month title and the row cards' left edge, so
                 // both section headers sit on one vertical line.
@@ -115,10 +115,11 @@ struct MainMenuView: View {
                 .padding(.top, DesignSystem.Spacing.xs)
                 .padding(.bottom, DesignSystem.Spacing.xs)
 
-            if store.todayEvents.isEmpty {
+            if store.selectedDayEvents.isEmpty {
                 emptyState(icon: "calendar.badge.clock",
-                           message: Strings.Status.noEvents)
-            } else if dayIsOver {
+                           message: viewingToday ? Strings.Status.noEvents
+                                                 : Strings.Status.noEventsThisDay)
+            } else if viewingToday && dayIsOver {
                 // The day happened but nothing lies ahead — a quiet "done"
                 // beats a list of dimmed leftovers with the now line under it.
                 emptyState(icon: "checkmark.circle",
@@ -128,6 +129,21 @@ struct MainMenuView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// True while the list shows today — drives the header label and the
+    /// today-only empty states.
+    private var viewingToday: Bool {
+        Calendar.current.isDateInToday(store.selectedDay)
+    }
+
+    /// "Today" for the current day, otherwise the browsed day's localized
+    /// short date (e.g. "Mon, Jul 20").
+    private var sectionTitle: String {
+        viewingToday
+            ? Strings.Menu.today
+            : store.selectedDay.formatted(.dateTime.weekday(.abbreviated)
+                .month(.abbreviated).day())
     }
 
     /// Every event today already ended AND no meeting is still inside its

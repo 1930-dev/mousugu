@@ -28,7 +28,7 @@ struct TodayEventListView: View {
     /// The first upcoming meeting today — the only future event that should
     /// show a "Unirse" button.
     private func nextUpcomingMeetingID(now: Date) -> String? {
-        store.todayEvents
+        store.selectedDayEvents
             .first { $0.startDate > now && store.findMeetingURL(for: $0) != nil }?
             .eventIdentifier
     }
@@ -44,14 +44,20 @@ struct TodayEventListView: View {
 
     var body: some View {
         let now = Date()
-        let events = store.todayEvents
-        let inProgressIndex = events.firstIndex { $0.startDate <= now && $0.endDate > now }
+        let events = store.selectedDayEvents
+        // The now line, join buttons and past-event dimming are meaningful
+        // only while the list shows today. Browsing another day, the rows are
+        // a plain schedule with none of those "current time" adornments.
+        let viewingToday = Calendar.current.isDateInToday(store.selectedDay)
+        let inProgressIndex = viewingToday
+            ? events.firstIndex { $0.startDate <= now && $0.endDate > now }
+            : nil
         // Standalone line position when nothing is running: above the first
         // event still alive; after the last row once the day is over.
-        let standaloneLineIndex = inProgressIndex == nil
+        let standaloneLineIndex = viewingToday && inProgressIndex == nil
             ? (events.firstIndex { $0.endDate > now } ?? events.count)
             : nil
-        let nextMeetingID = nextUpcomingMeetingID(now: now)
+        let nextMeetingID = viewingToday ? nextUpcomingMeetingID(now: now) : nil
 
         ScrollView {
             VStack(spacing: DesignSystem.Spacing.xs) {
@@ -65,7 +71,8 @@ struct TodayEventListView: View {
                     EventRow(
                         event: event,
                         store: store,
-                        isNextUpcomingMeeting: event.eventIdentifier == nextMeetingID
+                        isNextUpcomingMeeting: event.eventIdentifier == nextMeetingID,
+                        dimsPast: viewingToday
                     )
                     .overlay {
                         if index == inProgressIndex {
@@ -120,6 +127,9 @@ struct EventRow: View {
     let event: EKEvent
     @ObservedObject var store: CalendarStore
     let isNextUpcomingMeeting: Bool
+    /// Dim this row once it's over. False when browsing a non-today schedule,
+    /// where "past" carries no meaning.
+    let dimsPast: Bool
     @State private var isHovered = false
 
     /// What kind of join button (if any) to display for this event.
@@ -192,7 +202,7 @@ struct EventRow: View {
                     ? DesignSystem.Opacity.eventRowFillHovered
                     : DesignSystem.Opacity.eventRowFill))
         )
-        .opacity(isPast && !isHovered ? DesignSystem.Opacity.pastEvent : 1)
+        .opacity(dimsPast && isPast && !isHovered ? DesignSystem.Opacity.pastEvent : 1)
         .onHover { hovering in
             isHovered = hovering
         }

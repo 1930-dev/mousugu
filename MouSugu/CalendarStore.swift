@@ -32,6 +32,14 @@ final class CalendarStore: ObservableObject {
     private let eventStore = EKEventStore()
     
     @Published var todayEvents: [EKEvent] = []
+    /// Start-of-day the popover list is showing. Defaults to today; the month
+    /// grid repoints it via `selectDay`, and it snaps back to today on day
+    /// rollover and on each popover open. The menu bar countdown never follows
+    /// it — only the list does.
+    @Published var selectedDay: Date = Calendar.current.startOfDay(for: Date())
+    /// Events for `selectedDay` — what the popover list renders. Identical to
+    /// `todayEvents` while the selection is today.
+    @Published private(set) var selectedDayEvents: [EKEvent] = []
     @Published var allCalendars: [EKCalendar] = []
     @Published var nextEvent: EKEvent?
     @Published var countdownLabel: String = Strings.General.loading
@@ -142,16 +150,36 @@ final class CalendarStore: ObservableObject {
         self.allCalendars = eventStore.calendars(for: .event)
             .sorted { $0.title < $1.title }
 
-        let cal = Calendar.current
-        let start = cal.startOfDay(for: Date())
-        let end = cal.date(byAdding: .day, value: 1, to: start)!
-        
-        // Filtrar calendarios seleccionados por el usuario
+        let today = Calendar.current.startOfDay(for: Date())
+        if today != loadedDay {
+            // A new calendar day began: the join history and any day the user
+            // was browsing belong to yesterday — snap both back to today.
+            joinedEventKeys.removeAll()
+            selectedDay = today
+        }
+        self.loadedDay = today
+
+        self.todayEvents = events(forDayStarting: today)
+        self.selectedDayEvents = selectedDay == today
+            ? todayEvents
+            : events(forDayStarting: selectedDay)
+
+        updateCountdown()
+        loadMonthDots()
+    }
+
+    /// Visible, non-all-day events for the single day starting at `dayStart`,
+    /// with the same calendar-visibility and free-time filters the bar uses,
+    /// in stable start order. Reads `allCalendars`, so callers must refresh it
+    /// first.
+    private func events(forDayStarting dayStart: Date) -> [EKEvent] {
+        let end = Calendar.current.date(byAdding: .day, value: 1, to: dayStart)!
         let hiddenIDs = getHiddenCalendarIDs()
         let calendarsToFetch = allCalendars.filter { !hiddenIDs.contains($0.calendarIdentifier) }
-        
-        let predicate = eventStore.predicateForEvents(withStart: start, end: end, calendars: calendarsToFetch.isEmpty ? nil : calendarsToFetch)
-        let events = eventStore.events(matching: predicate)
+        let predicate = eventStore.predicateForEvents(
+            withStart: dayStart, end: end,
+            calendars: calendarsToFetch.isEmpty ? nil : calendarsToFetch)
+        return eventStore.events(matching: predicate)
             .filter { !$0.isAllDay }
             .filter { !hideFreeTimeEvents || $0.availability != .free }
             // Simultaneous starts: the event that ends first goes first, then
@@ -161,14 +189,16 @@ final class CalendarStore: ObservableObject {
                 ($0.startDate, $0.endDate, $0.title ?? "")
                     < ($1.startDate, $1.endDate, $1.title ?? "")
             }
-        
-        self.todayEvents = events
-        if start != loadedDay {
-            joinedEventKeys.removeAll()
-        }
-        self.loadedDay = start
-        updateCountdown()
-        loadMonthDots()
+    }
+
+    /// Point the popover list at `date`'s day. The menu bar countdown stays on
+    /// today; only the list follows the selection. No-op when the day is
+    /// already selected.
+    func selectDay(_ date: Date) {
+        let day = Calendar.current.startOfDay(for: date)
+        guard day != selectedDay else { return }
+        selectedDay = day
+        selectedDayEvents = day == loadedDay ? todayEvents : events(forDayStarting: day)
     }
 
     func markJoined(_ event: EKEvent) {

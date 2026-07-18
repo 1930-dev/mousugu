@@ -30,6 +30,8 @@ struct Strings {
         /// Format string — consumed via `String(format:)` with hour and minute counts.
         static var inHoursMinutes: String { String(localized: "in %dh %dm: ") }
         static var noEvents: String { String(localized: "No events today") }
+        /// Empty state for a browsed day other than today.
+        static var noEventsThisDay: String { String(localized: "No events") }
         /// "Good work today" — the bar's sign-off once every meeting ended,
         /// in keeping with the app's Japanese name. Same in every locale.
         static var dayDone: String { String(localized: "おつかれさま") }
