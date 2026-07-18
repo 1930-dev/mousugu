@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
+import heroImage from '../assets/hero.webp';
 
 const alternates = [
   { lang: 'en', path: '/' },
@@ -86,7 +87,7 @@ const schemas = [
       <p class="kana-line"><em>もうすぐ</em> — 名前はそのまま、日本語から。</p>
 
       <div class="hero-shot">
-        <img src="/hero.webp" width="1558" height="942" fetchpriority="high"
+        <img src={heroImage.src} width={heroImage.width} height={heroImage.height} fetchpriority="high"
              alt="macOS のメニューバーの Mou Sugu：次の会議までのカウントダウンと、今日の予定・ワンクリック参加ボタンを表示した開いたポップオーバー" />
       </div>
 
