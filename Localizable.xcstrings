@@ -11,6 +11,16 @@
         }
       }
     },
+    "After the last event" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al terminar el último evento"
+          }
+        }
+      }
+    },
     "Calendar access needed" : {
       "localizations" : {
         "es" : {
@@ -37,6 +47,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Buscar actualizaciones…"
+          }
+        }
+      }
+    },
+    "Done for today" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listo por hoy"
           }
         }
       }
@@ -77,6 +97,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ocultar eventos donde estoy libre"
+          }
+        }
+      }
+    },
+    "Icon only" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo el ícono"
           }
         }
       }
@@ -300,6 +330,9 @@
           }
         }
       }
+    },
+    "おつかれさま" : {
+      "shouldTranslate" : false
     }
   },
   "version" : "1.0"

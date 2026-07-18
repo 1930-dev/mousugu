@@ -2,6 +2,31 @@ import SwiftUI
 import EventKit
 import Combine
 
+/// What the menu bar shows once every meeting today has ended. Persisted by
+/// raw value under "dayDoneStyle"; おつかれさま is the default sign-off.
+enum DayDoneStyle: String, CaseIterable {
+    case otsukaresama
+    case doneForToday
+    case checkmark
+    case iconOnly
+
+    /// The text next to the bar icon (empty collapses the bar to the icon).
+    var barLabel: String {
+        switch self {
+        case .otsukaresama: Strings.Status.dayDone
+        case .doneForToday: Strings.Settings.dayDoneText
+        case .checkmark: "✓"
+        case .iconOnly: ""
+        }
+    }
+
+    /// Row title in the Settings picker — the bar text itself, so the choice
+    /// previews what it does; only icon-only needs a descriptive name.
+    var pickerLabel: String {
+        self == .iconOnly ? Strings.Settings.dayDoneIconOnly : barLabel
+    }
+}
+
 @MainActor
 final class CalendarStore: ObservableObject {
     private let eventStore = EKEventStore()
@@ -36,6 +61,8 @@ final class CalendarStore: ObservableObject {
     /// Minutes a finished meeting keeps its join button (0 hides immediately).
     /// User-configurable from Settings → General.
     @AppStorage("joinGraceMinutes") var joinGraceMinutes: Int = 30
+    /// Menu bar sign-off once the day's meetings ended (Settings → General).
+    @AppStorage("dayDoneStyle") private var dayDoneStyleRaw: String = DayDoneStyle.otsukaresama.rawValue
 
     /// Events actually joined from the popover today — the real signal behind
     /// Unirse vs Re-unirse. In-memory only; cleared on day rollover.
@@ -224,9 +251,11 @@ final class CalendarStore: ObservableObject {
         nextEvent = upcoming
 
         guard let next = upcoming else {
-            // No upcoming event: collapse the menu bar to just the icon (the
-            // popover still shows its "no more events" empty state).
-            countdownLabel = ""
+            // Day wrapped after actual meetings: the user-chosen sign-off. A
+            // day with no events at all keeps the bar collapsed to just the
+            // icon; there is nothing to sign off from.
+            let style = DayDoneStyle(rawValue: dayDoneStyleRaw) ?? .otsukaresama
+            countdownLabel = todayEvents.isEmpty ? "" : style.barLabel
             return
         }
 

@@ -30,6 +30,9 @@ struct Strings {
         /// Format string — consumed via `String(format:)` with hour and minute counts.
         static var inHoursMinutes: String { String(localized: "in %dh %dm: ") }
         static var noEvents: String { String(localized: "No events today") }
+        /// "Good work today" — the bar's sign-off once every meeting ended,
+        /// in keeping with the app's Japanese name. Same in every locale.
+        static var dayDone: String { String(localized: "おつかれさま") }
     }
 
     struct Menu {
@@ -56,5 +59,8 @@ struct Strings {
         static var hideFreeEvents: String { String(localized: "Hide events where I'm free") }
         static var joinGraceWindow: String { String(localized: "Keep Join button after meetings end") }
         static var joinGraceOff: String { String(localized: "Never") }
+        static var dayDoneLabel: String { String(localized: "After the last event") }
+        static var dayDoneText: String { String(localized: "Done for today") }
+        static var dayDoneIconOnly: String { String(localized: "Icon only") }
     }
 }

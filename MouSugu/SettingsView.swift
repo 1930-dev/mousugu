@@ -60,6 +60,7 @@ private struct GeneralPane: View {
     @AppStorage("hideFreeTimeEvents") private var hideFreeTimeEvents = true
     @AppStorage("autoStartEnabled") private var autoStartEnabled = false
     @AppStorage("joinGraceMinutes") private var joinGraceMinutes = 30
+    @AppStorage("dayDoneStyle") private var dayDoneStyleRaw = DayDoneStyle.otsukaresama.rawValue
 
     /// Localized "15 min" / "1 h" labels for the grace-window picker.
     private static let graceFormatter: DateComponentsFormatter = {
@@ -82,6 +83,16 @@ private struct GeneralPane: View {
                     Text(Self.graceFormatter.string(from: TimeInterval(minutes * 60)) ?? "\(minutes)")
                         .tag(minutes)
                 }
+            }
+            Picker(Strings.Settings.dayDoneLabel, selection: $dayDoneStyleRaw) {
+                ForEach(DayDoneStyle.allCases, id: \.rawValue) { style in
+                    Text(style.pickerLabel).tag(style.rawValue)
+                }
+            }
+            .onChange(of: dayDoneStyleRaw) { _, _ in
+                // Re-derives the bar label so a day already wrapped reflects
+                // the new choice immediately, not at the next minute tick.
+                store.loadEvents()
             }
             Toggle(Strings.Settings.autoStart, isOn: $autoStartEnabled)
                 .onChange(of: autoStartEnabled) { _, newValue in
