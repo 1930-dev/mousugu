@@ -121,17 +121,33 @@ codesign --verify --strict --verbose=2 "$APP_PATH"
 spctl --assess --type execute --verbose=2 "$APP_PATH"
 
 echo "▸ Building DMG"
+# Stage a clean folder holding ONLY the app. Handing create-dmg the whole
+# export dir dragged its byproducts (DistributionSummary.plist, ExportOptions
+# .plist, Packaging.log) into the installer window.
+DMG_SRC="$BUILD_DIR/dmg-src"
+rm -rf "$DMG_SRC"
+mkdir -p "$DMG_SRC"
+cp -R "$APP_PATH" "$DMG_SRC/"
+
+# Branded background (scripts/generate_dmg_background.swift) and the app's own
+# icon on the mounted volume. Icon positions match the two wells drawn in the
+# background art.
+DMG_BACKGROUND="$ROOT_DIR/Config/dmg-background@2x.png"
+VOL_ICON="$APP_PATH/Contents/Resources/AppIcon.icns"
 create-dmg \
     --volname "$APP_DISPLAY" \
+    --volicon "$VOL_ICON" \
+    --background "$DMG_BACKGROUND" \
     --window-pos 200 120 \
-    --window-size 500 320 \
-    --icon-size 100 \
-    --icon "$APP_NAME.app" 120 160 \
+    --window-size 640 400 \
+    --icon-size 128 \
+    --text-size 13 \
+    --icon "$APP_NAME.app" 170 168 \
     --hide-extension "$APP_NAME.app" \
-    --app-drop-link 360 160 \
+    --app-drop-link 470 168 \
     --no-internet-enable \
     "$DMG_PATH" \
-    "$EXPORT_DIR"
+    "$DMG_SRC"
 
 # generate_appcast signs each archive with the Ed25519 key from the Keychain and
 # rewrites the feed in place. It reads every archive in the directory it is
