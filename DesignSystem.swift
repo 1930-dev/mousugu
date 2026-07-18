@@ -96,11 +96,12 @@ enum DesignSystem {
         /// natural fractional height would shift every grid row onto half
         /// pixels and blur today's border.
         static let monthWeekdayHeaderHeight: CGFloat = 14
-        /// Height of one row in the month grid — equal to the cell width
-        /// ((popoverWidth − 16) / 7 = 35), so day cells are square. The day
-        /// number centers in it; the event dots overlay the bottom band and
-        /// don't take part in the layout.
-        static let monthDayCellHeight: CGFloat = 35
+        /// Height of one row in the month grid. A touch shorter than the 35pt
+        /// cell width to tighten the grid vertically — kept a whole point so
+        /// the rows still land on integral pixels and today's 1pt border stays
+        /// sharp. The day number centers in it; the event dots overlay the
+        /// bottom band and don't take part in the layout.
+        static let monthDayCellHeight: CGFloat = 31
         /// Diameter of an event dot under a day number in the month grid.
         static let monthEventDotSize: CGFloat = 2
         /// Max event dots rendered per day in the month grid.
