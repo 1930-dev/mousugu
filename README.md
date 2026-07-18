@@ -17,6 +17,10 @@ and lets you jump into the call with a single click.
 [![Swift](https://img.shields.io/badge/Swift-SwiftUI-orange?logo=swift)](https://developer.apple.com/swift/)
 [![License](https://img.shields.io/badge/license-MIT-green)](#license)
 
+<br />
+
+<img src="assets/hero.png" width="760" alt="Mou Sugu in the macOS menu bar: a live meeting countdown and the open popover showing today's schedule with a one-click Join button" />
+
 </div>
 
 ---
