@@ -130,31 +130,56 @@ private struct GeneralPane: View {
 private struct CalendarsPane: View {
     @ObservedObject var store: CalendarStore
 
-    private var sortedCalendars: [EKCalendar] {
-        store.allCalendars.sorted {
-            $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
-        }
+    /// Calendars grouped by their account (`EKSource`) — the same grouping
+    /// macOS Calendar shows in its sidebar. Accounts are ordered
+    /// alphabetically by title, and calendars alphabetically within each.
+    private var groupedCalendars: [(source: EKSource, calendars: [EKCalendar])] {
+        Dictionary(grouping: store.allCalendars, by: { $0.source.sourceIdentifier })
+            .values
+            .map { calendars in
+                (source: calendars[0].source,
+                 calendars: calendars.sorted {
+                     $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
+                 })
+            }
+            .sorted {
+                $0.source.title.localizedCaseInsensitiveCompare($1.source.title) == .orderedAscending
+            }
     }
 
     var body: some View {
         Form {
-            ForEach(sortedCalendars, id: \.calendarIdentifier) { calendar in
-                Toggle(isOn: Binding(
-                    get: { store.isCalendarVisible(calendar) },
-                    set: { _ in store.toggleCalendar(calendar) }
-                )) {
-                    HStack(spacing: DesignSystem.Spacing.md) {
-                        Circle()
-                            .fill(Color(calendar.color))
-                            .frame(
-                                width: DesignSystem.Layout.calendarDotSize,
-                                height: DesignSystem.Layout.calendarDotSize
-                            )
-                        Text(calendar.title)
+            ForEach(groupedCalendars, id: \.source.sourceIdentifier) { group in
+                Section(sectionTitle(for: group.source)) {
+                    ForEach(group.calendars, id: \.calendarIdentifier) { calendar in
+                        calendarToggle(calendar)
                     }
                 }
             }
         }
         .formStyle(.grouped)
+    }
+
+    /// Account header — the source's own title, with a fallback for the rare
+    /// untitled local source.
+    private func sectionTitle(for source: EKSource) -> String {
+        source.title.isEmpty ? Strings.Settings.otherAccount : source.title
+    }
+
+    private func calendarToggle(_ calendar: EKCalendar) -> some View {
+        Toggle(isOn: Binding(
+            get: { store.isCalendarVisible(calendar) },
+            set: { _ in store.toggleCalendar(calendar) }
+        )) {
+            HStack(spacing: DesignSystem.Spacing.md) {
+                Circle()
+                    .fill(Color(calendar.color))
+                    .frame(
+                        width: DesignSystem.Layout.calendarDotSize,
+                        height: DesignSystem.Layout.calendarDotSize
+                    )
+                Text(calendar.title)
+            }
+        }
     }
 }

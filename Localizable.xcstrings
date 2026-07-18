@@ -343,6 +343,16 @@
           }
         }
       }
+    },
+    "Other" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otros"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

@@ -60,6 +60,8 @@ struct Strings {
         /// Section headers in the General pane.
         static var eventsSection: String { String(localized: "Events") }
         static var appSection: String { String(localized: "App") }
+        /// Fallback account header for a calendar source with no title.
+        static var otherAccount: String { String(localized: "Other") }
         static var autoStart: String { String(localized: "Start at macOS login") }
         static var hideFreeEvents: String { String(localized: "Hide events where I'm free") }
         static var joinGraceWindow: String { String(localized: "Keep Join button after meetings end") }
