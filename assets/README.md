@@ -5,18 +5,16 @@ where they are consumed; the editable sources live here.
 
 ## Website hero
 
-- `hero-source.png` — original hand-composed shot (menu-bar chip + open
-  popover on the brand gradient), clock reading 3:07.
-- `hero-shot.png` — same composition with the menu-bar clock patched to 4:20;
-  the shipped source of the hero.
-- `../website/public/hero.webp` — the served asset: `hero-shot.png` resized to
-  1600×1066 and encoded with `cwebp -q 84` (~44 KB, the hero's LCP element).
+- `hero.png` — the source: a real full-screen capture of the menu-bar chip and
+  the open popover (1558×942).
+- `../website/public/hero.webp` — the served asset: `hero.png` encoded at native
+  resolution with `cwebp -q 95` (~100 KB, the hero's LCP element). High quality
+  keeps the popover's UI text crisp; native width covers 2× on Retina.
 
-To regenerate the web asset after editing `hero-shot.png`:
+To regenerate the web asset after replacing `hero.png`:
 
 ```sh
-sips --resampleWidth 1600 assets/hero-shot.png --out /tmp/hero.png
-cwebp -q 84 /tmp/hero.png -o website/public/hero.webp
+cwebp -q 95 -m 6 assets/hero.png -o website/public/hero.webp
 ```
 
 ## Tooling
@@ -24,6 +22,6 @@ cwebp -q 84 /tmp/hero.png -o website/public/hero.webp
 - `../scripts/generate_hero_shot.swift` — utility that composites a raw
   full-screen capture (popover + optional menu-bar chip) onto the brand
   gradient with a dot-grid and soft shadow (CleanShot/OpenScreen "menu opened"
-  look). Kept for producing future shots from a fresh capture.
+  look). Not used for the current hero; kept for producing composed shots.
 - `../scripts/generate_dmg_background.swift` — renders
   `../Config/dmg-background@2x.png`, the branded DMG installer backdrop.
