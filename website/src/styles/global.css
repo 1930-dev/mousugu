@@ -203,7 +203,6 @@ footer .col strong { display: block; margin-bottom: 0.3rem; }
 .nav-btn:hover { color: var(--paper); }
 .nav-btn svg { display: block; }
 .nav-toggle:focus-visible ~ .nav-open { outline: 2px solid var(--shu); outline-offset: 3px; border-radius: 5px; }
-html:has(.nav-toggle:checked) { overflow: hidden; }
 
 /* Responsive — phones. The layout is fluid by default (clamp type, auto-fit
    grids); these breakpoints reclaim vertical space, stack the footer, and swap
@@ -220,39 +219,46 @@ html:has(.nav-toggle:checked) { overflow: hidden; }
   footer .col { flex: 1 1 100%; }
   footer a { margin-top: 0.5rem; }
 
-  /* Drawer: brand stays left, hamburger right. */
+  /* Collapse the links into a dropdown panel anchored under the hamburger —
+     a compact menu, not a full-screen drawer, so there's no body scroll-lock
+     and thus no scrollbar-vanish flicker on open. The hamburger toggles the
+     checkbox both ways; a transparent full-screen backdrop catches an outside
+     tap to dismiss (same trick as the desktop language menu). */
+  .nav { position: relative; }
   .nav-open { display: inline-flex; }
-  .nav-backdrop { position: fixed; inset: 0; z-index: 15; background: rgba(0, 0, 0, 0.55); }
+  .nav-close { display: none; }
+  .nav-backdrop { position: fixed; inset: 0; z-index: 15; }
   .nav .links {
-    position: fixed; top: 0; right: 0; z-index: 20;
-    height: 100dvh; width: min(80vw, 300px);
-    flex-direction: column; align-items: stretch; justify-content: flex-start;
-    gap: 0.1rem; padding: 4.75rem 1.35rem 1.5rem;
-    background: var(--sumi-2); border-left: 1px solid var(--glass-border);
-    box-shadow: -24px 0 60px rgba(0, 0, 0, 0.5);
-    transform: translateX(100%); transition: transform 0.25s ease; will-change: transform;
-    overflow-y: auto;
+    position: absolute; top: calc(100% + 0.55rem); right: 0; z-index: 20;
+    flex-direction: column; align-items: stretch;
+    gap: 0.1rem; width: min(72vw, 250px); padding: 0.5rem;
+    background: var(--sumi-2); border: 1px solid var(--glass-border);
+    border-radius: 12px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    transform-origin: top right;
+    opacity: 0; transform: translateY(-6px) scale(0.98); pointer-events: none;
+    transition: opacity 0.16s ease, transform 0.16s ease;
   }
-  .nav-close { display: inline-flex; position: absolute; top: 1.15rem; right: 1.2rem; }
+  /* One divider only: rows separate by hover wash, the language row by a
+     single top border — no per-link borders to double up against it. */
   .nav .links > a {
-    padding: 0.7rem 0.15rem; font-size: 1.02rem;
-    border-bottom: 1px solid var(--glass-border);
+    display: flex; align-items: center;
+    padding: 0.6rem 0.55rem; font-size: 1rem; border-radius: 7px;
+    color: var(--paper);
   }
-  .nav .links a { color: var(--paper); }
-  .nav .icon-link { align-items: center; }
+  .nav .links > a:hover { background: var(--glass); }
   .nav .icon-label { display: inline; margin-left: 0.55rem; }
 
-  /* Swap the desktop language dropdown for a compact row at the drawer's foot. */
+  /* Swap the desktop language dropdown for a compact row at the menu's foot. */
   .nav .lang { display: none; }
   .lang-drawer {
-    display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem;
-    margin-top: 0.7rem; padding-top: 1rem;
+    display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem;
+    margin-top: 0.35rem; padding: 0.7rem 0.55rem 0.3rem;
     border-top: 1px solid var(--glass-border);
   }
   .lang-drawer a { padding: 0.3rem 0; font-size: 0.98rem; }
   .lang-drawer a[aria-current="true"] { color: var(--shu); font-weight: 600; }
 
-  #nav-toggle:checked ~ .links { transform: translateX(0); }
+  #nav-toggle:checked ~ .links { opacity: 1; transform: none; pointer-events: auto; }
   #nav-toggle:checked ~ .nav-backdrop { display: block; }
 }
 
