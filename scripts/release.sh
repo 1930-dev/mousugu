@@ -74,9 +74,11 @@ xcodebuild \
     -exportPath "$EXPORT_DIR" \
     -exportOptionsPlist "$EXPORT_OPTIONS"
 
-# Pull the version out of the built app so the DMG carries the same string.
+# Pull the version out of the built app; used for the appcast URL prefix and
+# the GitHub release tag. The DMG filename itself is version-less so the
+# website can link to a stable https://.../releases/latest/download/MouSugu.dmg.
 VERSION="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP_PATH/Contents/Info.plist")"
-DMG_PATH="$BUILD_DIR/$APP_NAME-$VERSION.dmg"
+DMG_PATH="$BUILD_DIR/$APP_NAME.dmg"
 
 # This channel must ship the updater; the App Store one must not. Catch a
 # mis-built archive here rather than shipping an app that can never update.
@@ -148,6 +150,7 @@ cp "$FEED_DIR/appcast.xml" "$APPCAST"
 echo ""
 echo "✅ Ready to ship:"
 echo "   DMG     $DMG_PATH"
-echo "           → upload to $RELEASE_URL_PREFIX/v$VERSION/"
+echo "           → gh release create v$VERSION \"$DMG_PATH\" --title \"$APP_DISPLAY $VERSION\""
+echo "             (the stable filename keeps .../releases/latest/download/$APP_NAME.dmg working)"
 echo "   Appcast $APPCAST"
 echo "           → commit, then publish to https://mousugu.app/"
