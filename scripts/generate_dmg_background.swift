@@ -40,11 +40,20 @@ let dotColour = rgb(255, 255, 255, 0.05)
 let wellFill = rgb(0, 0, 0, 0.18)
 let wellStroke = rgb(255, 255, 255, 0.06)
 let textColour = rgb(255, 255, 255, 0.62)
+// A mid-tone plate behind each Finder icon label. Finder draws those labels
+// itself in a colour that follows the viewer's Light/Dark appearance (near-black
+// in Light, near-white in Dark) with no way to override it — so a medium
+// backing is the only thing that keeps them legible in *both* modes on this
+// dark backdrop.
+let namePlateFill = rgb(150, 146, 132, 0.30)
 
 // Icon slots — kept in sync with the --icon positions in release.sh.
 let appCenter = NSPoint(x: 170, y: 168)
 let appsCenter = NSPoint(x: 470, y: 168)
 let iconSlot: CGFloat = 150 // well edge; a touch larger than the 128 icons
+// Where Finder lays the icon label: one line, centred under each icon.
+let labelCenterY: CGFloat = 247
+let labelPlateSize = NSSize(width: 118, height: 22)
 
 /// Rasterises into an explicitly sRGB context, flipped to a top-left origin and
 /// scaled to 2×, matching generate_icon.swift so colours are stable across
@@ -114,6 +123,15 @@ let background = makeCanvas { context in
         wellStroke.setStroke()
         path.lineWidth = 1
         path.stroke()
+    }
+
+    // Legibility plates behind the Finder-drawn icon labels.
+    for centre in [appCenter, appsCenter] {
+        let rect = NSRect(x: centre.x - labelPlateSize.width / 2,
+                          y: labelCenterY - labelPlateSize.height / 2,
+                          width: labelPlateSize.width, height: labelPlateSize.height)
+        namePlateFill.setFill()
+        NSBezierPath(roundedRect: rect, xRadius: 7, yRadius: 7).fill()
     }
 
     // Red arrow from the app well to the Applications well.
