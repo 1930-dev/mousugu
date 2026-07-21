@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 import EventKit
 import Combine
@@ -88,6 +89,18 @@ final class CalendarStore: ObservableObject {
             .sink { [weak self] _ in
                 Task { @MainActor in
                     self?.loadEvents()
+                }
+            }
+            .store(in: &cancellables)
+
+        // The 60s tick is suspended while the Mac sleeps, so without this the
+        // countdown stays frozen at the pre-sleep minute until the next tick
+        // eventually fires. Catch up the moment the machine wakes.
+        NSWorkspace.shared.notificationCenter
+            .publisher(for: NSWorkspace.didWakeNotification)
+            .sink { [weak self] _ in
+                Task { @MainActor in
+                    self?.tick()
                 }
             }
             .store(in: &cancellables)

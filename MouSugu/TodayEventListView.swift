@@ -43,7 +43,17 @@ struct TodayEventListView: View {
     }
 
     var body: some View {
-        let now = Date()
+        // Drive `now` off the timeline, not a bare Date() captured at body-eval:
+        // that value only refreshed when the store published a change, so the
+        // red line froze whenever the 60s tick was suspended (App Nap, display
+        // or system sleep) and reopening the popover showed a stale "now".
+        // `.everyMinute` recomputes on appear and every minute while visible.
+        TimelineView(.everyMinute) { context in
+            listContent(now: context.date)
+        }
+    }
+
+    private func listContent(now: Date) -> some View {
         let events = store.selectedDayEvents
         // The now line, join buttons and past-event dimming are meaningful
         // only while the list shows today. Browsing another day, the rows are
@@ -59,7 +69,7 @@ struct TodayEventListView: View {
             : nil
         let nextMeetingID = viewingToday ? nextUpcomingMeetingID(now: now) : nil
 
-        ScrollView {
+        return ScrollView {
             VStack(spacing: DesignSystem.Spacing.xs) {
                 ForEach(Array(events.enumerated()), id: \.element.eventIdentifier) { index, event in
                     if index > 0, let gap = gapDuration(events: events, before: index) {
