@@ -2,16 +2,21 @@ import SwiftUI
 import EventKit
 
 /// Calendr-style compact list of today's events: accent-bar rows in start
-/// order, quiet separators showing the free stretch between meetings, and
-/// the red now line — striking through the in-progress event at the current
-/// minute's proportional position, or sitting between rows when nothing is
-/// running. Opens scrolled so "now" is centered.
+/// order, quiet separators showing the free stretch between meetings, and the
+/// red now line. Overlapping events are laid out like Calendar's day view —
+/// concurrent meetings sit side by side in columns, and a long block that wraps
+/// several of them (focus time, an OOO hold) drops into a narrow spine on the
+/// left so the real meetings keep the width. Opens scrolled so "now" is
+/// centered.
 struct TodayEventListView: View {
     @ObservedObject var store: CalendarStore
     /// Tallest the list may grow before scrolling (screen-derived).
     let maxHeight: CGFloat
 
     private static let nowAnchorID = "now-anchor"
+
+    /// Width of the left spine that long background blocks collapse into.
+    static let backgroundStripWidth: CGFloat = 52
 
     /// Scroll anchor binding — starts on "now" so the popover opens centered
     /// on the present; resets every open since MenuBarExtra re-hosts the
@@ -33,15 +38,6 @@ struct TodayEventListView: View {
             .eventIdentifier
     }
 
-    /// Free time between this event and everything that came before it (an
-    /// event nested inside a longer one yields no gap), or nil below the
-    /// threshold.
-    private func gapDuration(events: [EKEvent], before index: Int) -> TimeInterval? {
-        guard let previousEnd = events[..<index].map(\.endDate).max() else { return nil }
-        let gap = events[index].startDate.timeIntervalSince(previousEnd)
-        return gap >= Self.gapThreshold ? gap : nil
-    }
-
     var body: some View {
         // Drive `now` off the timeline, not a bare Date() captured at body-eval:
         // that value only refreshed when the store published a change, so the
@@ -55,45 +51,42 @@ struct TodayEventListView: View {
 
     private func listContent(now: Date) -> some View {
         let events = store.selectedDayEvents
-        // The now line, join buttons and past-event dimming are meaningful
-        // only while the list shows today. Browsing another day, the rows are
-        // a plain schedule with none of those "current time" adornments.
+        let groups = Self.clusters(events)
+        // The now line, join buttons and past-event dimming are meaningful only
+        // while the list shows today. Browsing another day, the rows are a plain
+        // schedule with none of those "current time" adornments.
         let viewingToday = Calendar.current.isDateInToday(store.selectedDay)
-        let inProgressIndex = viewingToday
-            ? events.firstIndex { $0.startDate <= now && $0.endDate > now }
+        let nowClusterIndex = viewingToday
+            ? groups.firstIndex { span($0).contains(now) }
             : nil
         // Standalone line position when nothing is running: above the first
-        // event still alive; after the last row once the day is over.
-        let standaloneLineIndex = viewingToday && inProgressIndex == nil
-            ? (events.firstIndex { $0.endDate > now } ?? events.count)
+        // cluster still alive; after the last row once the day is over.
+        let standaloneLineIndex = viewingToday && nowClusterIndex == nil
+            ? (groups.firstIndex { span($0).upperBound > now } ?? groups.count)
             : nil
         let nextMeetingID = viewingToday ? nextUpcomingMeetingID(now: now) : nil
 
         return ScrollView {
             VStack(spacing: DesignSystem.Spacing.xs) {
-                ForEach(Array(events.enumerated()), id: \.element.eventIdentifier) { index, event in
-                    if index > 0, let gap = gapDuration(events: events, before: index) {
+                ForEach(Array(groups.enumerated()), id: \.offset) { index, cluster in
+                    if index > 0, let gap = gap(between: groups[index - 1], and: cluster) {
                         GapRow(duration: gap)
                     }
                     if index == standaloneLineIndex {
                         NowLine().id(Self.nowAnchorID)
                     }
-                    EventRow(
-                        event: event,
-                        store: store,
-                        isNextUpcomingMeeting: event.eventIdentifier == nextMeetingID,
-                        dimsPast: viewingToday
+                    clusterView(
+                        cluster,
+                        isNow: index == nowClusterIndex,
+                        now: now,
+                        nextMeetingID: nextMeetingID,
+                        viewingToday: viewingToday
                     )
-                    .overlay {
-                        if index == inProgressIndex {
-                            progressLine(for: event, now: now)
-                        }
-                    }
-                    // The in-progress row doubles as the scroll anchor, so the
-                    // popover opens centered on the running meeting.
-                    .id(index == inProgressIndex ? Self.nowAnchorID : event.eventIdentifier)
+                    // The in-progress cluster doubles as the scroll anchor, so
+                    // the popover opens centered on what's running.
+                    .id(index == nowClusterIndex ? Self.nowAnchorID : "cluster-\(index)")
                 }
-                if standaloneLineIndex == events.count {
+                if standaloneLineIndex == groups.count {
                     NowLine().id(Self.nowAnchorID)
                 }
             }
@@ -117,19 +110,187 @@ struct TodayEventListView: View {
         .frame(height: min(max(listContentHeight, DesignSystem.Layout.eventRowHeight), maxHeight))
     }
 
-    /// The red line crossing the running event at the fraction of it that
-    /// already elapsed — Calendr's strike-through now indicator.
-    private func progressLine(for event: EKEvent, now: Date) -> some View {
+    /// A single cluster: one row when nothing overlaps (the common case, kept
+    /// identical to the old flat list), otherwise the side-by-side band.
+    @ViewBuilder
+    private func clusterView(
+        _ cluster: [EKEvent], isNow: Bool, now: Date,
+        nextMeetingID: String?, viewingToday: Bool
+    ) -> some View {
+        if cluster.count == 1 {
+            EventRow(
+                event: cluster[0], store: store,
+                isNextUpcomingMeeting: cluster[0].eventIdentifier == nextMeetingID,
+                dimsPast: viewingToday
+            )
+            .overlay { if isNow { nowLine(over: span(cluster), now: now) } }
+        } else {
+            ClusterBand(
+                cluster: cluster, store: store,
+                nextMeetingID: nextMeetingID, dimsPast: viewingToday
+            )
+            .overlay { if isNow { nowLine(over: span(cluster), now: now) } }
+        }
+    }
+
+    /// The red line crossing a cluster at the fraction of its span that has
+    /// already elapsed — Calendr's strike-through now indicator, generalized
+    /// from a single event to a whole overlap band.
+    private func nowLine(over span: Range<Date>, now: Date) -> some View {
         GeometryReader { geometry in
-            let duration = event.endDate.timeIntervalSince(event.startDate)
+            let duration = span.upperBound.timeIntervalSince(span.lowerBound)
             let fraction = duration > 0
-                ? min(max(now.timeIntervalSince(event.startDate) / duration, 0), 1)
+                ? min(max(now.timeIntervalSince(span.lowerBound) / duration, 0), 1)
                 : 0
             NowLine()
                 .offset(y: fraction * geometry.size.height
                     - DesignSystem.Layout.nowLineHeight / 2)
         }
         .allowsHitTesting(false)
+    }
+
+    // MARK: - Overlap layout
+
+    /// The time span a cluster (or any event set) covers.
+    private func span(_ events: [EKEvent]) -> Range<Date> {
+        let start = events.map(\.startDate).min() ?? Date()
+        let end = max(events.map(\.endDate).max() ?? start, start.addingTimeInterval(1))
+        return start..<end
+    }
+
+    private func gap(between earlier: [EKEvent], and later: [EKEvent]) -> TimeInterval? {
+        guard let previousEnd = earlier.map(\.endDate).max(),
+              let nextStart = later.map(\.startDate).min() else { return nil }
+        let free = nextStart.timeIntervalSince(previousEnd)
+        return free >= Self.gapThreshold ? free : nil
+    }
+
+    /// Maximal groups of events that overlap transitively — a new group starts
+    /// only once an event begins after everything before it has ended.
+    static func clusters(_ events: [EKEvent]) -> [[EKEvent]] {
+        let sorted = events.sorted {
+            ($0.startDate, $0.endDate) < ($1.startDate, $1.endDate)
+        }
+        var groups: [[EKEvent]] = []
+        var current: [EKEvent] = []
+        var currentEnd = Date.distantPast
+        for event in sorted {
+            if current.isEmpty || event.startDate < currentEnd {
+                current.append(event)
+                currentEnd = max(currentEnd, event.endDate)
+            } else {
+                groups.append(current)
+                current = [event]
+                currentEnd = event.endDate
+            }
+        }
+        if !current.isEmpty { groups.append(current) }
+        return groups
+    }
+
+    /// Greedy interval coloring: each event lands in the first column whose last
+    /// event has already ended, so concurrent events end up in adjacent columns.
+    static func columns(_ events: [EKEvent]) -> [[EKEvent]] {
+        let sorted = events.sorted { $0.startDate < $1.startDate }
+        var columns: [[EKEvent]] = []
+        for event in sorted {
+            if let index = columns.firstIndex(where: { $0.last!.endDate <= event.startDate }) {
+                columns[index].append(event)
+            } else {
+                columns.append([event])
+            }
+        }
+        return columns
+    }
+}
+
+/// One overlap cluster laid out side by side: long wrapping blocks in a narrow
+/// left spine, the remaining meetings re-clustered into time-ordered rows where
+/// genuinely concurrent events sit in adjacent columns.
+struct ClusterBand: View {
+    let cluster: [EKEvent]
+    @ObservedObject var store: CalendarStore
+    let nextMeetingID: String?
+    let dimsPast: Bool
+
+    var body: some View {
+        let background = cluster.filter(isBackground)
+        let foreground = cluster.filter { !isBackground($0) }
+        HStack(alignment: .top, spacing: DesignSystem.Spacing.xs) {
+            ForEach(background, id: \.eventIdentifier) { block in
+                BackgroundBlockStrip(event: block)
+            }
+            VStack(spacing: DesignSystem.Spacing.xs) {
+                ForEach(Array(TodayEventListView.clusters(foreground).enumerated()), id: \.offset) { _, row in
+                    if row.count == 1 {
+                        eventRow(row[0], compact: false)
+                    } else {
+                        HStack(alignment: .top, spacing: DesignSystem.Spacing.xs) {
+                            ForEach(Array(TodayEventListView.columns(row).enumerated()), id: \.offset) { _, column in
+                                VStack(spacing: DesignSystem.Spacing.xs) {
+                                    ForEach(column, id: \.eventIdentifier) { event in
+                                        eventRow(event, compact: true)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func eventRow(_ event: EKEvent, compact: Bool) -> EventRow {
+        EventRow(
+            event: event, store: store,
+            isNextUpcomingMeeting: event.eventIdentifier == nextMeetingID,
+            dimsPast: dimsPast, compact: compact
+        )
+    }
+
+    /// A long block that fully contains two or more of the cluster's other
+    /// events and isn't itself a meeting (no join link) — focus time, an OOO
+    /// hold, a "busy" wrapper. It collapses into the left spine so the meetings
+    /// nested inside it keep the popover's width.
+    private func isBackground(_ event: EKEvent) -> Bool {
+        guard store.findMeetingURL(for: event) == nil else { return false }
+        let contained = cluster.filter {
+            $0 !== event && event.startDate <= $0.startDate && event.endDate >= $0.endDate
+        }
+        return contained.count >= 2
+    }
+}
+
+/// The narrow left spine a long wrapping block collapses into: its accent
+/// color, a stacked title and start time, stretched to the band's full height.
+struct BackgroundBlockStrip: View {
+    let event: EKEvent
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxs) {
+            Text(event.title)
+                .font(.caption2)
+                .fontWeight(.medium)
+                .lineLimit(4)
+                .foregroundStyle(Color.primary)
+            Text(event.startDate.formatted(date: .omitted, time: .shortened))
+                .font(.system(size: 9))
+                .foregroundStyle(Color.secondary)
+            Spacer(minLength: 0)
+        }
+        .padding(DesignSystem.Spacing.sm)
+        .frame(width: TodayEventListView.backgroundStripWidth)
+        .frame(maxHeight: .infinity, alignment: .top)
+        .background(
+            RoundedRectangle(cornerRadius: DesignSystem.Radius.sm)
+                .fill(Color(event.calendar.color).opacity(DesignSystem.Opacity.eventRowFill))
+        )
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: DesignSystem.Layout.eventAccentWidth / 2)
+                .fill(Color(event.calendar.color))
+                .frame(width: DesignSystem.Layout.eventAccentWidth)
+                .padding(.vertical, DesignSystem.Spacing.sm)
+        }
     }
 }
 
@@ -140,6 +301,9 @@ struct EventRow: View {
     /// Dim this row once it's over. False when browsing a non-today schedule,
     /// where "past" carries no meaning.
     let dimsPast: Bool
+    /// Column layout for a side-by-side overlap: title and time stack, the join
+    /// button drops below, and the time shows just the start to fit the width.
+    var compact: Bool = false
     @State private var isHovered = false
 
     /// What kind of join button (if any) to display for this event.
@@ -180,42 +344,73 @@ struct EventRow: View {
     /// Hovering restores full opacity to keep the row comfortable to read.
     private var isPast: Bool { event.endDate <= Date() }
 
+    /// Start–end for a full row; just the start when squeezed into a column.
+    private var timeText: String {
+        let start = event.startDate.formatted(date: .omitted, time: .shortened)
+        if compact { return start }
+        return "\(start) - \(event.endDate.formatted(date: .omitted, time: .shortened))"
+    }
+
     var body: some View {
-        HStack(spacing: DesignSystem.Spacing.md) {
-            RoundedRectangle(cornerRadius: DesignSystem.Layout.eventAccentWidth / 2)
-                .fill(Color(event.calendar.color))
-                .frame(width: DesignSystem.Layout.eventAccentWidth)
+        content
+            .background(
+                // Hover deepens the row's own calendar tint — translucent, so the
+                // glass keeps reading through.
+                RoundedRectangle(cornerRadius: DesignSystem.Radius.sm)
+                    .fill(Color(event.calendar.color).opacity(isHovered
+                        ? DesignSystem.Opacity.eventRowFillHovered
+                        : DesignSystem.Opacity.eventRowFill))
+            )
+            .opacity(dimsPast && isPast && !isHovered ? DesignSystem.Opacity.pastEvent : 1)
+            .onHover { isHovered = $0 }
+    }
 
-            VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxs) {
-                Text(event.title)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .lineLimit(1)
-                    .foregroundStyle(Color.primary)
-
-                Text("\(event.startDate.formatted(date: .omitted, time: .shortened)) - \(event.endDate.formatted(date: .omitted, time: .shortened))")
-                    .font(.caption)
-                    .foregroundStyle(Color.secondary)
+    @ViewBuilder
+    private var content: some View {
+        if compact {
+            HStack(alignment: .top, spacing: DesignSystem.Spacing.sm) {
+                accentBar
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxs) {
+                    Text(event.title)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .lineLimit(2)
+                        .foregroundStyle(Color.primary)
+                    Text(timeText)
+                        .font(.caption)
+                        .foregroundStyle(Color.secondary)
+                        .lineLimit(1)
+                    joinButton
+                }
+                Spacer(minLength: 0)
             }
-
-            Spacer()
-
-            joinButton
+            .padding(DesignSystem.Spacing.sm)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        } else {
+            HStack(spacing: DesignSystem.Spacing.md) {
+                accentBar
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxs) {
+                    Text(event.title)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .lineLimit(1)
+                        .foregroundStyle(Color.primary)
+                    Text(timeText)
+                        .font(.caption)
+                        .foregroundStyle(Color.secondary)
+                }
+                Spacer()
+                joinButton
+            }
+            .padding(.horizontal, DesignSystem.Spacing.md)
+            .padding(.vertical, DesignSystem.Spacing.sm)
         }
-        .padding(.horizontal, DesignSystem.Spacing.md)
-        .padding(.vertical, DesignSystem.Spacing.sm)
-        .background(
-            // Hover deepens the row's own calendar tint — translucent, so the
-            // glass keeps reading through.
-            RoundedRectangle(cornerRadius: DesignSystem.Radius.sm)
-                .fill(Color(event.calendar.color).opacity(isHovered
-                    ? DesignSystem.Opacity.eventRowFillHovered
-                    : DesignSystem.Opacity.eventRowFill))
-        )
-        .opacity(dimsPast && isPast && !isHovered ? DesignSystem.Opacity.pastEvent : 1)
-        .onHover { hovering in
-            isHovered = hovering
-        }
+    }
+
+    private var accentBar: some View {
+        RoundedRectangle(cornerRadius: DesignSystem.Layout.eventAccentWidth / 2)
+            .fill(Color(event.calendar.color))
+            .frame(width: DesignSystem.Layout.eventAccentWidth)
     }
 
     @ViewBuilder
@@ -226,11 +421,11 @@ struct EventRow: View {
         case .join:
             Button(Strings.General.join, action: openMeeting)
                 .buttonStyle(.borderedProminent)
-                .controlSize(.small)
+                .controlSize(compact ? .mini : .small)
         case .rejoin:
             Button(Strings.General.rejoin, action: openMeeting)
                 .buttonStyle(.borderedProminent)
-                .controlSize(.small)
+                .controlSize(compact ? .mini : .small)
         }
     }
 
