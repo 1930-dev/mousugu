@@ -52,9 +52,14 @@ icon is your next meeting, rising.
 
 ## Install
 
-Grab the latest `.dmg` from the [Releases](../../releases) page,
-open it, and drag **Mou Sugu** to your Applications folder. This build keeps
-itself up to date through [Sparkle](https://github.com/sparkle-project/Sparkle).
+```bash
+brew install --cask 1930-dev/tap/mou-sugu
+```
+
+Or grab the latest `.dmg` from the [Releases](../../releases) page,
+open it, and drag **Mou Sugu** to your Applications folder. Either way you get
+the same build, and it keeps itself up to date through
+[Sparkle](https://github.com/sparkle-project/Sparkle).
 
 A Mac App Store build is also published — same app, minus the updater, since the
 App Store ships updates itself.

@@ -74,3 +74,31 @@ Bump `MARKETING_VERSION` (and `CURRENT_PROJECT_VERSION`) in
 [APP_STORE.md](APP_STORE.md) explains how the two-target split works and what
 App Store Connect still needs. See each script's header for one-time
 prerequisites.
+
+## The Homebrew cask
+
+Mou Sugu is distributed through our own tap,
+[1930-dev/homebrew-tap](https://github.com/1930-dev/homebrew-tap), as
+`Casks/mou-sugu.rb`:
+
+```bash
+brew install --cask 1930-dev/tap/mou-sugu
+```
+
+**Do not bump the cask by hand.** The release workflow does it: after publishing
+the GitHub Release it hashes the DMG asset it just uploaded, rewrites `version`
+and `sha256` in the cask, and pushes to the tap with a deploy key. A manual bump
+races that commit and, worse, invites a wrong checksum.
+
+Two things are worth knowing before touching the cask:
+
+- The DMG is **not** byte-reproducible — the notarization timestamp lives inside
+  the signature, so the same commit built twice gives different bytes. The
+  `sha256` must come from the published asset, never from a local rebuild.
+- `auto_updates true` is deliberate. The app updates itself through Sparkle, so
+  the version on disk runs ahead of the cask between releases; without that line
+  `brew outdated` reports upgrades that Homebrew must not apply.
+
+Edits to the cask that are *not* a version bump — a new `zap` path, a changed
+`depends_on` — go to the tap repository directly, and `brew audit --cask
+--online --strict mou-sugu` has to pass.
