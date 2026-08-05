@@ -4,7 +4,8 @@ import EventKit
 /// Calendr-style compact list of today's events: accent-bar rows in start
 /// order, quiet separators showing the free stretch between meetings, and the
 /// red now line. Overlapping events are laid out like Calendar's day view —
-/// concurrent meetings sit side by side in columns, and a long block that wraps
+/// concurrent meetings sit side by side in columns, each dropped to its own
+/// start time so a later one never looks simultaneous, and a long block that wraps
 /// several of them (focus time, an OOO hold) drops into a narrow spine on the
 /// left so the real meetings keep the width. Opens scrolled so "now" is
 /// centered.
@@ -206,7 +207,8 @@ struct TodayEventListView: View {
 
 /// One overlap cluster laid out side by side: long wrapping blocks in a narrow
 /// left spine, the remaining meetings re-clustered into time-ordered rows where
-/// genuinely concurrent events sit in adjacent columns.
+/// genuinely concurrent events sit in adjacent columns, each at its own start
+/// time.
 struct ClusterBand: View {
     let cluster: [EKEvent]
     @ObservedObject var store: CalendarStore
@@ -223,28 +225,25 @@ struct ClusterBand: View {
             VStack(spacing: DesignSystem.Spacing.xs) {
                 ForEach(Array(TodayEventListView.clusters(foreground).enumerated()), id: \.offset) { _, row in
                     if row.count == 1 {
-                        eventRow(row[0], compact: false)
+                        eventRow(row[0])
                     } else {
-                        HStack(alignment: .top, spacing: DesignSystem.Spacing.xs) {
-                            ForEach(Array(TodayEventListView.columns(row).enumerated()), id: \.offset) { _, column in
-                                VStack(spacing: DesignSystem.Spacing.xs) {
-                                    ForEach(column, id: \.eventIdentifier) { event in
-                                        eventRow(event, compact: true)
-                                    }
-                                }
-                            }
-                        }
+                        OverlapRow(
+                            events: row, store: store,
+                            nextMeetingID: nextMeetingID, dimsPast: dimsPast
+                        )
                     }
                 }
             }
         }
     }
 
-    private func eventRow(_ event: EKEvent, compact: Bool) -> EventRow {
+    /// A row of the band that nothing runs alongside — full width, exactly like
+    /// an event outside any cluster.
+    private func eventRow(_ event: EKEvent) -> EventRow {
         EventRow(
             event: event, store: store,
             isNextUpcomingMeeting: event.eventIdentifier == nextMeetingID,
-            dimsPast: dimsPast, compact: compact
+            dimsPast: dimsPast
         )
     }
 
@@ -258,6 +257,57 @@ struct ClusterBand: View {
             $0 !== event && event.startDate <= $0.startDate && event.endDate >= $0.endDate
         }
         return contained.count >= 2
+    }
+}
+
+/// A run of events that overlap: side by side in columns, each block dropped to
+/// its own start time so the row still reads top-to-bottom as a schedule. Two
+/// meetings 45 minutes apart overlap and share the row — but they never share
+/// the same line, which would claim they started together.
+struct OverlapRow: View {
+    let events: [EKEvent]
+    @ObservedObject var store: CalendarStore
+    let nextMeetingID: String?
+    let dimsPast: Bool
+
+    /// One event placed in the row: which column carries it, and how far down
+    /// its start time puts it.
+    private struct Block {
+        let index: Int
+        let event: EKEvent
+        let column: Int
+        let offset: CGFloat
+    }
+
+    var body: some View {
+        let columns = TodayEventListView.columns(events)
+        let blocks = Self.blocks(in: columns)
+        TimeStaggeredColumns(columnCount: columns.count) {
+            ForEach(blocks, id: \.index) { block in
+                EventRow(
+                    event: block.event, store: store,
+                    isNextUpcomingMeeting: block.event.eventIdentifier == nextMeetingID,
+                    dimsPast: dimsPast, compact: true
+                )
+                .overlapSlot(column: block.column, offset: block.offset)
+            }
+        }
+    }
+
+    /// Flattens the columns column-major — which keeps each column's events in
+    /// start order, the order `OverlapLayout.frames` expects — and gives every
+    /// event the offset its start time earns inside the row.
+    private static func blocks(in columns: [[EKEvent]]) -> [Block] {
+        let placed = columns.enumerated().flatMap { column, events in
+            events.map { (column: column, event: $0) }
+        }
+        let rowStart = placed.map(\.event.startDate).min() ?? Date()
+        let offsets = OverlapLayout.offsets(
+            delays: placed.map { $0.event.startDate.timeIntervalSince(rowStart) }
+        )
+        return placed.enumerated().map { index, entry in
+            Block(index: index, event: entry.event, column: entry.column, offset: offsets[index])
+        }
     }
 }
 
