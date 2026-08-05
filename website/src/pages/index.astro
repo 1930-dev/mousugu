@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import BrewCommand from '../components/BrewCommand.astro';
 import Nav from '../components/Nav.astro';
 import heroImage from '../assets/hero.webp';
 
@@ -95,6 +96,12 @@ const schemas = [
         <a class="btn btn-ghost" href="https://github.com/1930-dev/mousugu">View source</a>
       </div>
       <p class="free-note">Free &amp; open source · macOS 15+</p>
+
+      <BrewCommand
+        label="Or install with Homebrew"
+        copyLabel="Copy command"
+        copiedLabel="Copied"
+      />
     </header>
 
     <section id="why">
@@ -181,10 +188,19 @@ const schemas = [
     <section id="download" style="text-align:center">
       <h2>Almost time for your next meeting</h2>
       <p>Put the countdown where you can see it.</p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="https://github.com/1930-dev/mousugu/releases/latest/download/MouSugu.dmg" data-track="download" data-position="footer">Download Mou Sugu for macOS</a>
+
+      <div class="install">
+        <div class="card">
+          <h3>Download the DMG</h3>
+          <a class="btn btn-primary" href="https://github.com/1930-dev/mousugu/releases/latest/download/MouSugu.dmg" data-track="download" data-position="footer">Download Mou Sugu for macOS</a>
+          <p class="free-note">Keeps itself updated · also on the Mac App Store soon</p>
+        </div>
+        <div class="card">
+          <h3>Or install with Homebrew</h3>
+          <BrewCommand copyLabel="Copy command" copiedLabel="Copied" />
+          <p class="free-note">From our own tap · updates itself, just like the DMG</p>
+        </div>
       </div>
-      <p class="free-note">Keeps itself updated · also on the Mac App Store soon</p>
     </section>
 
     <footer>

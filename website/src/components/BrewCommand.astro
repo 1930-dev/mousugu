@@ -1,0 +1,64 @@
+---
+// BrewCommand.astro — the Homebrew one-liner, rendered as static HTML so it is
+// in the initial payload (and indexable) with or without JavaScript. The copy
+// button is a progressive enhancement: it only appears once the script confirms
+// a Clipboard API, so there is never a button that does nothing.
+
+interface Props {
+  /** Optional caption above the command. Omit where a heading already says it. */
+  label?: string;
+  /** Accessible name of the copy button. */
+  copyLabel: string;
+  /** Confirmation shown after a successful copy. */
+  copiedLabel: string;
+}
+
+const { label, copyLabel, copiedLabel } = Astro.props;
+
+const command = 'brew install --cask 1930-dev/tap/mou-sugu';
+---
+
+<div class="brew">
+  {label && <p class="brew-label">{label}</p>}
+
+  <div class="brew-cmd">
+    <code>{command}</code>
+    <button
+      type="button"
+      class="brew-copy"
+      data-command={command}
+      data-copied={copiedLabel}
+      aria-label={copyLabel}
+    >
+      <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+        <rect x="5" y="5" width="9" height="9" rx="2" />
+        <path d="M11 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h1" stroke-linecap="round" />
+      </svg>
+    </button>
+    <span class="brew-status" role="status" aria-live="polite"></span>
+  </div>
+</div>
+
+<script is:inline>
+  // One delegated listener for every command on the page — the component can be
+  // used more than once, this guard keeps the second copy of the script inert.
+  (function () {
+    if (window.__msBrewCopy || !navigator.clipboard) return;
+    window.__msBrewCopy = true;
+    document.documentElement.dataset.clipboard = 'on';
+
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest && e.target.closest('.brew-copy');
+      if (!btn) return;
+      navigator.clipboard.writeText(btn.dataset.command).then(function () {
+        var status = btn.parentNode.querySelector('.brew-status');
+        btn.classList.add('is-copied');
+        if (status) status.textContent = btn.dataset.copied;
+        setTimeout(function () {
+          btn.classList.remove('is-copied');
+          if (status) status.textContent = '';
+        }, 2000);
+      }, function () {});
+    });
+  })();
+</script>
