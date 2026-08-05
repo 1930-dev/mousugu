@@ -1,8 +1,8 @@
 name: Release (DMG · Developer ID)
 
 # Direct/DMG channel: build → Developer ID sign → notarize → staple → DMG →
-# Sparkle appcast → GitHub Release. Triggered by a version tag. The Mac App
-# Store channel is separate (release-appstore.sh).
+# GitHub Release → commit the Sparkle appcast to main. Triggered by a version
+# tag. The Mac App Store channel is separate (release-appstore.sh).
 #
 # Tag must match the app's MARKETING_VERSION (e.g. tag v1.2.3 ↔ version 1.2.3).
 # Secrets live in the repo's GitHub Secrets (loaded from Infisical /mousugu).
@@ -22,7 +22,7 @@ on:
         default: true
 
 permissions:
-  contents: write        # create the Release + upload the DMG
+  contents: write        # create the Release, upload the DMG, push the appcast to main
 
 jobs:
   release:
@@ -37,6 +37,10 @@ jobs:
       SPARKLE_ED_KEY: ${{ secrets.SPARKLE_ED_KEY }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history: the appcast commit below is pushed to main, and pushing
+          # from a shallow clone is refused by the server.
+          fetch-depth: 0
 
       - name: Select latest stable Xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -104,13 +108,65 @@ jobs:
               --generate-notes
           fi
 
+      - name: Commit the appcast to main
+        # release-ci.sh regenerated website/public/appcast.xml in the working tree.
+        # mousugu.app deploys from main, so the feed only goes live once that file
+        # lands there — Dokploy redeploys on the push. Runs on a dry run too (minus
+        # the push) so a dispatch exercises this path.
+        id: appcast
+        env:
+          VERSION: ${{ steps.dmg.outputs.version }}
+          PUBLISH: ${{ github.ref_type == 'tag' && inputs.dry_run != true }}
+        run: |
+          set -euo pipefail
+          APPCAST=website/public/appcast.xml
+
+          # Move the regenerated feed onto the tip of main: the workflow runs on a
+          # detached tag, and main may have advanced since it was cut.
+          cp "$APPCAST" "$RUNNER_TEMP/appcast.xml"
+          git checkout -- "$APPCAST"
+          git fetch origin main
+          git checkout -B appcast-publish origin/main
+          cp "$RUNNER_TEMP/appcast.xml" "$APPCAST"
+
+          if git diff --quiet -- "$APPCAST"; then
+            echo "Appcast on main already matches this build — nothing to commit."
+            exit 0
+          fi
+
+          git -c user.name='Agu Rodríguez' -c user.email='me@agu.uy' \
+            commit -m "chore(release): publish v$VERSION in the Sparkle appcast" -- "$APPCAST"
+
+          if [ "$PUBLISH" != "true" ]; then
+            echo "Dry run — not pushing. The commit that would land on main:"
+            git show --stat --oneline HEAD
+            exit 0
+          fi
+
+          # main can move between the fetch above and the push; rebase and retry.
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              echo "committed=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Push rejected (main moved?) — rebasing and retrying ($attempt/3)"
+            git fetch origin main
+            git rebase origin/main
+          done
+          echo "::error::Could not push the appcast commit to main after 3 attempts"
+          exit 1
+
       - name: Summary
         run: |
           {
             if [ "${{ github.ref_type }}" = "tag" ] && [ "${{ inputs.dry_run }}" != "true" ]; then
               echo "### Released ${GITHUB_REF_NAME}"
               echo "- Notarized, stapled DMG attached to the GitHub Release as \`MouSugu-${{ steps.dmg.outputs.version }}.dmg\` and \`MouSugu.dmg\` (same bytes)."
-              echo "- **Next:** publish \`website/public/appcast.xml\` (see the *appcast* artifact) to mousugu.app so Sparkle advertises the update."
+              if [ "${{ steps.appcast.outputs.committed }}" = "true" ]; then
+                echo "- Sparkle appcast committed to \`main\`; mousugu.app redeploys it on its own."
+              else
+                echo "- Sparkle appcast on \`main\` already matched this build — nothing committed."
+              fi
             else
               echo "### Dry run — nothing published"
               echo "- Built, signed, notarized and stapled \`MouSugu-${{ steps.dmg.outputs.version }}.dmg\` (see the *dmg* artifact)."
