@@ -11,6 +11,15 @@ on:
   push:
     tags:
       - 'v*.*.*'
+  # Exercise the whole pipeline — build, sign, notarize, staple, package — without
+  # publishing anything. Dispatch from a branch to smoke-test a pipeline change, or
+  # from a tag with dry_run off to re-run a release that failed after packaging.
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Build and notarize only; do not create the GitHub Release'
+        type: boolean
+        default: true
 
 permissions:
   contents: write        # create the Release + upload the DMG
@@ -40,34 +49,36 @@ jobs:
       - name: Build · sign · notarize · package
         run: ./scripts/release-ci.sh
 
-      - name: Locate DMG and verify version matches tag
+      - name: Locate the DMG
         id: dmg
         run: |
           set -euo pipefail
           DMG=$(ls build/MouSugu-*.dmg | head -1)
           [ -n "$DMG" ] || { echo "::error::No DMG produced"; exit 1; }
           VER=$(basename "$DMG" .dmg | sed 's/^MouSugu-//')
+          # release-ci.sh writes this byte-identical copy; both are attached to
+          # the release so releases/latest/download/MouSugu.dmg keeps resolving.
+          [ -f build/MouSugu.dmg ] || { echo "::error::No stable-name copy produced"; exit 1; }
+          cmp -s "$DMG" build/MouSugu.dmg || { echo "::error::MouSugu.dmg differs from $DMG"; exit 1; }
+          echo "dmg=$DMG" >> "$GITHUB_OUTPUT"
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "sha256=$(shasum -a 256 "$DMG" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - name: Verify version matches tag
+        if: github.ref_type == 'tag'
+        run: |
+          set -euo pipefail
+          VER="${{ steps.dmg.outputs.version }}"
           if [ "v$VER" != "${GITHUB_REF_NAME}" ]; then
             echo "::error::Tag ${GITHUB_REF_NAME} != app MARKETING_VERSION ($VER). Bump MARKETING_VERSION to ${GITHUB_REF_NAME#v} or retag."
             exit 1
           fi
-          echo "dmg=$DMG" >> "$GITHUB_OUTPUT"
-          echo "version=$VER" >> "$GITHUB_OUTPUT"
 
-      - name: Publish GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          # Idempotent: update the asset if a release for this tag already exists
-          # (e.g. a re-run), otherwise create the release.
-          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
-            gh release upload "${GITHUB_REF_NAME}" "${{ steps.dmg.outputs.dmg }}" --clobber
-          else
-            gh release create "${GITHUB_REF_NAME}" \
-              "${{ steps.dmg.outputs.dmg }}" \
-              --title "Mou Sugu ${{ steps.dmg.outputs.version }}" \
-              --generate-notes
-          fi
+      - name: Upload DMG as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dmg-${{ steps.dmg.outputs.version }}
+          path: ${{ steps.dmg.outputs.dmg }}
 
       - name: Upload appcast as artifact
         uses: actions/upload-artifact@v4
@@ -75,10 +86,34 @@ jobs:
           name: appcast
           path: website/public/appcast.xml
 
+      - name: Publish GitHub Release
+        # A dispatch defaults to dry-run; a tag push always publishes.
+        if: github.ref_type == 'tag' && inputs.dry_run != true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Idempotent: update the assets if a release for this tag already exists
+          # (e.g. a re-run), otherwise create the release.
+          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            gh release upload "${GITHUB_REF_NAME}" \
+              "${{ steps.dmg.outputs.dmg }}" build/MouSugu.dmg --clobber
+          else
+            gh release create "${GITHUB_REF_NAME}" \
+              "${{ steps.dmg.outputs.dmg }}" build/MouSugu.dmg \
+              --title "Mou Sugu ${{ steps.dmg.outputs.version }}" \
+              --generate-notes
+          fi
+
       - name: Summary
         run: |
           {
-            echo "### Released ${GITHUB_REF_NAME}"
-            echo "- Notarized, stapled DMG attached to the GitHub Release."
-            echo "- **Next:** publish \`website/public/appcast.xml\` (see the *appcast* artifact) to mousugu.app so Sparkle advertises the update."
+            if [ "${{ github.ref_type }}" = "tag" ] && [ "${{ inputs.dry_run }}" != "true" ]; then
+              echo "### Released ${GITHUB_REF_NAME}"
+              echo "- Notarized, stapled DMG attached to the GitHub Release as \`MouSugu-${{ steps.dmg.outputs.version }}.dmg\` and \`MouSugu.dmg\` (same bytes)."
+              echo "- **Next:** publish \`website/public/appcast.xml\` (see the *appcast* artifact) to mousugu.app so Sparkle advertises the update."
+            else
+              echo "### Dry run — nothing published"
+              echo "- Built, signed, notarized and stapled \`MouSugu-${{ steps.dmg.outputs.version }}.dmg\` (see the *dmg* artifact)."
+            fi
+            echo "- \`sha256\`: \`${{ steps.dmg.outputs.sha256 }}\`"
           } >> "$GITHUB_STEP_SUMMARY"

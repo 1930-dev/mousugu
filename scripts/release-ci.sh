@@ -18,7 +18,6 @@
 set -euo pipefail
 
 APP_NAME="MouSugu"
-APP_DISPLAY="Mou Sugu"
 SCHEME="MouSugu"
 TEAM_ID="7RX5GXJ5V3"
 SIGN_IDENTITY="Developer ID Application"
@@ -31,6 +30,9 @@ ARCHIVE_PATH="$BUILD_DIR/$APP_NAME.xcarchive"
 EXPORT_DIR="$BUILD_DIR/export"
 APP_PATH="$EXPORT_DIR/$APP_NAME.app"
 APPCAST="$ROOT_DIR/website/public/appcast.xml"
+
+# Shared with release.sh so both channels package an identical DMG.
+source "$ROOT_DIR/scripts/lib/make-dmg.sh"
 
 : "${ASC_KEY_ID:?set ASC_KEY_ID}"
 : "${ASC_ISSUER_ID:?set ASC_ISSUER_ID}"
@@ -110,7 +112,11 @@ xcodebuild \
     -exportOptionsPlist "$EXPORT_OPTS"
 
 VERSION="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP_PATH/Contents/Info.plist")"
+# Canonical artifact: versioned and immutable, so the appcast enclosure and a
+# Homebrew cask can pin it. DMG_STABLE_PATH is a byte-identical copy made after
+# notarization, only so releases/latest/download/MouSugu.dmg keeps resolving.
 DMG_PATH="$BUILD_DIR/$APP_NAME-$VERSION.dmg"
+DMG_STABLE_PATH="$BUILD_DIR/$APP_NAME.dmg"
 
 # The DMG channel must embed Sparkle; the App Store one must not. Fail fast.
 [[ -d "$APP_PATH/Contents/Frameworks/Sparkle.framework" ]] || { echo "✗ Sparkle.framework missing from export — wrong scheme?" >&2; exit 1; }
@@ -136,17 +142,7 @@ codesign --verify --strict --verbose=2 "$APP_PATH"
 spctl --assess --type execute --verbose=2 "$APP_PATH"
 
 echo "▸ Building DMG"
-create-dmg \
-    --volname "$APP_DISPLAY" \
-    --window-pos 200 120 \
-    --window-size 500 320 \
-    --icon-size 100 \
-    --icon "$APP_NAME.app" 120 160 \
-    --hide-extension "$APP_NAME.app" \
-    --app-drop-link 360 160 \
-    --no-internet-enable \
-    "$DMG_PATH" \
-    "$EXPORT_DIR"
+make_dmg "$APP_PATH" "$DMG_PATH"
 
 # The DMG is the artifact users download, so it must itself be signed + notarized
 # + stapled — otherwise double-clicking the quarantined download is blocked by
@@ -165,6 +161,11 @@ xcrun notarytool submit "$DMG_PATH" \
 echo "▸ Stapling notarization ticket onto the DMG"
 xcrun stapler staple "$DMG_PATH"
 xcrun stapler validate "$DMG_PATH"
+
+# Copy only now that the DMG is final — signing, notarizing and stapling all
+# rewrite it, and the two assets must be byte-identical.
+echo "▸ Copying to the stable filename"
+cp "$DMG_PATH" "$DMG_STABLE_PATH"
 
 echo "▸ Regenerating the Sparkle appcast"
 # Sparkle ships generate_appcast inside the SPM binary artifact, resolved into
@@ -188,5 +189,6 @@ cp "$FEED_DIR/appcast.xml" "$APPCAST"
 echo ""
 echo "✅ Built and notarized:"
 echo "   DMG     $DMG_PATH"
-echo "           → upload to $RELEASE_URL_PREFIX/v$VERSION/"
+echo "   copy    $DMG_STABLE_PATH (same bytes, keeps releases/latest/download working)"
+echo "           → upload both to $RELEASE_URL_PREFIX/v$VERSION/"
 echo "   Appcast $APPCAST"

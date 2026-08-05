@@ -23,8 +23,10 @@
 #   ./scripts/release.sh
 #
 # Output:
-#   build/MouSugu-<version>.dmg   — upload this to GitHub Releases
-#   website/public/appcast.xml            — commit and publish this
+#   build/MouSugu-<version>.dmg   — the canonical, immutable artifact
+#   build/MouSugu.dmg             — byte-identical copy, keeps the stable
+#                                   releases/latest/download/ URL alive
+#   website/public/appcast.xml    — commit and publish this
 
 set -euo pipefail
 export PATH="/opt/homebrew/bin:$HOME/.local/bin:$PATH"
@@ -44,6 +46,9 @@ EXPORT_DIR="$BUILD_DIR/export"
 EXPORT_OPTIONS="$ROOT_DIR/scripts/ExportOptions.plist"
 APP_PATH="$EXPORT_DIR/$APP_NAME.app"
 APPCAST="$ROOT_DIR/website/public/appcast.xml"
+
+# Shared with release-ci.sh so both channels package an identical DMG.
+source "$ROOT_DIR/scripts/lib/make-dmg.sh"
 
 # Sparkle ships its tools inside the SPM artifact, whose path includes a hash.
 SPARKLE_BIN="$(find "$HOME/Library/Developer/Xcode/DerivedData" \
@@ -75,10 +80,12 @@ xcodebuild \
     -exportOptionsPlist "$EXPORT_OPTIONS"
 
 # Pull the version out of the built app; used for the appcast URL prefix and
-# the GitHub release tag. The DMG filename itself is version-less so the
-# website can link to a stable https://.../releases/latest/download/MouSugu.dmg.
+# the GitHub release tag. The canonical artifact is versioned and immutable —
+# that is what the appcast enclosure and a Homebrew cask can pin to. The stable
+# MouSugu.dmg the website links to is a byte-identical copy made further down.
 VERSION="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP_PATH/Contents/Info.plist")"
-DMG_PATH="$BUILD_DIR/$APP_NAME.dmg"
+DMG_PATH="$BUILD_DIR/$APP_NAME-$VERSION.dmg"
+DMG_STABLE_PATH="$BUILD_DIR/$APP_NAME.dmg"
 
 # This channel must ship the updater; the App Store one must not. Catch a
 # mis-built archive here rather than shipping an app that can never update.
@@ -121,33 +128,7 @@ codesign --verify --strict --verbose=2 "$APP_PATH"
 spctl --assess --type execute --verbose=2 "$APP_PATH"
 
 echo "▸ Building DMG"
-# Stage a clean folder holding ONLY the app. Handing create-dmg the whole
-# export dir dragged its byproducts (DistributionSummary.plist, ExportOptions
-# .plist, Packaging.log) into the installer window.
-DMG_SRC="$BUILD_DIR/dmg-src"
-rm -rf "$DMG_SRC"
-mkdir -p "$DMG_SRC"
-cp -R "$APP_PATH" "$DMG_SRC/"
-
-# Branded background (scripts/generate_dmg_background.swift) and the app's own
-# icon on the mounted volume. Icon positions match the two wells drawn in the
-# background art.
-DMG_BACKGROUND="$ROOT_DIR/Config/dmg-background@2x.png"
-VOL_ICON="$APP_PATH/Contents/Resources/AppIcon.icns"
-create-dmg \
-    --volname "$APP_DISPLAY" \
-    --volicon "$VOL_ICON" \
-    --background "$DMG_BACKGROUND" \
-    --window-pos 200 120 \
-    --window-size 640 400 \
-    --icon-size 128 \
-    --text-size 13 \
-    --icon "$APP_NAME.app" 170 168 \
-    --hide-extension "$APP_NAME.app" \
-    --app-drop-link 470 168 \
-    --no-internet-enable \
-    "$DMG_PATH" \
-    "$DMG_SRC"
+make_dmg "$APP_PATH" "$DMG_PATH"
 
 # generate_appcast signs each archive with the Ed25519 key from the Keychain and
 # rewrites the feed in place. It reads every archive in the directory it is
@@ -163,10 +144,16 @@ cp "$APPCAST" "$FEED_DIR/appcast.xml"
     "$FEED_DIR"
 cp "$FEED_DIR/appcast.xml" "$APPCAST"
 
+# A byte-identical second name for the same file. The appcast enclosure and any
+# cask pin the versioned one; the website, the JSON-LD downloadUrl and every
+# link already shared point at .../releases/latest/download/MouSugu.dmg. Both
+# assets must be attached to the release or one of those two audiences breaks.
+cp "$DMG_PATH" "$DMG_STABLE_PATH"
+
 echo ""
 echo "✅ Ready to ship:"
 echo "   DMG     $DMG_PATH"
-echo "           → gh release create v$VERSION \"$DMG_PATH\" --title \"$APP_DISPLAY $VERSION\""
-echo "             (the stable filename keeps .../releases/latest/download/$APP_NAME.dmg working)"
+echo "   copy    $DMG_STABLE_PATH (same bytes, keeps releases/latest/download working)"
+echo "           → gh release create v$VERSION \"$DMG_PATH\" \"$DMG_STABLE_PATH\" --title \"$APP_DISPLAY $VERSION\""
 echo "   Appcast $APPCAST"
 echo "           → commit, then publish to https://mousugu.app/"
