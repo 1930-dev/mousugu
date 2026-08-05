@@ -87,6 +87,61 @@ section { padding: 4.5rem 0; }
 .btn-ghost { background: var(--glass); }
 .free-note { margin-top: 0.9rem; font-size: 0.88rem; color: var(--muted); }
 
+/* Homebrew command — a glass pill holding the literal one-liner. The copy
+   button stays hidden until BrewCommand.astro confirms a Clipboard API. */
+.brew { margin-top: 1.4rem; }
+.brew-label { font-size: 0.9rem; }
+.brew-cmd {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 0.35rem; max-width: 100%;
+  margin-top: 0.5rem; padding: 0.35rem 0.4rem 0.35rem 0.8rem;
+  background: var(--glass); border: 1px solid var(--glass-border);
+  border-radius: 10px;
+}
+.brew-cmd code {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+  font-size: clamp(0.72rem, 2.7vw, 0.86rem); color: var(--paper);
+  /* min-width:0 lets the flex item shrink on narrow phones — the command then
+     scrolls inside the pill instead of pushing the page sideways. */
+  min-width: 0; white-space: nowrap; overflow-x: auto; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.brew-cmd code::-webkit-scrollbar { display: none; }
+.brew-copy {
+  display: none; flex: none; align-items: center; justify-content: center;
+  width: 28px; height: 28px; padding: 0;
+  background: none; border: 0; border-radius: 7px;
+  color: var(--muted); cursor: pointer;
+}
+[data-clipboard='on'] .brew-copy { display: inline-flex; }
+.brew-copy:hover { background: var(--glass); color: var(--paper); }
+.brew-copy.is-copied { color: var(--shu); }
+/* Confirmation floats over the pill so nothing below it shifts. */
+.brew-copy::after {
+  content: attr(data-copied);
+  position: absolute; right: 0; bottom: calc(100% + 0.4rem);
+  padding: 0.2rem 0.5rem; border-radius: 6px;
+  background: var(--sumi-2); border: 1px solid var(--glass-border);
+  color: var(--paper); font-size: 0.78rem; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity 0.15s ease;
+}
+.brew-copy.is-copied::after { opacity: 1; }
+.brew-status {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);
+}
+
+/* Install block — the two ways in, side by side */
+.install { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-top: 2rem; }
+.install .card {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0.9rem; padding: 1.8rem 1.4rem;
+}
+.install .card > * { margin: 0; }
+/* Headings align at the top of both cards, captions at the bottom, whatever
+   each way needs in between. */
+.install .card .free-note { margin-top: auto; }
+.install .brew { margin-top: 0; }
+
 /* Feature grid */
 .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); grid-auto-rows: 1fr; gap: 1rem; margin-top: 2rem; }
 .card {
@@ -250,5 +305,5 @@ footer .col strong { display: block; margin-bottom: 0.3rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .nav .links { transition: none; }
+  .nav .links, .brew-copy::after { transition: none; }
 }

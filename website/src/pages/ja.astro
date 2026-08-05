@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import BrewCommand from '../components/BrewCommand.astro';
 import Nav from '../components/Nav.astro';
 import heroImage from '../assets/hero.webp';
 
@@ -96,6 +97,12 @@ const schemas = [
         <a class="btn btn-ghost" href="https://github.com/1930-dev/mousugu">ソースコード</a>
       </div>
       <p class="free-note">無料・オープンソース · macOS 15+</p>
+
+      <BrewCommand
+        label="Homebrew でインストール"
+        copyLabel="コマンドをコピー"
+        copiedLabel="コピーしました"
+      />
     </header>
 
     <section id="why">
@@ -179,10 +186,18 @@ const schemas = [
     <section id="download" style="text-align:center">
       <h2>そろそろ、次の会議の時間です</h2>
       <p>カウントダウンを、見える場所に。</p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="https://github.com/1930-dev/mousugu/releases/latest/download/MouSugu.dmg" data-track="download" data-position="footer">Mou Sugu をダウンロード</a>
+      <div class="install">
+        <div class="card">
+          <h3>DMG をダウンロード</h3>
+          <a class="btn btn-primary" href="https://github.com/1930-dev/mousugu/releases/latest/download/MouSugu.dmg" data-track="download" data-position="footer">Mou Sugu をダウンロード</a>
+          <p class="free-note">自動アップデート · Mac App Store 版も近日公開</p>
+        </div>
+        <div class="card">
+          <h3>Homebrew でインストール</h3>
+          <BrewCommand copyLabel="コマンドをコピー" copiedLabel="コピーしました" />
+          <p class="free-note">独自 tap から · DMG 版と同じく自動アップデート</p>
+        </div>
       </div>
-      <p class="free-note">自動アップデート · Mac App Store 版も近日公開</p>
     </section>
 
     <footer>
