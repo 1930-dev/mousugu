@@ -1,8 +1,9 @@
 name: Release (DMG · Developer ID)
 
 # Direct/DMG channel: build → Developer ID sign → notarize → staple → DMG →
-# GitHub Release → commit the Sparkle appcast to main. Triggered by a version
-# tag. The Mac App Store channel is separate (release-appstore.sh).
+# GitHub Release → commit the Sparkle appcast to main → bump the Homebrew cask.
+# Triggered by a version tag. The Mac App Store channel is separate
+# (release-appstore.sh).
 #
 # Tag must match the app's MARKETING_VERSION (e.g. tag v1.2.3 ↔ version 1.2.3).
 # Secrets live in the repo's GitHub Secrets (loaded from Infisical /mousugu).
@@ -28,6 +29,8 @@ jobs:
   release:
     runs-on: macos-15
     timeout-minutes: 45
+    outputs:
+      version: ${{ steps.dmg.outputs.version }}
     env:
       ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
@@ -172,4 +175,125 @@ jobs:
               echo "- Built, signed, notarized and stapled \`MouSugu-${{ steps.dmg.outputs.version }}.dmg\` (see the *dmg* artifact)."
             fi
             echo "- \`sha256\`: \`${{ steps.dmg.outputs.sha256 }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  bump-cask:
+    # Point 1930-dev/homebrew-tap at the release we just published, so
+    # `brew install --cask 1930-dev/tap/mou-sugu` serves this version.
+    #
+    # A separate job on purpose: the write-scoped deploy key never shares a
+    # runner with the build, and a failure here re-runs in a couple of minutes
+    # instead of rebuilding and re-notarizing the app.
+    name: Bump the Homebrew cask
+    needs: release
+    if: github.ref_type == 'tag' && inputs.dry_run != true
+    runs-on: macos-15
+    timeout-minutes: 20
+    env:
+      VERSION: ${{ needs.release.outputs.version }}
+    steps:
+      - name: Hash the published DMG
+        # The DMG is not byte-reproducible — the RFC-3161 timestamp Apple's TSA
+        # embeds in the signature differs on every build — so the cask must pin
+        # the asset users download, never a rebuild of it.
+        id: asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          DMG="$RUNNER_TEMP/MouSugu-$VERSION.dmg"
+          gh release download "${GITHUB_REF_NAME}" -R "$GITHUB_REPOSITORY" \
+            --pattern "MouSugu-$VERSION.dmg" --output "$DMG"
+          echo "sha256=$(shasum -a 256 "$DMG" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - name: Load the tap deploy key
+        # ed25519 key with write access to homebrew-tap and nothing else, so a
+        # compromised workflow cannot reach the rest of the org.
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.HOMEBREW_TAP_DEPLOY_KEY }}
+
+      - name: Rewrite the cask
+        id: cask
+        env:
+          SHA256: ${{ steps.asset.outputs.sha256 }}
+        run: |
+          set -euo pipefail
+          brew tap 1930-dev/tap
+          TAP=$(brew --repository 1930-dev/tap)
+          # brew taps over HTTPS, which the deploy key cannot push to.
+          git -C "$TAP" remote set-url origin git@github.com:1930-dev/homebrew-tap.git
+          # Current Homebrew clones taps in full, but it used to clone them
+          # shallow and the server refuses a push from a shallow clone.
+          if [ "$(git -C "$TAP" rev-parse --is-shallow-repository)" = "true" ]; then
+            git -C "$TAP" fetch --unshallow origin
+          fi
+          echo "tap=$TAP" >> "$GITHUB_OUTPUT"
+
+          CASK="$TAP/Casks/mou-sugu.rb"
+          sed -i '' \
+            -e "s|^  version \".*\"$|  version \"$VERSION\"|" \
+            -e "s|^  sha256 \".*\"$|  sha256 \"$SHA256\"|" \
+            "$CASK"
+
+          # A sed that matched nothing exits 0 and would look like "already up to
+          # date" further down, leaving the cask pinned to the previous release.
+          grep -qx "  version \"$VERSION\"" "$CASK" || {
+            echo "::error::version line in mou-sugu.rb did not take the rewrite"; exit 1; }
+          grep -qx "  sha256 \"$SHA256\"" "$CASK" || {
+            echo "::error::sha256 line in mou-sugu.rb did not take the rewrite"; exit 1; }
+
+      - name: Verify the cask before pushing it
+        # Ordered before the push so a bad cask never reaches the tap. `brew
+        # install` is the end-to-end check that the pinned sha256 matches what
+        # the release actually serves.
+        run: |
+          set -euo pipefail
+          brew audit --cask --online --strict 1930-dev/tap/mou-sugu
+          brew install --cask 1930-dev/tap/mou-sugu
+          brew uninstall --cask 1930-dev/tap/mou-sugu
+
+      - name: Commit and push the bump
+        id: push
+        env:
+          TAP: ${{ steps.cask.outputs.tap }}
+        run: |
+          set -euo pipefail
+          cd "$TAP"
+
+          # Idempotent: a re-run of an already-bumped release leaves no commit.
+          if git diff --quiet -- Casks/mou-sugu.rb; then
+            echo "Cask already at $VERSION — nothing to commit."
+            exit 0
+          fi
+
+          git -c user.name='Agu Rodríguez' -c user.email='me@agu.uy' \
+            commit -m "chore(mou-sugu): bump to $VERSION" -- Casks/mou-sugu.rb
+
+          # The tap is low-traffic, but another bump could land between the tap
+          # and the push; rebase and retry rather than fail the release.
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              echo "committed=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Push rejected (tap moved?) — rebasing and retrying ($attempt/3)"
+            git pull --rebase origin main
+          done
+          echo "::error::Could not push the cask bump after 3 attempts"
+          exit 1
+
+      - name: Summary
+        env:
+          SHA256: ${{ steps.asset.outputs.sha256 }}
+        run: |
+          {
+            echo "### Homebrew cask"
+            if [ "${{ steps.push.outputs.committed }}" = "true" ]; then
+              echo "- \`1930-dev/homebrew-tap\` bumped to \`$VERSION\`."
+            else
+              echo "- \`1930-dev/homebrew-tap\` already at \`$VERSION\` — nothing committed."
+            fi
+            echo "- Pinned \`sha256\`: \`$SHA256\` (hashed from the published asset)."
+            echo "- \`brew audit --online --strict\`, \`brew install\` and \`brew uninstall\` passed on macos-15."
           } >> "$GITHUB_STEP_SUMMARY"
