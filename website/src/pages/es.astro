@@ -1,4 +1,5 @@
 ---
+import AppStoreBadge from '../components/AppStoreBadge.astro';
 import Base from '../layouts/Base.astro';
 import BrewCommand from '../components/BrewCommand.astro';
 import Nav from '../components/Nav.astro';
@@ -52,6 +53,7 @@ const schemas = [
       'Calendario en la barra de menú de tu Mac con cuenta regresiva a tu próxima reunión y un clic para unirte a Zoom, Google Meet, Microsoft Teams y Webex.',
     url: 'https://mousugu.app/es',
     downloadUrl: 'https://github.com/1930-dev/mousugu/releases/latest/download/MouSugu.dmg',
+    installUrl: 'https://apps.apple.com/app/id6791985334?mt=12',
     license: 'https://opensource.org/license/mit',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
     inLanguage: 'es',
@@ -94,6 +96,7 @@ const schemas = [
       </div>
 
       <div class="cta-row">
+        <AppStoreBadge lang="es" position="hero" />
         <a class="btn btn-primary" href="https://github.com/1930-dev/mousugu/releases/latest/download/MouSugu.dmg" data-track="download" data-position="hero">Descargar para macOS</a>
       </div>
       <p class="free-note">Gratis y open source · macOS 15+</p>
@@ -192,9 +195,14 @@ const schemas = [
       <p>Poné la cuenta regresiva donde la puedas ver.</p>
       <div class="install">
         <div class="card">
+          <h3>Bajalo del Mac App Store</h3>
+          <AppStoreBadge lang="es" position="footer" />
+          <p class="free-note">Se actualiza por la App Store · macOS 15+</p>
+        </div>
+        <div class="card">
           <h3>Descargá el DMG</h3>
           <a class="btn btn-primary" href="https://github.com/1930-dev/mousugu/releases/latest/download/MouSugu.dmg" data-track="download" data-position="footer">Descargar Mou Sugu para macOS</a>
-          <p class="free-note">Se actualiza sola · pronto en el Mac App Store</p>
+          <p class="free-note">Se actualiza sola · macOS 15+</p>
         </div>
         <div class="card">
           <h3>O instalalo con Homebrew</h3>

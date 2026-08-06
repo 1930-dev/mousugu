@@ -1,4 +1,5 @@
 ---
+import AppStoreBadge from '../components/AppStoreBadge.astro';
 import Base from '../layouts/Base.astro';
 import BrewCommand from '../components/BrewCommand.astro';
 import Nav from '../components/Nav.astro';
@@ -52,6 +53,7 @@ const schemas = [
       'Mac のメニューバーに次の会議までのカウントダウンを表示し、Zoom・Google Meet・Microsoft Teams・Webex にワンクリックで参加できるカレンダーアプリ。',
     url: 'https://mousugu.app/ja',
     downloadUrl: 'https://github.com/1930-dev/mousugu/releases/latest/download/MouSugu.dmg',
+    installUrl: 'https://apps.apple.com/app/id6791985334?mt=12',
     license: 'https://opensource.org/license/mit',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
     inLanguage: 'ja',
@@ -93,6 +95,7 @@ const schemas = [
       </div>
 
       <div class="cta-row">
+        <AppStoreBadge lang="ja" position="hero" />
         <a class="btn btn-primary" href="https://github.com/1930-dev/mousugu/releases/latest/download/MouSugu.dmg" data-track="download" data-position="hero">macOS 版をダウンロード</a>
       </div>
       <p class="free-note">無料・オープンソース · macOS 15+</p>
@@ -187,9 +190,14 @@ const schemas = [
       <p>カウントダウンを、見える場所に。</p>
       <div class="install">
         <div class="card">
+          <h3>Mac App Store で入手</h3>
+          <AppStoreBadge lang="ja" position="footer" />
+          <p class="free-note">App Store 経由でアップデート · macOS 15+</p>
+        </div>
+        <div class="card">
           <h3>DMG をダウンロード</h3>
           <a class="btn btn-primary" href="https://github.com/1930-dev/mousugu/releases/latest/download/MouSugu.dmg" data-track="download" data-position="footer">Mou Sugu をダウンロード</a>
-          <p class="free-note">自動アップデート · Mac App Store 版も近日公開</p>
+          <p class="free-note">自動アップデート · macOS 15+</p>
         </div>
         <div class="card">
           <h3>Homebrew でインストール</h3>

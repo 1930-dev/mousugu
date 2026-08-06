@@ -76,7 +76,7 @@ section { padding: 4.5rem 0; }
 .hero-shot img { display: block; width: 100%; height: auto; }
 
 /* CTA buttons */
-.cta-row { display: flex; gap: 0.9rem; justify-content: center; margin-top: 2.4rem; flex-wrap: wrap; }
+.cta-row { display: flex; align-items: center; gap: 0.9rem; justify-content: center; margin-top: 2.4rem; flex-wrap: wrap; }
 .btn {
   display: inline-block; padding: 0.75rem 1.5rem; border-radius: 999px;
   text-decoration: none; font-weight: 600; font-size: 0.98rem;
@@ -86,6 +86,12 @@ section { padding: 4.5rem 0; }
 .btn-primary:hover { background: #f2493c; color: #fff; }
 .btn-ghost { background: var(--glass); }
 .free-note { margin-top: 0.9rem; font-size: 0.88rem; color: var(--muted); }
+
+/* Apple's Mac App Store badge, next to a .btn. Scaling is the only edit the
+   artwork allows, so the height repeats .btn's own pixel maths — vertical
+   padding + line box + borders — instead of guessing a round number. */
+.appstore { display: inline-block; line-height: 0; }
+.appstore img { height: calc(1.5rem + 0.98rem * 1.65 + 2px); width: auto; }
 
 /* Homebrew command — a glass pill holding the literal one-liner. The copy
    button stays hidden until BrewCommand.astro confirms a Clipboard API. */
@@ -130,17 +136,27 @@ section { padding: 4.5rem 0; }
   position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);
 }
 
-/* Install block — the two ways in, side by side */
-.install { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-top: 2rem; }
+/* Install block — the three ways in, side by side */
+/* Two one-click ways in on the top row, the one-liner on its own below. Two
+   fixed columns rather than auto-fit: three tracks would leave a hole next to
+   the pair once Homebrew claims a row of its own. */
+.install { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 2rem; }
 .install .card {
   display: flex; flex-direction: column; align-items: center;
   gap: 0.9rem; padding: 1.8rem 1.4rem;
 }
 .install .card > * { margin: 0; }
-/* Headings align at the top of both cards, captions at the bottom, whatever
+/* Headings align at the top of every card, captions at the bottom, whatever
    each way needs in between. */
 .install .card .free-note { margin-top: auto; }
-.install .brew { margin-top: 0; }
+/* The pill is as wide as its command unless something pins it: tie it to the
+   card so the code scrolls inside instead of spilling over the neighbour. */
+.install .brew { margin-top: 0; width: 100%; }
+/* Homebrew takes the whole row under the two one-click ways in. A third of the
+   grid is narrower than the one-liner, and a command you have to scroll to
+   read is worth less than one you can check before you run it. Browsers
+   without :has fall back to three columns and the scrolling pill. */
+.install .card:has(.brew) { grid-column: 1 / -1; }
 
 /* Feature grid */
 .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); grid-auto-rows: 1fr; gap: 1rem; margin-top: 2rem; }
@@ -251,6 +267,7 @@ footer .col strong { display: block; margin-bottom: 0.3rem; }
    the inline nav for a slide-in drawer. */
 @media (max-width: 600px) {
   section { padding: 3rem 0; }
+  .install { grid-template-columns: 1fr; }
   .hero { padding: 2.8rem 0 2.4rem; }
   .nav { padding: 0.9rem 0; }
   .nav .brand .kana { display: none; }
