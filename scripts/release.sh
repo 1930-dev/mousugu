@@ -154,6 +154,8 @@ echo ""
 echo "✅ Ready to ship:"
 echo "   DMG     $DMG_PATH"
 echo "   copy    $DMG_STABLE_PATH (same bytes, keeps releases/latest/download working)"
-echo "           → gh release create v$VERSION \"$DMG_PATH\" \"$DMG_STABLE_PATH\" --title \"$APP_DISPLAY $VERSION\""
+# Same body the workflow publishes: the header carries the tagged site link, and
+# --generate-notes appends GitHub's changelog under it.
+echo "           → gh release create v$VERSION \"$DMG_PATH\" \"$DMG_STABLE_PATH\" --title \"$APP_DISPLAY $VERSION\" --notes-file scripts/lib/release-notes-header.md --generate-notes"
 echo "   Appcast $APPCAST"
 echo "           → commit, then publish to https://mousugu.app/"

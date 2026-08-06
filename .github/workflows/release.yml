@@ -105,9 +105,13 @@ jobs:
             gh release upload "${GITHUB_REF_NAME}" \
               "${{ steps.dmg.outputs.dmg }}" build/MouSugu.dmg --clobber
           else
+            # The header goes above GitHub's generated notes; it carries the only
+            # link in the body that reaches our own site, tagged so OpenPanel can
+            # attribute it. The DMG assets stay bare — see the file's comment.
             gh release create "${GITHUB_REF_NAME}" \
               "${{ steps.dmg.outputs.dmg }}" build/MouSugu.dmg \
               --title "Mou Sugu ${{ steps.dmg.outputs.version }}" \
+              --notes-file scripts/lib/release-notes-header.md \
               --generate-notes
           fi
 

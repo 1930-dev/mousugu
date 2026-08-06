@@ -75,6 +75,26 @@ Bump `MARKETING_VERSION` (and `CURRENT_PROJECT_VERSION`) in
 App Store Connect still needs. See each script's header for one-time
 prerequisites.
 
+### Release notes
+
+The release body is `scripts/lib/release-notes-header.md` followed by GitHub's
+generated changelog (`--notes-file … --generate-notes`). The workflow does this
+on a tag push; `release.sh` prints the same command for a manual release.
+
+Links out of the repo follow one rule, and it cuts both ways:
+
+- **Links to mousugu.app carry UTM parameters.** The site is the only surface
+  our analytics can see, so an untagged link there arrives with no channel. The
+  parameters are `?utm_source=github&utm_medium=repo&utm_campaign=evergreen` in
+  the README and the repository's *Website* field, and `utm_medium=release-notes`
+  in a release body.
+- **The DMG and source links carry none, on purpose.** Neither reaches the site,
+  so there is nothing to attribute and the parameters would only make the link
+  harder to read. Same for the Mac App Store listing: Apple discards `utm_*`.
+
+Do not compose these URLs by hand — copy them from the two lists above, or from
+the table they come from in the project workspace.
+
 ## The Homebrew cask
 
 Mou Sugu is distributed through our own tap,
