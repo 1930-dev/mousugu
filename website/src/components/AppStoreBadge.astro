@@ -1,0 +1,46 @@
+---
+// AppStoreBadge.astro — Apple's official "Download on the Mac App Store"
+// badge. The artwork is Apple's: it may be scaled, never recoloured or
+// altered, so the only thing this component does is size it and link it.
+//
+// The link carries no storefront prefix and no `l=` parameter, so Apple routes
+// each visitor to their own country's store. No UTMs either — Apple drops them.
+//
+// The badge speaks the language of the page, which is a statement about the
+// reader, not a promise about the listing: the App Store metadata is EN + ES.
+
+interface Props {
+  lang: 'en' | 'es' | 'ja';
+  /** Feeds data-position, matching the data-track="download" links. */
+  position: 'hero' | 'footer';
+}
+
+const { lang, position } = Astro.props;
+
+// Intrinsic width of Apple's artwork at its natural 40px height, passed as
+// width/height attributes so the browser reserves the box before the SVG
+// loads. CSS then scales it to the height of the .btn beside it.
+const badges = {
+  en: { width: 156, alt: 'Download on the Mac App Store' },
+  es: { width: 156, alt: 'Descárgalo en el Mac App Store' },
+  ja: { width: 140, alt: 'Mac App Store からダウンロード' },
+};
+
+const { width, alt } = badges[lang];
+---
+
+<a
+  class="appstore"
+  href="https://apps.apple.com/app/id6791985334?mt=12"
+  data-track="appstore"
+  data-position={position}
+>
+  <img
+    src={`/badge-mac-app-store-${lang}.svg`}
+    width={width}
+    height={40}
+    alt={alt}
+    loading={position === 'hero' ? 'eager' : 'lazy'}
+    decoding="async"
+  />
+</a>
