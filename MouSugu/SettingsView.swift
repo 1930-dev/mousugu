@@ -1,6 +1,7 @@
 import SwiftUI
 import EventKit
 import ServiceManagement
+import os
 
 /// Selected pane in the Settings window, persisted across launches per HIG
 /// ("Restore the most recently viewed pane").
@@ -44,7 +45,9 @@ private struct GeneralPane: View {
     @ObservedObject var store: CalendarStore
     @ObservedObject var updater: UpdateChecker
     @AppStorage("hideFreeTimeEvents") private var hideFreeTimeEvents = true
-    @AppStorage("autoStartEnabled") private var autoStartEnabled = false
+    @State private var launchAtLogin = LaunchAtLogin.isEnabled
+    @State private var launchAtLoginNeedsApproval = LaunchAtLogin.needsApproval
+    @State private var launchAtLoginFailed = false
     @AppStorage("joinGraceMinutes") private var joinGraceMinutes = 30
     @AppStorage("dayDoneStyle") private var dayDoneStyleRaw = DayDoneStyle.otsukaresama.rawValue
 
@@ -94,10 +97,22 @@ private struct GeneralPane: View {
                 }
             }
             Section(Strings.Settings.appSection) {
-                Toggle(Strings.Settings.autoStart, isOn: $autoStartEnabled)
-                    .onChange(of: autoStartEnabled) { _, newValue in
-                        toggleAutoStart(enabled: newValue)
+                Toggle(Strings.Settings.autoStart, isOn: Binding(
+                    get: { launchAtLogin },
+                    set: { setLaunchAtLogin($0) }
+                ))
+                if launchAtLoginNeedsApproval {
+                    LabeledContent(Strings.Settings.autoStartNeedsApproval) {
+                        Button(Strings.Settings.openLoginItems) {
+                            SMAppService.openSystemSettingsLoginItems()
+                        }
                     }
+                }
+                if launchAtLoginFailed {
+                    Text(Strings.Settings.autoStartFailed)
+                        .font(.callout)
+                        .foregroundStyle(.red)
+                }
                 LabeledContent(Strings.Settings.version, value: versionLabel)
                 // "Check for updates" is intentionally the last row — it reads
                 // as an action on the version shown just above, so it breaks the
@@ -112,18 +127,80 @@ private struct GeneralPane: View {
             }
         }
         .formStyle(.grouped)
+        // The login item can change behind the app's back (System Settings,
+        // a reinstall), so re-read it whenever the pane can be seen again.
+        .onAppear(perform: refreshLaunchAtLogin)
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            refreshLaunchAtLogin()
+        }
     }
 
-    private func toggleAutoStart(enabled: Bool) {
+    private func setLaunchAtLogin(_ enabled: Bool) {
         do {
-            if enabled {
-                try SMAppService.mainApp.register()
-            } else {
-                try SMAppService.mainApp.unregister()
-            }
+            try LaunchAtLogin.setEnabled(enabled)
+            launchAtLoginFailed = false
         } catch {
-            print("Error configurando auto-start: \(error)")
+            LaunchAtLogin.logger.error("Could not \(enabled ? "register" : "unregister", privacy: .public) the login item: \(error.localizedDescription, privacy: .public)")
+            launchAtLoginFailed = true
         }
+        refreshLaunchAtLogin()
+    }
+
+    private func refreshLaunchAtLogin() {
+        launchAtLogin = LaunchAtLogin.isEnabled
+        launchAtLoginNeedsApproval = LaunchAtLogin.needsApproval
+    }
+}
+
+/// Launch at login, read from Background Task Management on every access.
+///
+/// The registration belongs to the system, not to the app: switching between
+/// the direct and App Store builds, or removing the item in System Settings,
+/// drops it silently. A cached flag would then keep showing the toggle on while
+/// the app no longer starts after a restart.
+enum LaunchAtLogin {
+    static let logger = Logger(subsystem: "dev.1930.MouSugu", category: "LaunchAtLogin")
+
+    /// Where builds up to 1.3.5 stored the toggle instead of asking the system.
+    private static let legacyPreferenceKey = "autoStartEnabled"
+
+    /// On when registered, including while the user still has to approve it.
+    static var isEnabled: Bool {
+        switch SMAppService.mainApp.status {
+        case .enabled, .requiresApproval: true
+        default: false
+        }
+    }
+
+    static var needsApproval: Bool {
+        SMAppService.mainApp.status == .requiresApproval
+    }
+
+    static func setEnabled(_ enabled: Bool) throws {
+        if enabled {
+            try SMAppService.mainApp.register()
+        } else {
+            try SMAppService.mainApp.unregister()
+        }
+    }
+
+    /// Restores a registration that the legacy preference still claims, then
+    /// drops the preference so the system stays the only source of truth. It
+    /// runs once: a later removal in System Settings is the user's choice.
+    /// On failure the preference stays, and the next launch tries again.
+    static func migrateLegacyPreference() {
+        let defaults = UserDefaults.standard
+        guard defaults.object(forKey: legacyPreferenceKey) != nil else { return }
+        if defaults.bool(forKey: legacyPreferenceKey),
+           SMAppService.mainApp.status == .notRegistered {
+            do {
+                try SMAppService.mainApp.register()
+            } catch {
+                logger.error("Could not restore the login item: \(error.localizedDescription, privacy: .public)")
+                return
+            }
+        }
+        defaults.removeObject(forKey: legacyPreferenceKey)
     }
 }
 

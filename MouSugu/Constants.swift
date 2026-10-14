@@ -63,6 +63,9 @@ struct Strings {
         /// Fallback account header for a calendar source with no title.
         static var otherAccount: String { String(localized: "Other") }
         static var autoStart: String { String(localized: "Start at macOS login") }
+        static var autoStartNeedsApproval: String { String(localized: "Needs your approval") }
+        static var autoStartFailed: String { String(localized: "Couldn't change this setting. Add Mou Sugu in System Settings › General › Login Items.") }
+        static var openLoginItems: String { String(localized: "Open Login Items") }
         static var hideFreeEvents: String { String(localized: "Hide events where I'm free") }
         static var joinGraceWindow: String { String(localized: "Keep Join button after meetings end") }
         static var joinGraceOff: String { String(localized: "Never") }

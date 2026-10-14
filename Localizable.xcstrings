@@ -61,6 +61,16 @@
         }
       }
     },
+    "Couldn't change this setting. Add Mou Sugu in System Settings › General › Login Items." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo cambiar esta opción. Agregá Mou Sugu en Configuración del Sistema › General › Ítems de inicio."
+          }
+        }
+      }
+    },
     "Done for today" : {
       "localizations" : {
         "es" : {
@@ -161,6 +171,16 @@
         }
       }
     },
+    "Needs your approval" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Necesita tu aprobación"
+          }
+        }
+      }
+    },
     "Never" : {
       "localizations" : {
         "es" : {
@@ -227,6 +247,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Abrir Calendario"
+          }
+        }
+      }
+    },
+    "Open Login Items" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Ítems de inicio"
           }
         }
       }

@@ -6,6 +6,10 @@ struct CalendarBarApp: App {
     @StateObject private var store = CalendarStore()
     @StateObject private var updater = UpdateChecker()
 
+    init() {
+        LaunchAtLogin.migrateLegacyPreference()
+    }
+
     var body: some Scene {
         MenuBarExtra {
             MainMenuView(store: store)
