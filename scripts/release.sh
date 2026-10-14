@@ -11,7 +11,7 @@
 #   1. Apple Developer Program membership (https://developer.apple.com/programs/).
 #   2. "Developer ID Application" certificate installed in your Keychain.
 #      Xcode → Settings → Accounts → your Apple ID → Manage Certificates → +
-#   3. App Store Connect API key in Infisical (engineering/prod):
+#   3. App Store Connect API key in Infisical (prod, /jasper/infra/appstore-connect):
 #      APP_STORE_CONNECT_KEY_ID / _ISSUER_ID / _PRIVATE_KEY — the same key
 #      release-appstore.sh uses. notarytool authenticates with it directly.
 #   4. Sparkle's Ed25519 signing key in your Keychain (`generate_keys`). The
@@ -98,7 +98,7 @@ fi
 # Same key and mechanism as release-appstore.sh; nothing sensitive stays on
 # disk past the script's lifetime.
 INFISICAL_PID="0b3c27f1-21ae-4aa3-b8fb-a21857a6a35f"
-secret() { infisical-secret get "$1" --projectId "$INFISICAL_PID" --env prod --plain --silent; }
+secret() { infisical-secret get "$1" --projectId "$INFISICAL_PID" --env prod --path /jasper/infra/appstore-connect --plain --silent; }
 ASC_KEY_ID="$(secret APP_STORE_CONNECT_KEY_ID)"
 ASC_ISSUER_ID="$(secret APP_STORE_CONNECT_ISSUER_ID)"
 ASC_KEY_PATH="$(mktemp -t asckey)"

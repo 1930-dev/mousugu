@@ -6,7 +6,7 @@
 # Sparkle. For the direct/DMG channel use release.sh. See APP_STORE.md.
 #
 # Signing and upload auth are fully automatic via the App Store Connect API
-# key stored in Infisical (engineering/prod): APP_STORE_CONNECT_KEY_ID /
+# key stored in Infisical (prod, /jasper/infra/appstore-connect): APP_STORE_CONNECT_KEY_ID /
 # _ISSUER_ID / _PRIVATE_KEY. The .p8 is fetched at runtime into altool's
 # search path and removed on exit — nothing sensitive is left on disk.
 # xcodebuild uses the same key with -allowProvisioningUpdates to create or
@@ -41,7 +41,7 @@ EXPORT_OPTIONS="$ROOT_DIR/scripts/ExportOptions-appstore.plist"
 
 # ---- App Store Connect API key: Infisical -> runtime .p8 ------------------
 INFISICAL_PID="0b3c27f1-21ae-4aa3-b8fb-a21857a6a35f"
-secret() { infisical-secret get "$1" --projectId "$INFISICAL_PID" --env prod --plain --silent; }
+secret() { infisical-secret get "$1" --projectId "$INFISICAL_PID" --env prod --path /jasper/infra/appstore-connect --plain --silent; }
 
 ASC_KEY_ID="$(secret APP_STORE_CONNECT_KEY_ID)"
 ASC_ISSUER_ID="$(secret APP_STORE_CONNECT_ISSUER_ID)"
