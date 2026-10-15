@@ -18,6 +18,9 @@ struct Strings {
         static var rejoin: String { String(localized: "Rejoin") }
         static var preferences: String { String(localized: "Preferences…") }
         static var checkForUpdates: String { String(localized: "Check for updates…") }
+        static func updateAvailable(_ version: String) -> String {
+            String(localized: "Update to \(version) available")
+        }
         static var exit: String { String(localized: "Quit") }
     }
 

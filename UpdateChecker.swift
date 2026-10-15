@@ -19,23 +19,24 @@ import Sparkle
 /// App Store target whenever the direct target had been built first, silently
 /// linking a framework that is never embedded.
 @MainActor
-final class UpdateChecker: ObservableObject {
-    // Required because the class has no `@Published` storage to drive the
-    // default synthesized publisher; `isAvailable` is static-by-compilation
-    // so it never actually emits, but conforming to `ObservableObject` lets us
-    // use `@StateObject` for lifecycle.
-    let objectWillChange = ObservableObjectPublisher()
+final class UpdateChecker: NSObject, ObservableObject {
+    /// Version of a scheduled update that the app shows as a gentle reminder
+    /// instead of Sparkle's alert. Always nil in the App Store build.
+    @Published private(set) var pendingUpdateVersion: String?
 
     #if SPARKLE
-    private let controller: SPUStandardUpdaterController
+    private var controller: SPUStandardUpdaterController!
     #endif
 
-    init() {
+    override init() {
+        super.init()
         #if SPARKLE
+        // Created after super.init so the controller can take self as its
+        // user-driver delegate.
         controller = SPUStandardUpdaterController(
             startingUpdater: true,
             updaterDelegate: nil,
-            userDriverDelegate: nil
+            userDriverDelegate: self
         )
         #endif
     }
@@ -57,3 +58,38 @@ final class UpdateChecker: ObservableObject {
         #endif
     }
 }
+
+#if SPARKLE
+/// Gentle reminders. Mou Sugu has no window, so a scheduled update alert would
+/// either steal focus or open behind other apps. Sparkle shows its alert only
+/// when it can take focus anyway (recent launch, idle system). Otherwise the
+/// menu bar shows a quiet indicator, and the alert opens when the user clicks it.
+extension UpdateChecker: SPUStandardUserDriverDelegate {
+    nonisolated var supportsGentleScheduledUpdateReminders: Bool { true }
+
+    nonisolated func standardUserDriverShouldHandleShowingScheduledUpdate(
+        _ update: SUAppcastItem,
+        andInImmediateFocus immediateFocus: Bool
+    ) -> Bool {
+        immediateFocus
+    }
+
+    nonisolated func standardUserDriverWillHandleShowingUpdate(
+        _ handleShowingUpdate: Bool,
+        forUpdate update: SUAppcastItem,
+        state: SPUUserUpdateState
+    ) {
+        guard !handleShowingUpdate else { return }
+        let version = update.displayVersionString
+        MainActor.assumeIsolated { pendingUpdateVersion = version }
+    }
+
+    nonisolated func standardUserDriverDidReceiveUserAttention(forUpdate update: SUAppcastItem) {
+        MainActor.assumeIsolated { pendingUpdateVersion = nil }
+    }
+
+    nonisolated func standardUserDriverWillFinishUpdateSession() {
+        MainActor.assumeIsolated { pendingUpdateVersion = nil }
+    }
+}
+#endif

@@ -12,10 +12,15 @@ struct CalendarBarApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            MainMenuView(store: store)
+            MainMenuView(store: store, updater: updater)
         } label: {
             HStack(spacing: DesignSystem.Spacing.xs) {
                 Image(systemName: "calendar")
+                // Gentle update reminder: Sparkle found an update while the app
+                // sat in the background and left it to the app to show.
+                if updater.pendingUpdateVersion != nil {
+                    Image(systemName: "arrow.down.circle")
+                }
                 // Collapse to just the icon when idle (no upcoming event today);
                 // the store sets an empty label in that case. Long titles are
                 // truncated by the store — MenuBarExtra ignores layout
@@ -36,6 +41,7 @@ struct CalendarBarApp: App {
 
 struct MainMenuView: View {
     @ObservedObject var store: CalendarStore
+    @ObservedObject var updater: UpdateChecker
     @Environment(\.openSettings) private var openSettings
 
     /// Tallest the event list may grow before scrolling: the screen's visible
@@ -183,6 +189,13 @@ struct MainMenuView: View {
                 NSApp.activate(ignoringOtherApps: true)
                 Self.centerNextKeyWindow()
                 openSettings()
+            }
+            if let version = updater.pendingUpdateVersion {
+                ToolbarIconButton(systemName: "arrow.down.circle",
+                                  label: Strings.General.updateAvailable(version),
+                                  iconColor: .accentColor) {
+                    updater.checkForUpdates()
+                }
             }
             Spacer()
             ToolbarIconButton(systemName: "power",

@@ -351,6 +351,16 @@
         }
       }
     },
+    "Update to %@ available" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualización a %@ disponible"
+          }
+        }
+      }
+    },
     "Version" : {
       "localizations" : {
         "es" : {
