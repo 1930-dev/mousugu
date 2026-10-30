@@ -236,8 +236,6 @@ struct DayCell: View {
                 .font(.callout)
                 .fontWeight(isToday ? .bold : .medium)
                 .foregroundStyle(numberColor)
-                .frame(width: DesignSystem.Layout.monthTodayCircleSize,
-                       height: DesignSystem.Layout.monthTodayCircleSize)
                 .frame(maxWidth: .infinity)
                 .frame(height: DesignSystem.Layout.monthDayCellHeight)
                 .overlay {

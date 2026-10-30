@@ -106,8 +106,6 @@ enum DesignSystem {
         static let monthEventDotSize: CGFloat = 2
         /// Max event dots rendered per day in the month grid.
         static let monthMaxDotsPerDay: Int = 3
-        /// Square frame that day numbers center in.
-        static let monthTodayCircleSize: CGFloat = 16
         /// Stroke width of the border marking today's cell. Whole point on
         /// purpose: fractional widths land on half-pixels over the grid's
         /// fractional cell widths and render unevenly.
