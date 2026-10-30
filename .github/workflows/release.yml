@@ -224,6 +224,8 @@ jobs:
         run: |
           set -euo pipefail
           brew tap 1930-dev/tap
+          # Homebrew refuses to load a cask from a tap it does not trust.
+          brew trust 1930-dev/tap
           TAP=$(brew --repository 1930-dev/tap)
           # brew taps over HTTPS, which the deploy key cannot push to.
           git -C "$TAP" remote set-url origin git@github.com:1930-dev/homebrew-tap.git
